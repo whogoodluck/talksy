@@ -1,9 +1,9 @@
 function info(...args: string[]) {
-  console.log(...args);
+  console.log(...args)
 }
 
 function error(...args: string[]) {
-  console.error(...args);
+  console.error(...args)
 }
 
-export default {info, error};
+export default { info, error }
