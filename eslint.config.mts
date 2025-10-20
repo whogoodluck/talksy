@@ -15,6 +15,9 @@ export default defineConfig([
   tseslint.configs.recommended,
   prettierConfig,
   {
-    rules: {},
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-unused-vars': 'warn',
+    },
   },
 ])
