@@ -1,15 +1,14 @@
 import { NextFunction, Request, Response } from 'express'
 import { comparePassword, hashPassword, signToken } from '../lib/utils'
 import { ExpressRequest } from '../middlewares/auth.middleware'
-import { loginSchema, registerSchema, usernameSchema } from '../schemas/user.schema'
+import { signinSchema, signupSchema, usernameSchema } from '../schemas/user.schema'
 import userService from '../services/user.service'
-import config from '../utils/config'
 import { HttpError } from '../utils/http-error'
 import JsonResponse from '../utils/json-response'
 
 const signUp = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const payload = registerSchema.parse(req.body)
+    const payload = signupSchema.parse(req.body)
 
     const isUserExist = await userService.getOneByEmail(payload.email)
 
@@ -28,14 +27,14 @@ const signUp = async (req: Request, res: Response, next: NextFunction) => {
       username,
     })
 
-    const token = signToken({ id: user.id, email: user.email, name: user.name })
-
-    res.cookie('token', token, {
-      httpOnly: true,
-      secure: config.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    })
+    signToken(
+      {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+      },
+      res
+    )
 
     res.status(201).json(
       new JsonResponse({
@@ -49,9 +48,9 @@ const signUp = async (req: Request, res: Response, next: NextFunction) => {
   }
 }
 
-const login = async (req: Request, res: Response, next: NextFunction) => {
+const signin = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { email, password } = loginSchema.parse(req.body)
+    const { email, password } = signinSchema.parse(req.body)
 
     const user = await userService.getOneByEmail(email)
 
@@ -69,20 +68,16 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
       throw new HttpError(401, 'Invalid email or password')
     }
 
-    const token = signToken({
-      id: user.id,
-      email: user.email,
-      name: user.name,
-    })
+    signToken(
+      {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+      },
+      res
+    )
 
     const { hashPassword: _, ...userWithoutPassword } = user
-
-    res.cookie('token', token, {
-      httpOnly: true,
-      secure: config.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    })
 
     res.status(200).json(
       new JsonResponse({
@@ -96,7 +91,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
   }
 }
 
-const logout = async (_req: Request, res: Response, next: NextFunction) => {
+const signout = async (_req: Request, res: Response, next: NextFunction) => {
   try {
     res.clearCookie('token')
 
@@ -104,6 +99,26 @@ const logout = async (_req: Request, res: Response, next: NextFunction) => {
       new JsonResponse({
         status: 'success',
         message: 'User logged out successfully',
+      })
+    )
+  } catch (err) {
+    next(err)
+  }
+}
+
+async function validateToken(req: ExpressRequest, res: Response, next: NextFunction) {
+  try {
+    const user = await userService.getOneById(req.user!.id)
+
+    if (!user) {
+      throw new HttpError(401, 'Invalid or expired token')
+    }
+
+    res.status(200).json(
+      new JsonResponse({
+        status: 'success',
+        message: 'User validated successfully',
+        data: user,
       })
     )
   } catch (err) {
@@ -154,8 +169,9 @@ const getUserByUsername = async (req: Request, res: Response, next: NextFunction
 
 export default {
   signUp,
-  login,
-  logout,
+  signin,
+  signout,
+  validateToken,
   getAllUsers,
   getUserByUsername,
 }

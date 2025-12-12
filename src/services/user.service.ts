@@ -1,7 +1,7 @@
 import { prisma } from '../lib/prisma'
-import { RegisterRequest } from '../schemas/user.schema'
+import { SignupRequest } from '../schemas/user.schema'
 
-const createNew = async (user: RegisterRequest) => {
+const createNew = async (user: SignupRequest) => {
   return await prisma.user.create({
     data: user,
     omit: { hashPassword: true },

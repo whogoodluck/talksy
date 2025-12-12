@@ -8,7 +8,7 @@ export const usernameSchema = requiredString('Username')
   .regex(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers and underscores')
   .toLowerCase()
 
-export const registerSchema = z.object({
+export const signupSchema = z.object({
   email: requiredString('Email')
     .email('Please provide a valid email address')
     .toLowerCase()
@@ -17,7 +17,7 @@ export const registerSchema = z.object({
   password: requiredString('Password').min(6, 'Password must be atleast 6 characters').default(''),
 })
 
-export const loginSchema = z.object({
+export const signinSchema = z.object({
   email: requiredString('Email')
     .email('Please provide a valid email address')
     .toLowerCase()
@@ -25,15 +25,15 @@ export const loginSchema = z.object({
   password: requiredString('Password').min(6, 'Password must be atleast 6 characters').default(''),
 })
 
-type OriginalRegisterRequest = z.infer<typeof registerSchema>
+type OriginalSignupRequest = z.infer<typeof signupSchema>
 
-export type RegisterRequest = Omit<OriginalRegisterRequest, 'password'> & {
-  hashPassword: OriginalRegisterRequest['password']
+export type SignupRequest = Omit<OriginalSignupRequest, 'password'> & {
+  hashPassword: OriginalSignupRequest['password']
   username: string
 }
 
-type OriginalLoginRequest = z.infer<typeof loginSchema>
+type OriginalSigninRequest = z.infer<typeof signinSchema>
 
-export type LoginSchema = Omit<OriginalLoginRequest, 'password'> & {
-  hashPassword: OriginalLoginRequest['password']
+export type SigninRequest = Omit<OriginalSigninRequest, 'password'> & {
+  hashPassword: OriginalSigninRequest['password']
 }
