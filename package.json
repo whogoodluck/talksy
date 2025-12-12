@@ -6,6 +6,9 @@
   "scripts": {
     "start": "NODE_ENV=production node dist/index.js",
     "dev": "NODE_ENV=development tsx watch src/index.ts",
+    "build:frontend": "cd ./web && npm install && npm run build",
+    "build:backend": "npm install && npm run build",
+    "build:all": "npm run build:frontend && npm run build:backend",
     "build": "tsc",
     "lint": "eslint .",
     "format": "prettier --write .",
