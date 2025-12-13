@@ -2,7 +2,7 @@
   "name": "talksy",
   "version": "1.0.0",
   "description": "A modern real-time chat platform that makes conversations fast, fun, and effortless.",
-  "main": "dist/index.js",
+  "main": "index.js",
   "scripts": {
     "dev": "NODE_ENV=development tsx watch src/index.ts",
     "start": "NODE_ENV=production node dist/index.js",
