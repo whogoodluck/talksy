@@ -1,8 +1,17 @@
+import { VerificationType } from '@prisma/client'
 import { NextFunction, Request, Response } from 'express'
 import { comparePassword, hashPassword, signToken } from '../lib/utils'
 import { ExpressRequest } from '../middlewares/auth.middleware'
-import { signinSchema, signupSchema, usernameSchema } from '../schemas/user.schema'
+import {
+  resendCodeSchema,
+  signinSchema,
+  signupSchema,
+  usernameSchema,
+  verifyEmailSchema,
+} from '../schemas/user.schema'
+import emailService from '../services/email.service'
 import userService from '../services/user.service'
+import verificationService from '../services/verification.service'
 import { HttpError } from '../utils/http-error'
 import JsonResponse from '../utils/json-response'
 
@@ -10,37 +19,126 @@ const signUp = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const payload = signupSchema.parse(req.body)
 
-    const isUserExist = await userService.getOneByEmail(payload.email)
+    let user = await userService.getOneByEmail(payload.email)
 
-    if (isUserExist) {
-      throw new HttpError(400, 'Email already in use')
+    if (user && user.isEmailVerified) {
+      throw new HttpError(409, 'Email already in use')
     }
 
     const hashedPassword = await hashPassword(payload.password)
 
     const username = usernameSchema.parse(payload.email.split('@')[0])
 
-    const user = await userService.createNew({
-      email: payload.email,
-      hashPassword: hashedPassword,
-      name: payload.name,
-      username,
-    })
+    if (!user) {
+      user = await userService.createNew({
+        email: payload.email,
+        hashPassword: hashedPassword,
+        name: payload.name,
+        username,
+      })
+    } else {
+      user = await userService.updateOneById(user.id, {
+        email: payload.email,
+        hashPassword: hashedPassword,
+        name: payload.name,
+        username,
+      })
+    }
 
-    signToken(
-      {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-      },
-      res
+    const verificationCode = await verificationService.createVerificationCode(
+      user.id,
+      VerificationType.EMAIL_VERIFICATION
     )
+
+    await emailService.sendVerificationEmail(user.email, verificationCode.code, user.name)
 
     res.status(201).json(
       new JsonResponse({
         status: 'success',
-        message: 'User signed up successfully!',
-        data: user,
+        message: 'Account created successfully. Please check your email for verification code.',
+        data: {
+          email: user.email,
+        },
+      })
+    )
+  } catch (err) {
+    next(err)
+  }
+}
+
+const vrififyEmail = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { email, code } = verifyEmailSchema.parse(req.body)
+
+    const user = await userService.getOneByEmail(email)
+
+    if (!user) {
+      throw new HttpError(404, 'User not found')
+    }
+
+    if (user.isEmailVerified) {
+      throw new HttpError(400, 'Email already verified')
+    }
+
+    const verificationCode = await verificationService.verifyCode(
+      user.id,
+      code,
+      VerificationType.EMAIL_VERIFICATION
+    )
+
+    if (!verificationCode) {
+      throw new HttpError(400, 'Invalid or expired verification code')
+    }
+
+    const updatedUser = await userService.verifyUserEmail(verificationCode.userId)
+
+    await emailService.sendWelcomeEmail(updatedUser.email, updatedUser.name)
+
+    signToken(
+      {
+        id: updatedUser.id,
+        email: updatedUser.email,
+        name: updatedUser.name,
+      },
+      res
+    )
+
+    res.status(200).json(
+      new JsonResponse({
+        status: 'success',
+        message: 'Email verified successfully',
+        data: updatedUser,
+      })
+    )
+  } catch (err) {
+    next(err)
+  }
+}
+
+const resendEmailVerificationCode = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { email } = resendCodeSchema.parse(req.body)
+
+    const user = await userService.getOneByEmail(email)
+
+    if (!user) {
+      throw new HttpError(404, 'User not found')
+    }
+
+    if (user.isEmailVerified) {
+      throw new HttpError(400, 'Email is already verified')
+    }
+
+    const verificationCode = await verificationService.createVerificationCode(
+      user.id,
+      VerificationType.EMAIL_VERIFICATION
+    )
+    await emailService.sendVerificationEmail(user.email, verificationCode.code, user.name)
+
+    res.status(200).json(
+      new JsonResponse({
+        status: 'success',
+        message: 'Verification code sent successfully!',
       })
     )
   } catch (err) {
@@ -52,10 +150,14 @@ const signin = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email, password } = signinSchema.parse(req.body)
 
-    const user = await userService.getOneByEmail(email)
+    const user = await userService.getOneByEmailForLogin(email)
 
     if (!user) {
       throw new HttpError(401, 'This email does not exist')
+    }
+
+    if (!user.isEmailVerified) {
+      throw new HttpError(403, 'Please verify your email before signing in')
     }
 
     if (!user.hashPassword) {
@@ -169,6 +271,8 @@ const getUserByUsername = async (req: Request, res: Response, next: NextFunction
 
 export default {
   signUp,
+  vrififyEmail,
+  resendEmailVerificationCode,
   signin,
   signout,
   validateToken,

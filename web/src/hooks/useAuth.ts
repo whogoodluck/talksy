@@ -1,6 +1,6 @@
-import type { SigninRequest, SignupRequest } from '@/schemas/user.schema'
+import type { SigninRequest, SignupRequest, VerifyEmailRequest } from '@/schemas/user.schema'
 import type { User } from '@/types/user'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { api } from '../lib/api'
@@ -15,30 +15,28 @@ export const useSignin = () => {
     },
     onSuccess: data => {
       queryClient.setQueryData(['currentUser'], data)
-      toast.success('Signed in successfully!')
+      toast.success(data.message)
       navigate('/')
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Signin failed')
+      toast.error(error.message)
     },
   })
 }
 
 export const useSignup = () => {
-  const queryClient = useQueryClient()
   const navigate = useNavigate()
 
   return useMutation({
-    mutationFn: async (credentials: SignupRequest) => {
-      return await api.post<User>('/users/signup', credentials)
+    mutationFn: async (newUserData: SignupRequest) => {
+      return await api.post<User>('/users/signup', newUserData)
     },
     onSuccess: data => {
-      queryClient.setQueryData(['currentUser'], data)
-      toast.success('Account created successfully!')
-      navigate('/')
+      toast.success(data.message)
+      navigate('/auth/verify-email', { state: { email: data.data.email } })
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Signup failed')
+      toast.error(error.message)
     },
   })
 }
@@ -51,25 +49,47 @@ export const useSignout = () => {
     mutationFn: async () => {
       return await api.post('/users/signout')
     },
-    onSuccess: () => {
+    onSuccess: data => {
       queryClient.setQueryData(['currentUser'], null)
       queryClient.clear()
-      toast.success('Signed out successfully!')
+      toast.success(data.message)
       navigate('/auth/signin')
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Signout failed')
+      toast.error(error.message)
     },
   })
 }
 
-export const useCheckAuth = () => {
-  return useQuery({
-    queryKey: ['currentUser'],
-    queryFn: async () => {
-      return await api.get<User>('/users/me')
+export const useVerifyEmail = () => {
+  const queryClient = useQueryClient()
+  const navigate = useNavigate()
+
+  return useMutation({
+    mutationFn: async (verifyEmailData: VerifyEmailRequest) => {
+      return await api.post<User>('/users/verify-email', verifyEmailData)
     },
-    staleTime: Infinity,
-    retry: false,
+    onSuccess: data => {
+      queryClient.setQueryData(['currentUser'], data)
+      toast.success(data.message)
+      navigate('/')
+    },
+    onError: (error: Error) => {
+      toast.error(error.message)
+    },
+  })
+}
+
+export const useResendEmailVerification = () => {
+  return useMutation({
+    mutationFn: async (email: string) => {
+      return await api.post('/users/resend-email-verification-code', { email })
+    },
+    onSuccess: data => {
+      toast.success(data.message)
+    },
+    onError: (error: Error) => {
+      toast.error(error.message)
+    },
   })
 }

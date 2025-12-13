@@ -8,17 +8,41 @@ datasource db {
 }
 
 model User {
-  id            String   @id      @default(cuid())
-  email         String   @unique
-  hashPassword  String?
-  username      String?  @unique  @db.VarChar(30)
-  name          String   @db.VarChar(100)
-  bio           String?  @db.VarChar(500)
-  picture       String?
-  location      String?  @db.VarChar(100)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id              String   @id      @default(cuid())
+  email           String   @unique
+  hashPassword    String?
+  username        String?  @unique  @db.VarChar(30)
+  name            String   @db.VarChar(100)
+  bio             String?  @db.VarChar(500)
+  picture         String?
+  location        String?  @db.VarChar(100)
+  isEmailVerified Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  verificationCodes VerificationCode[]
 
   @@map("users")
 }
+
+enum VerificationType {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+}
+
+model VerificationCode {
+  id        String   @id @default(cuid())
+  code      String   @db.VarChar(6)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      VerificationType
+  expiresAt DateTime
+  isUsed    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, type])
+  @@map("verification_codes")
+}
+
+
 

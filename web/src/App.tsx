@@ -5,6 +5,7 @@ import { ProtectedRoute, PublicRoute } from './components/route-guard'
 import { AuthProvider } from './contexts/AuthContext'
 import Signin from './pages/auth/signin'
 import Signup from './pages/auth/signup'
+import VerifyEmail from './pages/auth/verify-email'
 import Home from './pages/home'
 
 const queryClient = new QueryClient({
@@ -30,11 +31,15 @@ function App() {
               <Route path='/auth/signup' element={<Signup />} />
             </Route>
 
+            <Route element={<PublicRoute />}>
+              <Route path='/auth/verify-email' element={<VerifyEmail />} />
+            </Route>
+
             <Route element={<ProtectedRoute />}>
               <Route path='/' element={<Home />} />
             </Route>
           </Routes>
-          <Toaster position='top-right' richColors />
+          <Toaster position='bottom-right' richColors />
         </AuthProvider>
       </Router>
     </QueryClientProvider>

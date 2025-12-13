@@ -8,6 +8,18 @@ const createNew = async (user: SignupRequest) => {
   })
 }
 
+const verifyUserEmail = async (userId: string) => {
+  return await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      isEmailVerified: true,
+    },
+    omit: { hashPassword: true },
+  })
+}
+
 const getAll = async () => {
   return await prisma.user.findMany({
     orderBy: {
@@ -27,6 +39,17 @@ const getOneById = async (userId: string) => {
 }
 
 const getOneByEmail = async (email: string) => {
+  return await prisma.user.findUnique({
+    where: {
+      email,
+    },
+    omit: {
+      hashPassword: true,
+    },
+  })
+}
+
+const getOneByEmailForLogin = async (email: string) => {
   return await prisma.user.findUnique({
     where: {
       email,
@@ -53,11 +76,24 @@ const deleteOneById = async (userId: string) => {
   })
 }
 
+const updateOneById = async (userId: string, user: SignupRequest) => {
+  return await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: user,
+    omit: { hashPassword: true },
+  })
+}
+
 export default {
   createNew,
+  verifyUserEmail,
   getAll,
   getOneById,
   getOneByEmail,
+  getOneByEmailForLogin,
   getOneByUsername,
   deleteOneById,
+  updateOneById,
 }

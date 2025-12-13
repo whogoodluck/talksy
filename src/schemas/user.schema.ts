@@ -25,6 +25,17 @@ export const signinSchema = z.object({
   password: requiredString('Password').min(6, 'Password must be atleast 6 characters').default(''),
 })
 
+export const verifyEmailSchema = z.object({
+  email: requiredString('Email').email('Please provide a valid email address'),
+  code: requiredString('code')
+    .length(6, 'Code must be 6 digits')
+    .regex(/^\d+$/, 'Code must contain only numbers'),
+})
+
+export const resendCodeSchema = z.object({
+  email: requiredString('Email').email('Please provide a valid email address'),
+})
+
 type OriginalSignupRequest = z.infer<typeof signupSchema>
 
 export type SignupRequest = Omit<OriginalSignupRequest, 'password'> & {
@@ -37,3 +48,7 @@ type OriginalSigninRequest = z.infer<typeof signinSchema>
 export type SigninRequest = Omit<OriginalSigninRequest, 'password'> & {
   hashPassword: OriginalSigninRequest['password']
 }
+
+export type VerifyEmailRequest = z.infer<typeof verifyEmailSchema>
+
+export type ResendCodeRequest = z.infer<typeof resendCodeSchema>

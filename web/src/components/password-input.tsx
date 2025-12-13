@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Eye, EyeClosed } from 'lucide-react'
+import { Eye, EyeOff } from 'lucide-react'
 import * as React from 'react'
 
 export const PasswordInput = React.forwardRef<
@@ -19,7 +19,7 @@ export const PasswordInput = React.forwardRef<
         onClick={() => setShowPassword(prev => !prev)}
         tabIndex={-1}
       >
-        {showPassword ? <EyeClosed className='size-4' /> : <Eye className='size-4' />}
+        {showPassword ? <EyeOff className='size-4' /> : <Eye className='size-4' />}
       </Button>
     </div>
   )

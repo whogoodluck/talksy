@@ -1,4 +1,4 @@
-import { useCheckAuth } from '@/hooks/useAuth'
+import { useCurrentUser } from '@/hooks/useUsers'
 import { createContext, useContext, type ReactNode } from 'react'
 
 interface User {
@@ -17,7 +17,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const { data, isLoading } = useCheckAuth()
+  const { data, isLoading } = useCurrentUser()
   const user = data?.data
 
   return (
