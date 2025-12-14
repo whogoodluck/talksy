@@ -68,6 +68,16 @@ const getOneByUsername = async (username: string) => {
   })
 }
 
+const updateOneById = async (userId: string, user: SignupRequest) => {
+  return await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: user,
+    omit: { hashPassword: true },
+  })
+}
+
 const deleteOneById = async (userId: string) => {
   return await prisma.user.delete({
     where: {
@@ -76,13 +86,17 @@ const deleteOneById = async (userId: string) => {
   })
 }
 
-const updateOneById = async (userId: string, user: SignupRequest) => {
-  return await prisma.user.update({
+const deleteUnverifiedUsers = async (daysOld: number = 7) => {
+  const cutoffDate = new Date()
+  cutoffDate.setDate(cutoffDate.getDate() - daysOld)
+
+  return await prisma.user.deleteMany({
     where: {
-      id: userId,
+      isEmailVerified: false,
+      createdAt: {
+        lt: cutoffDate,
+      },
     },
-    data: user,
-    omit: { hashPassword: true },
   })
 }
 
@@ -94,6 +108,7 @@ export default {
   getOneByEmail,
   getOneByEmailForLogin,
   getOneByUsername,
-  deleteOneById,
   updateOneById,
+  deleteOneById,
+  deleteUnverifiedUsers,
 }

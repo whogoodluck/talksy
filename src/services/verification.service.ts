@@ -1,13 +1,27 @@
 import { VerificationType } from '@prisma/client'
 import { prisma } from '../lib/prisma'
 
-const createVerificationCode = async (userId: string, type: VerificationType) => {
-  await prisma.verificationCode.deleteMany({
+const deleteExpiredCodes = async () => {
+  return await prisma.verificationCode.deleteMany({
     where: {
-      userId,
-      type,
+      expiresAt: {
+        lt: new Date(),
+      },
     },
   })
+}
+
+const deleteUserCodes = async (userId: string, type?: VerificationType) => {
+  return await prisma.verificationCode.deleteMany({
+    where: {
+      userId,
+      ...(type && { type }),
+    },
+  })
+}
+
+const createVerificationCode = async (userId: string, type: VerificationType) => {
+  await deleteUserCodes(userId, type)
 
   const code = Math.floor(100000 + Math.random() * 900000).toString()
   const expiresAt = new Date(Date.now() + 10 * 60 * 1000)
@@ -82,19 +96,10 @@ const verifyCodeByEmail = async (email: string, code: string, type: Verification
   return verificationCode
 }
 
-const deleteExpiredCodes = async () => {
-  await prisma.verificationCode.deleteMany({
-    where: {
-      expiresAt: {
-        lt: new Date(),
-      },
-    },
-  })
-}
-
 export default {
+  deleteExpiredCodes,
+  deleteUserCodes,
   createVerificationCode,
   verifyCode,
   verifyCodeByEmail,
-  deleteExpiredCodes,
 }

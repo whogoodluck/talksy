@@ -14,7 +14,8 @@
     "build:backend": "npm install && npm run build",
     "build:all": "npm run build:frontend && npm run build:backend",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "cleanup": "tsx src/jobs/cleanup.job.ts"
   },
   "repository": {
     "type": "git",
