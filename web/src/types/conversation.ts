@@ -1,18 +1,23 @@
 import type { User } from './user'
 
-export enum ConversationType {
-  DIRECT = 'DIRECT',
-  GROUP = 'GROUP',
-}
+export const ConversationEnum = {
+  ALL: 'ALL',
+  DIRECT: 'DIRECT',
+  GROUP: 'GROUP',
+} as const
 
-export enum MessageType {
-  TEXT = 'TEXT',
-  IMAGE = 'IMAGE',
-  VIDEO = 'VIDEO',
-  AUDIO = 'AUDIO',
-  FILE = 'FILE',
-  SYSTEM = 'SYSTEM',
-}
+export type ConversationType = (typeof ConversationEnum)[keyof typeof ConversationEnum]
+
+export const MessageEnum = {
+  TEXT: 'TEXT',
+  IMAGE: 'IMAGE',
+  VIDEO: 'VIDEO',
+  AUDIO: 'AUDIO',
+  FILE: 'FILE',
+  SYSTEM: 'SYSTEM',
+} as const
+
+export type MessageType = (typeof MessageEnum)[keyof typeof MessageEnum]
 
 export interface ConversationParticipant {
   id: string
@@ -67,12 +72,12 @@ export interface Conversation {
 }
 
 export interface CreateDirectConversationRequest {
-  type?: ConversationType.DIRECT
+  type?: typeof ConversationEnum.DIRECT
   participantId: string
 }
 
 export interface CreateGroupConversationRequest {
-  type: ConversationType.GROUP
+  type: typeof ConversationEnum.GROUP
   name: string
   picture?: string
   participantIds: string[]

@@ -1,4 +1,4 @@
-import { ConversationType, type Conversation } from '@/types/conversation'
+import { ConversationEnum, type Conversation } from '@/types/conversation'
 
 export const getOtherParticipantFromDirectConversation = (
   conversation: Conversation,
@@ -8,7 +8,7 @@ export const getOtherParticipantFromDirectConversation = (
 }
 
 export const getConversationName = (conversation: Conversation, currentUserId: string): string => {
-  if (conversation.type === ConversationType.GROUP) {
+  if (conversation.type === ConversationEnum.GROUP) {
     return conversation.name || 'Unnamed Group'
   }
   const otherParticipant = getOtherParticipantFromDirectConversation(conversation, currentUserId)
@@ -19,7 +19,7 @@ export const getConversationAvatar = (
   conversation: Conversation,
   currentUserId: string
 ): string | null => {
-  if (conversation.type === ConversationType.GROUP) {
+  if (conversation.type === ConversationEnum.GROUP) {
     return conversation.picture || null
   }
   const otherParticipant = conversation.participants.find(p => p.user.id !== currentUserId)

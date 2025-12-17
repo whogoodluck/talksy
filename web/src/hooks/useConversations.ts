@@ -1,14 +1,13 @@
-import { HomeTabEnum, type HomeTab } from '@/constants'
 import { api } from '@/lib/api'
-import type { Conversation } from '@/types/conversation'
+import { ConversationEnum, type Conversation, type ConversationType } from '@/types/conversation'
 import { useQuery } from '@tanstack/react-query'
 
-export const useConversations = (activeTab?: HomeTab) => {
+export const useConversations = (activeTab?: ConversationType) => {
   return useQuery({
     queryKey: ['conversations'],
     queryFn: async () => {
       const res = await api.get<{ conversations: Conversation[]; total: number }>(
-        `/conversations?tab=${activeTab || HomeTabEnum.ALL}`
+        `/conversations?tab=${activeTab || ConversationEnum.ALL}`
       )
 
       return res.data

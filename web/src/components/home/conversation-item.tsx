@@ -29,7 +29,7 @@ export function ConversationItem({ conversation, setSelectedConversation }: Conv
     <Card
       onClick={() => setSelectedConversation(conversation)}
       className={cn(
-        'bg-background cursor-pointer border-none p-3 shadow-none transition-colors',
+        'bg-background cursor-pointer rounded-none border-none px-4 py-3 shadow-none transition-colors md:rounded-sm md:px-3',
         'hover:bg-foreground/5',
         {
           'bg-foreground/5': isActive,

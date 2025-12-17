@@ -1,18 +1,18 @@
-import type { HomeTab } from '@/constants'
 import { cn } from '@/lib/utils'
+import type { ConversationType } from '@/types/conversation'
 import type { Dispatch, SetStateAction } from 'react'
 
 interface Tab {
   value: string
-  label: string
+  label: ConversationType
   disabled?: boolean
   icon?: React.ComponentType<{ className?: string }>
 }
 
 interface TabsProps {
   tabs: readonly Tab[]
-  activeTab: HomeTab
-  setActiveTab: Dispatch<SetStateAction<HomeTab>>
+  activeTab: ConversationType
+  setActiveTab: Dispatch<SetStateAction<ConversationType>>
   className?: string
 }
 

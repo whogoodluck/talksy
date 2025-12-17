@@ -1,6 +1,7 @@
-import { HOME_TABS, HomeTabEnum } from '@/constants'
+import { HOME_TABS } from '@/constants'
 import { cn } from '@/lib/utils'
 import { useConversationContext } from '@/providers/conversation.provider'
+import { ConversationEnum, type ConversationType } from '@/types/conversation'
 import { Search, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import Logo from '../common/logo'
@@ -11,7 +12,7 @@ import { HomeMenu } from './home-menu'
 
 function LeftSidebar() {
   const { selectedConversation } = useConversationContext()
-  const [activeTab, setActiveTab] = useState(HomeTabEnum.ALL)
+  const [activeTab, setActiveTab] = useState<ConversationType>(ConversationEnum.ALL)
   const [searchQuery, setSearchQuery] = useState('')
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('')
 
@@ -68,7 +69,7 @@ function LeftSidebar() {
         <Tabs tabs={HOME_TABS} activeTab={activeTab} setActiveTab={setActiveTab} />
       </div>
 
-      <div className='flex flex-1 p-1'>
+      <div className='flex flex-1 md:px-1'>
         <ConversationList debouncedSearchQuery={debouncedSearchQuery} activeTab={activeTab} />
       </div>
     </aside>

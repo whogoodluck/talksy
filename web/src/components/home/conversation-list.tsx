@@ -1,7 +1,6 @@
-import { HomeTabEnum, type HomeTab } from '@/constants'
 import { useConversations, useSearchConversations } from '@/hooks/useConversations'
 import { useConversationContext } from '@/providers/conversation.provider'
-import type { Conversation } from '@/types/conversation'
+import { ConversationEnum, type Conversation, type ConversationType } from '@/types/conversation'
 import { MessageSquareMore, Plus, RotateCw } from 'lucide-react'
 import { useEffect } from 'react'
 import FallbackState from '../fallback-state'
@@ -9,7 +8,7 @@ import { ConversationItem, ConversationItemSkeleton } from './conversation-item'
 
 type ConversationListProps = {
   debouncedSearchQuery: string
-  activeTab: HomeTab
+  activeTab: ConversationType
 }
 
 function ConversationList({ debouncedSearchQuery, activeTab }: ConversationListProps) {
@@ -74,17 +73,17 @@ function ConversationList({ debouncedSearchQuery, activeTab }: ConversationListP
       <FallbackState
         icon={MessageSquareMore}
         title={
-          activeTab === HomeTabEnum.ALL
+          activeTab === ConversationEnum.ALL
             ? 'No conversations yet'
             : `No ${activeTab.toLowerCase()} conversations yet`
         }
         description={
-          activeTab === HomeTabEnum.GROUP
+          activeTab === ConversationEnum.GROUP
             ? 'Create a group to start a conversation'
             : 'Start a new conversation'
         }
         onAction={() => {}}
-        actionLabel={activeTab === HomeTabEnum.GROUP ? 'Create a group' : 'New Conversation'}
+        actionLabel={activeTab === ConversationEnum.GROUP ? 'Create a group' : 'New Conversation'}
         actionIcon={Plus}
       />
     )

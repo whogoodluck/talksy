@@ -1,23 +1,17 @@
-export const HomeTabEnum = {
-  ALL: 'ALL',
-  GROUP: 'GROUP',
-  DIRECT: 'DIRECT',
-}
-
-export type HomeTab = (typeof HomeTabEnum)[keyof typeof HomeTabEnum]
+import { ConversationEnum } from '@/types/conversation'
 
 export const HOME_TABS = [
   {
     value: 'All',
-    label: HomeTabEnum.ALL,
+    label: ConversationEnum.ALL,
   },
   {
     value: 'Groups',
-    label: HomeTabEnum.GROUP,
+    label: ConversationEnum.GROUP,
   },
   {
     value: 'Direct',
-    label: HomeTabEnum.DIRECT,
+    label: ConversationEnum.DIRECT,
   },
 ]
 
