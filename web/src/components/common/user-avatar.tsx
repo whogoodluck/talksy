@@ -1,4 +1,3 @@
-import { FALLBACK_USER_AVATAR_LIGHT } from '@/constants'
 import { cn } from '@/lib/utils'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 
@@ -10,19 +9,21 @@ interface UserAvatarProps {
 
 function UserAvatar({ picture, name, size }: UserAvatarProps) {
   const sizeConfig = {
-    xs: 'size-8',
-    sm: 'size-10',
-    md: 'size-12',
-    lg: 'size-14',
+    xs: { avatar: 'size-8', avatarFallbackText: 'text-xs' },
+    sm: { avatar: 'size-10', avatarFallbackText: 'text-sm' },
+    md: { avatar: 'size-12', avatarFallbackText: 'text-md' },
+    lg: { avatar: 'size-14', avatarFallbackText: 'text-lg' },
   }
 
   const sizeClass = sizeConfig[size || 'md']
 
   return (
-    <Avatar className={cn(sizeClass)}>
+    <Avatar className={cn(sizeClass.avatar)}>
       <AvatarImage src={picture ? picture : undefined} alt={name} />
-      <AvatarFallback className={cn(sizeClass)}>
-        <img src={FALLBACK_USER_AVATAR_LIGHT} alt={name} />
+      <AvatarFallback
+        className={cn('bg-accent text-foreground font-semibold', sizeClass.avatarFallbackText)}
+      >
+        {name.charAt(0).toUpperCase()}
       </AvatarFallback>
     </Avatar>
   )

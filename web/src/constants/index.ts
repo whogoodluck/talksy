@@ -14,5 +14,3 @@ export const HOME_TABS = [
     label: ConversationEnum.DIRECT,
   },
 ]
-
-export const FALLBACK_USER_AVATAR_LIGHT = '/images/user-avatar.png'

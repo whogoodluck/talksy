@@ -31,11 +31,13 @@ function LeftSidebar() {
 
   return (
     <aside
-      className={cn('bg-background flex w-full flex-col border-r md:w-1/4', {
+      className={cn('bg-background flex w-full flex-col md:w-1/4 md:border-r', {
         'hidden md:flex': !!selectedConversation,
       })}
     >
-      <div className='flex flex-col gap-4 p-4'>
+      <div
+        className={cn('bg-background flex w-full flex-col gap-4 p-4', 'sticky top-0 right-0 z-10')}
+      >
         <div className='flex items-center justify-between'>
           <Logo />
           <div className='flex items-center'>
@@ -69,7 +71,7 @@ function LeftSidebar() {
         <Tabs tabs={HOME_TABS} activeTab={activeTab} setActiveTab={setActiveTab} />
       </div>
 
-      <div className='flex flex-1 md:px-1'>
+      <div className='flex flex-1 md:px-2'>
         <ConversationList debouncedSearchQuery={debouncedSearchQuery} activeTab={activeTab} />
       </div>
     </aside>

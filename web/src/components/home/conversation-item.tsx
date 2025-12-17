@@ -37,7 +37,7 @@ export function ConversationItem({ conversation, setSelectedConversation }: Conv
       )}
     >
       <div className='flex items-center gap-3'>
-        <UserAvatar size='md' picture={conversationAvatar || undefined} name={conversationName} />
+        <UserAvatar picture={conversationAvatar || undefined} name={conversationName} />
         <div className='flex-1'>
           <div className='flex items-center justify-between'>
             <h3 className='text-foreground text-lg font-medium'>{conversationName}</h3>
@@ -63,7 +63,12 @@ export function ConversationItem({ conversation, setSelectedConversation }: Conv
 
 export function ConversationItemSkeleton() {
   return (
-    <Card className='bg-background hover:bg-accent border-none p-3 shadow-none'>
+    <Card
+      className={cn(
+        'bg-background rounded-none border-none px-4 py-3 shadow-none transition-colors md:rounded-sm md:px-3',
+        'hover:bg-foreground/5'
+      )}
+    >
       <div className='flex items-center gap-3'>
         <Avatar className='size-12'>
           <Skeleton className='size-12 rounded-full' />

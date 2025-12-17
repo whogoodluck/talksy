@@ -25,7 +25,7 @@ function ConversationList({ debouncedSearchQuery, activeTab }: ConversationListP
 
   if (conversations.isPending || searchConversations.isPending)
     return (
-      <div className='scrollbar-hide w-full space-y-[6px]'>
+      <div className='scrollbar-hide w-full space-y-[6px] overflow-y-hidden'>
         {Array.from({ length: 10 }).map((_, i) => (
           <ConversationItemSkeleton key={i} />
         ))}
@@ -62,7 +62,7 @@ function ConversationList({ debouncedSearchQuery, activeTab }: ConversationListP
         icon={MessageSquareMore}
         title='No conversations found'
         description={`No conversations found for "${debouncedSearchQuery}". Try a different search query.`}
-        onAction={() => {}}
+        onAction={() => searchConversations.refetch()}
         actionLabel='Try again'
         actionIcon={RotateCw}
       />
