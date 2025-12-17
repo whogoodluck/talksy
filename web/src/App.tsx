@@ -1,12 +1,15 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
-import { Toaster } from 'sonner'
+import ComingSoon from './components/coming-soon'
 import { ProtectedRoute, PublicRoute } from './components/route-guard'
-import { AuthProvider } from './contexts/AuthContext'
+import { Toaster } from './components/ui/sonner'
 import Signin from './pages/auth/signin'
 import Signup from './pages/auth/signup'
 import VerifyEmail from './pages/auth/verify-email'
 import Home from './pages/home'
+import { AuthProvider } from './providers/auth.provider'
+import { ConversationProvider } from './providers/conversation.provider'
+import { ThemeProvider } from './providers/theme-provider'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -22,24 +25,30 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <Router>
         <AuthProvider>
-          <Routes>
-            <Route element={<PublicRoute />}>
-              <Route path='/auth/signin' element={<Signin />} />
-            </Route>
+          <ThemeProvider>
+            <ConversationProvider>
+              <Routes>
+                <Route element={<PublicRoute />}>
+                  <Route path='/auth/signin' element={<Signin />} />
+                </Route>
 
-            <Route element={<PublicRoute />}>
-              <Route path='/auth/signup' element={<Signup />} />
-            </Route>
+                <Route element={<PublicRoute />}>
+                  <Route path='/auth/signup' element={<Signup />} />
+                </Route>
 
-            <Route element={<PublicRoute />}>
-              <Route path='/auth/verify-email' element={<VerifyEmail />} />
-            </Route>
+                <Route element={<PublicRoute />}>
+                  <Route path='/auth/verify-email' element={<VerifyEmail />} />
+                </Route>
 
-            <Route element={<ProtectedRoute />}>
-              <Route path='/' element={<Home />} />
-            </Route>
-          </Routes>
-          <Toaster position='bottom-right' richColors />
+                <Route element={<ProtectedRoute />}>
+                  <Route path='/' element={<Home />} />
+                </Route>
+
+                <Route path='*' element={<ComingSoon />} />
+              </Routes>
+              <Toaster />
+            </ConversationProvider>
+          </ThemeProvider>
         </AuthProvider>
       </Router>
     </QueryClientProvider>

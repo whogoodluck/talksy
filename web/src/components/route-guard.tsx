@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from 'react-router-dom'
-import { useAuthContext } from '../contexts/AuthContext'
+import { useAuthContext } from '../providers/auth.provider'
 import { FullPageLoader } from './loader'
 
 export const PublicRoute = () => {

@@ -1,10 +1,30 @@
 import { prisma } from '../lib/prisma'
 import { SignupRequest } from '../schemas/user.schema'
 
+export const USER_SAFE_FIELDS = {
+  hashPassword: true,
+}
+
+const generateUniqueUsernameFromEmail = async (email: string) => {
+  let username = email.split('@')[0]
+
+  const existingUser = await prisma.user.findUnique({
+    where: {
+      username,
+    },
+  })
+
+  if (existingUser) {
+    username = `${username.replace(/[^a-z]/g, '')}_${existingUser.id.slice(0, 5)}`
+  }
+
+  return username
+}
+
 const createNew = async (user: SignupRequest) => {
   return await prisma.user.create({
     data: user,
-    omit: { hashPassword: true },
+    omit: USER_SAFE_FIELDS,
   })
 }
 
@@ -16,7 +36,7 @@ const verifyUserEmail = async (userId: string) => {
     data: {
       isEmailVerified: true,
     },
-    omit: { hashPassword: true },
+    omit: USER_SAFE_FIELDS,
   })
 }
 
@@ -25,7 +45,7 @@ const getAll = async () => {
     orderBy: {
       createdAt: 'desc',
     },
-    omit: { hashPassword: true },
+    omit: USER_SAFE_FIELDS,
   })
 }
 
@@ -34,7 +54,7 @@ const getOneById = async (userId: string) => {
     where: {
       id: userId,
     },
-    omit: { hashPassword: true },
+    omit: USER_SAFE_FIELDS,
   })
 }
 
@@ -43,9 +63,7 @@ const getOneByEmail = async (email: string) => {
     where: {
       email,
     },
-    omit: {
-      hashPassword: true,
-    },
+    omit: USER_SAFE_FIELDS,
   })
 }
 
@@ -60,11 +78,9 @@ const getOneByEmailForLogin = async (email: string) => {
 const getOneByUsername = async (username: string) => {
   return await prisma.user.findUnique({
     where: {
-      username: username,
+      username,
     },
-    omit: {
-      hashPassword: true,
-    },
+    omit: USER_SAFE_FIELDS,
   })
 }
 
@@ -74,7 +90,7 @@ const updateOneById = async (userId: string, user: SignupRequest) => {
       id: userId,
     },
     data: user,
-    omit: { hashPassword: true },
+    omit: USER_SAFE_FIELDS,
   })
 }
 
@@ -101,6 +117,7 @@ const deleteUnverifiedUsers = async (daysOld: number = 7) => {
 }
 
 export default {
+  generateUniqueUsernameFromEmail,
   createNew,
   verifyUserEmail,
   getAll,

@@ -1,12 +1,6 @@
 import { useCurrentUser } from '@/hooks/useUsers'
+import type { User } from '@/types/user'
 import { createContext, useContext, type ReactNode } from 'react'
-
-interface User {
-  id: string
-  email: string
-  name: string
-  username: string
-}
 
 interface AuthContextType {
   user: User | null
@@ -17,8 +11,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const { data, isLoading } = useCurrentUser()
-  const user = data?.data
+  const { data: user, isLoading } = useCurrentUser()
 
   return (
     <AuthContext.Provider

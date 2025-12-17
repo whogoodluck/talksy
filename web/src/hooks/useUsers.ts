@@ -6,7 +6,9 @@ export const useCurrentUser = () => {
   return useQuery({
     queryKey: ['currentUser'],
     queryFn: async () => {
-      return await api.get<User>('/users/me')
+      const res = await api.get<User>('/users/me')
+
+      return res.data
     },
     staleTime: Infinity,
     retry: false,

@@ -4,7 +4,7 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import * as React from 'react'
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+  "inline-flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap rounded-sm text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
   {
     variants: {
       variant: {
@@ -14,16 +14,9 @@ const buttonVariants = cva(
           'bg-destructive text-destructive-foreground hover:bg-destructive/90 active:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 active:scale-95',
         outline:
           'border-foreground border text-foreground hover:bg-foreground hover:border-foreground hover:text-background active:bg-foreground active:text-background active:scale-95',
-        primaryAccent:
-          'text-primary bg-foreground/5 hover:bg-foreground/10 active:bg-foreground/10 active:scale-95',
-        secondaryAccent:
-          'text-secondary bg-foreground/5 hover:bg-foreground/10 active:bg-foreground/10 active:scale-95',
-        foreground:
-          'bg-foreground text-background hover:bg-foreground/90 active:bg-foreground/90 active:scale-95',
         secondary:
           'bg-secondary text-secondary-foreground hover:bg-secondary/80 active:bg-secondary/80 active:scale-95',
-        accent: 'bg-foreground/5 hover:bg-foreground/10 active:bg-foregrouond/10 active:scale-95',
-        ghost: 'hover:bg-foreground/5 active:bg-foreground/5',
+        ghost: 'focus-visible:ring-0 hover:bg-foreground/5 active:bg-foreground/5',
         link: 'text-primary hover:underline active:underline underline-offset-4 font-medium',
       },
       size: {

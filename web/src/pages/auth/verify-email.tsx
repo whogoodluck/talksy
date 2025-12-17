@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/form'
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp'
 import { useResendEmailVerification, useVerifyEmail } from '@/hooks/useAuth'
-import { cn, getFormattedDuration } from '@/lib/utils'
+import { cn, formatDuration } from '@/lib/utils'
 import { verifyEmailSchema, type VerifyEmailRequest } from '@/schemas/user.schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { REGEXP_ONLY_DIGITS } from 'input-otp'
@@ -144,7 +144,7 @@ function VerifyEmail() {
               </button>
             ) : (
               <span className='text-foreground font-medium'>
-                Resend in {getFormattedDuration(countdown)}
+                Resend in {formatDuration(countdown)}
               </span>
             )}
           </div>

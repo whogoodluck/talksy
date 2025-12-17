@@ -1,6 +1,11 @@
 export interface User {
   id: string
   email: string
-  name: string
   username: string
+  name: string
+  bio?: string
+  picture?: string
+  location?: string
+  isOnline: boolean
+  lastSeen?: string
 }

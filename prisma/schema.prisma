@@ -8,20 +8,25 @@ datasource db {
 }
 
 model User {
-  id              String   @id      @default(cuid())
-  email           String   @unique
-  hashPassword    String?
-  username        String?  @unique  @db.VarChar(30)
-  name            String   @db.VarChar(100)
-  bio             String?  @db.VarChar(500)
-  picture         String?
-  location        String?  @db.VarChar(100)
-  isEmailVerified Boolean  @default(false)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
+  id                String             @id @default(cuid())
+  email             String             @unique
+  hashPassword      String?
+  username          String?            @unique @db.VarChar(30)
+  name              String             @db.VarChar(100)
+  bio               String?            @db.VarChar(500)
+  picture           String?
+  location          String?            @db.VarChar(100)
+  isEmailVerified   Boolean            @default(false)
+  isOnline          Boolean            @default(false)
+  lastSeen          DateTime?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  
   verificationCodes VerificationCode[]
-
+  sentMessages      Message[]          @relation("SentMessages")
+  conversations     ConversationParticipant[]
+  readReceipts      ReadReceipt[]
+  
   @@map("users")
 }
 
@@ -31,18 +36,105 @@ enum VerificationType {
 }
 
 model VerificationCode {
-  id        String   @id @default(cuid())
-  code      String   @db.VarChar(6)
+  id        String           @id @default(cuid())
+  code      String           @db.VarChar(6)
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   type      VerificationType
   expiresAt DateTime
-  isUsed    Boolean  @default(false)
-  createdAt DateTime @default(now())
-
+  isUsed    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+  
   @@unique([userId, type])
   @@map("verification_codes")
 }
 
+enum ConversationType {
+  DIRECT
+  GROUP
+}
 
+model Conversation {
+  id           String        @id @default(cuid())
+  type         ConversationType @default(DIRECT)
+  name         String?       @db.VarChar(100)
+  picture      String?
+  createdBy    String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  
+  participants ConversationParticipant[]
+  messages     Message[]
+  
+  @@map("conversations")
+}
 
+model ConversationParticipant {
+  id             String       @id @default(cuid())
+  conversationId String
+  userId         String
+  joinedAt       DateTime     @default(now())
+  leftAt         DateTime?
+  isAdmin        Boolean      @default(false)
+  isMuted        Boolean      @default(false)
+  lastReadAt     DateTime?
+  
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([conversationId, userId])
+  @@index([userId])
+  @@index([conversationId])
+  @@map("conversation_participants")
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  VIDEO
+  AUDIO
+  FILE
+  SYSTEM
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  senderId       String
+  content        String       @db.Text
+  type           MessageType  @default(TEXT)
+  fileUrl        String?
+  fileName       String?
+  fileSize       Int?
+  isEdited       Boolean      @default(false)
+  isDeleted      Boolean      @default(false)
+  replyToId      String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         User         @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  replyTo        Message?     @relation("MessageReplies", fields: [replyToId], references: [id], onDelete: SetNull)
+  replies        Message[]    @relation("MessageReplies")
+  readReceipts   ReadReceipt[]
+  
+  @@index([conversationId])
+  @@index([senderId])
+  @@index([createdAt])
+  @@map("messages")
+}
+
+model ReadReceipt {
+  id        String   @id @default(cuid())
+  messageId String
+  userId    String
+  readAt    DateTime @default(now())
+  
+  message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([messageId, userId])
+  @@index([messageId])
+  @@index([userId])
+  @@map("read_receipts")
+}

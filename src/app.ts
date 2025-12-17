@@ -3,7 +3,7 @@ import cors from 'cors'
 import express, { Request, Response } from 'express'
 import morgan from 'morgan'
 
-import userRouter from './routes/user.route'
+import router from './routes'
 
 import path from 'path'
 import errorHandler from './middlewares/error-handler'
@@ -17,7 +17,7 @@ app.use(morgan('tiny'))
 app.use(cors())
 app.use(cookieParser())
 
-app.use('/api/v1/users', userRouter)
+app.use('/api/v1', router)
 
 // React App
 app.use(

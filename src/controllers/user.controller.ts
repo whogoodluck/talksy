@@ -27,7 +27,7 @@ const signUp = async (req: Request, res: Response, next: NextFunction) => {
 
     const hashedPassword = await hashPassword(payload.password)
 
-    const username = usernameSchema.parse(payload.email.split('@')[0])
+    const username = await userService.generateUniqueUsernameFromEmail(payload.email)
 
     if (!user) {
       user = await userService.createNew({
@@ -68,9 +68,9 @@ const signUp = async (req: Request, res: Response, next: NextFunction) => {
 
 const vrififyEmail = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { email, code } = verifyEmailSchema.parse(req.body)
+    const payload = verifyEmailSchema.parse(req.body)
 
-    const user = await userService.getOneByEmail(email)
+    const user = await userService.getOneByEmail(payload.email)
 
     if (!user) {
       throw new HttpError(404, 'User not found')
@@ -82,7 +82,7 @@ const vrififyEmail = async (req: Request, res: Response, next: NextFunction) => 
 
     const verificationCode = await verificationService.verifyCode(
       user.id,
-      code,
+      payload.code,
       VerificationType.EMAIL_VERIFICATION
     )
 
@@ -117,9 +117,9 @@ const vrififyEmail = async (req: Request, res: Response, next: NextFunction) => 
 
 const resendEmailVerificationCode = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { email } = resendCodeSchema.parse(req.body)
+    const payload = resendCodeSchema.parse(req.body)
 
-    const user = await userService.getOneByEmail(email)
+    const user = await userService.getOneByEmail(payload.email)
 
     if (!user) {
       throw new HttpError(404, 'User not found')
@@ -148,9 +148,9 @@ const resendEmailVerificationCode = async (req: Request, res: Response, next: Ne
 
 const signin = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { email, password } = signinSchema.parse(req.body)
+    const payload = signinSchema.parse(req.body)
 
-    const user = await userService.getOneByEmailForLogin(email)
+    const user = await userService.getOneByEmailForLogin(payload.email)
 
     if (!user) {
       throw new HttpError(401, 'This email does not exist')
@@ -164,7 +164,7 @@ const signin = async (req: Request, res: Response, next: NextFunction) => {
       throw new HttpError(401, 'This user does not have a password')
     }
 
-    const isValidPassword = await comparePassword(password, user.hashPassword)
+    const isValidPassword = await comparePassword(payload.password, user.hashPassword)
 
     if (!isValidPassword) {
       throw new HttpError(401, 'Invalid email or password')
