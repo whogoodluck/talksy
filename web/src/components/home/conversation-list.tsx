@@ -89,7 +89,7 @@ function ConversationList({ debouncedSearchQuery, activeTab }: ConversationListP
     )
 
   return (
-    <div className='scrollbar-hide w-full space-y-[6px]'>
+    <div className='scrollbar-hide w-full space-y-[6px] overflow-y-auto'>
       {debouncedSearchQuery && searchConversationList
         ? searchConversationList.map(conversation => (
             <ConversationItem

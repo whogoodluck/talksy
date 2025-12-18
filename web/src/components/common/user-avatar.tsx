@@ -2,12 +2,12 @@ import { cn } from '@/lib/utils'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 
 interface UserAvatarProps {
-  picture: string | undefined
+  avatarUrl: string | undefined
   name: string
   size?: 'xs' | 'sm' | 'md' | 'lg'
 }
 
-function UserAvatar({ picture, name, size }: UserAvatarProps) {
+function UserAvatar({ avatarUrl, name, size }: UserAvatarProps) {
   const sizeConfig = {
     xs: { avatar: 'size-8', avatarFallbackText: 'text-xs' },
     sm: { avatar: 'size-10', avatarFallbackText: 'text-sm' },
@@ -19,9 +19,9 @@ function UserAvatar({ picture, name, size }: UserAvatarProps) {
 
   return (
     <Avatar className={cn(sizeClass.avatar)}>
-      <AvatarImage src={picture ? picture : undefined} alt={name} />
+      <AvatarImage src={avatarUrl} alt={name} />
       <AvatarFallback
-        className={cn('bg-accent text-foreground font-semibold', sizeClass.avatarFallbackText)}
+        className={cn('bg-foreground/5 text-foreground font-semibold', sizeClass.avatarFallbackText)}
       >
         {name.charAt(0).toUpperCase()}
       </AvatarFallback>

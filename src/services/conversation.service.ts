@@ -5,7 +5,6 @@ import {
   CreateGroupConversationRequest,
   GetConversationsRequest,
   SearchConversationsRequest,
-  TAB,
 } from '../schemas/conversation.schema'
 import { USER_SAFE_FIELDS } from './user.service'
 
@@ -124,9 +123,9 @@ const getUserConversations = async (userId: string, params: GetConversationsRequ
   }
 
   if (tab) {
-    if (tab === TAB.GROUP) {
+    if (tab === ConversationType.GROUP) {
       whereClause.type = ConversationType.GROUP
-    } else if (tab === TAB.DIRECT) {
+    } else if (tab === ConversationType.DIRECT) {
       whereClause.type = ConversationType.DIRECT
     }
   }
@@ -241,9 +240,41 @@ const getUserConversationsByQuery = async (userId: string, params: SearchConvers
   })
 }
 
+const getUserConversationById = async (userId: string, conversationId: string) => {
+  return await prisma.conversation.findFirst({
+    where: {
+      id: conversationId,
+      participants: {
+        some: {
+          userId,
+          leftAt: null,
+        },
+      },
+    },
+    include: {
+      participants: {
+        where: {
+          leftAt: null,
+        },
+        include: {
+          user: {
+            omit: USER_SAFE_FIELDS,
+          },
+        },
+      },
+      _count: {
+        select: {
+          messages: true,
+        },
+      },
+    },
+  })
+}
+
 export default {
   createDirectConversation,
   createGroupConversation,
   getUserConversations,
   getUserConversationsByQuery,
+  getUserConversationById,
 }

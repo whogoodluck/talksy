@@ -31,12 +31,12 @@ function LeftSidebar() {
 
   return (
     <aside
-      className={cn('bg-background flex w-full flex-col md:w-1/4 md:border-r', {
+      className={cn('flex w-full flex-col md:w-1/4 md:border-r', {
         'hidden md:flex': !!selectedConversation,
       })}
     >
       <div
-        className={cn('bg-background flex w-full flex-col gap-4 p-4', 'sticky top-0 right-0 z-10')}
+        className={cn('flex w-full flex-col gap-4 p-4', 'sticky top-0 right-0 z-10')}
       >
         <div className='flex items-center justify-between'>
           <Logo />

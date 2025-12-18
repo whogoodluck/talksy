@@ -10,7 +10,7 @@ userRouter.post('/signout', userController.signout)
 userRouter.post('/verify-email', userController.vrififyEmail)
 userRouter.post('/resend-email-verification-code', userController.resendEmailVerificationCode)
 
-userRouter.get('/me', authMiddleware.requireAuth, userController.validateToken)
+userRouter.get('/me', authMiddleware.requireAuth, userController.getProfile)
 
 userRouter.get('/', authMiddleware.requireAuth, userController.getAllUsers)
 userRouter.get('/:username', authMiddleware.requireAuth, userController.getUserByUsername)

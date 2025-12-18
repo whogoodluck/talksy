@@ -1,3 +1,4 @@
+import { User } from '@prisma/client'
 import { prisma } from '../lib/prisma'
 import { SignupRequest } from '../schemas/user.schema'
 
@@ -84,7 +85,7 @@ const getOneByUsername = async (username: string) => {
   })
 }
 
-const updateOneById = async (userId: string, user: SignupRequest) => {
+const updateOneById = async (userId: string, user: Partial<User>) => {
   return await prisma.user.update({
     where: {
       id: userId,

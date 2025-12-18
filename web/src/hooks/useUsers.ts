@@ -2,9 +2,9 @@ import { api } from '@/lib/api'
 import type { User } from '@/types/user'
 import { useQuery } from '@tanstack/react-query'
 
-export const useCurrentUser = () => {
+export const useGetProfile = () => {
   return useQuery({
-    queryKey: ['currentUser'],
+    queryKey: ['profile'],
     queryFn: async () => {
       const res = await api.get<User>('/users/me')
 

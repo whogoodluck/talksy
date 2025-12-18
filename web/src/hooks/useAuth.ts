@@ -5,25 +5,6 @@ import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { api } from '../lib/api'
 
-export const useSignin = () => {
-  const queryClient = useQueryClient()
-  const navigate = useNavigate()
-
-  return useMutation({
-    mutationFn: async (credentials: SigninRequest) => {
-      return await api.post<User>('/users/signin', credentials)
-    },
-    onSuccess: data => {
-      queryClient.setQueryData(['currentUser'], data)
-      toast.success(data.message)
-      navigate('/')
-    },
-    onError: (error: Error) => {
-      toast.error(error.message)
-    },
-  })
-}
-
 export const useSignup = () => {
   const navigate = useNavigate()
 
@@ -41,25 +22,7 @@ export const useSignup = () => {
   })
 }
 
-export const useSignout = () => {
-  const queryClient = useQueryClient()
-  const navigate = useNavigate()
 
-  return useMutation({
-    mutationFn: async () => {
-      return await api.post('/users/signout')
-    },
-    onSuccess: data => {
-      queryClient.setQueryData(['currentUser'], null)
-      queryClient.clear()
-      toast.success(data.message)
-      navigate('/auth/signin')
-    },
-    onError: (error: Error) => {
-      toast.error(error.message)
-    },
-  })
-}
 
 export const useVerifyEmail = () => {
   const queryClient = useQueryClient()
@@ -70,7 +33,7 @@ export const useVerifyEmail = () => {
       return await api.post<User>('/users/verify-email', verifyEmailData)
     },
     onSuccess: data => {
-      queryClient.setQueryData(['currentUser'], data)
+      queryClient.setQueryData(['profile'], data)
       toast.success(data.message)
       navigate('/')
     },
@@ -87,6 +50,45 @@ export const useResendEmailVerification = () => {
     },
     onSuccess: data => {
       toast.success(data.message)
+    },
+    onError: (error: Error) => {
+      toast.error(error.message)
+    },
+  })
+}
+
+export const useSignin = () => {
+  const queryClient = useQueryClient()
+  const navigate = useNavigate()
+
+  return useMutation({
+    mutationFn: async (credentials: SigninRequest) => {
+      return await api.post<User>('/users/signin', credentials)
+    },
+    onSuccess: data => {
+      queryClient.setQueryData(['profile'], data)
+      toast.success(data.message)
+      navigate('/')
+    },
+    onError: (error: Error) => {
+      toast.error(error.message)
+    },
+  })
+}
+
+export const useSignout = () => {
+  const queryClient = useQueryClient()
+  const navigate = useNavigate()
+
+  return useMutation({
+    mutationFn: async () => {
+      return await api.post('/users/signout')
+    },
+    onSuccess: data => {
+      queryClient.setQueryData(['profile'], null)
+      queryClient.clear()
+      toast.success(data.message)
+      navigate('/auth/signin')
     },
     onError: (error: Error) => {
       toast.error(error.message)

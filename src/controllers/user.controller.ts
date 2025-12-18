@@ -208,13 +208,18 @@ const signout = async (_req: Request, res: Response, next: NextFunction) => {
   }
 }
 
-async function validateToken(req: ExpressRequest, res: Response, next: NextFunction) {
+async function getProfile(req: ExpressRequest, res: Response, next: NextFunction) {
   try {
     const user = await userService.getOneById(req.user!.id)
 
     if (!user) {
       throw new HttpError(401, 'Invalid or expired token')
     }
+
+    // const updatedUser = await userService.updateOneById(user.id, {
+    //   isOnline: true,
+    //   lastSeen: new Date(),
+    // })
 
     res.status(200).json(
       new JsonResponse({
@@ -275,7 +280,7 @@ export default {
   resendEmailVerificationCode,
   signin,
   signout,
-  validateToken,
+  getProfile,
   getAllUsers,
   getUserByUsername,
 }

@@ -1,4 +1,4 @@
-import { useCurrentUser } from '@/hooks/useUsers'
+import { useGetProfile } from '@/hooks/useUsers'
 import { cn, formatMessageTime } from '@/lib/utils'
 import { useConversationContext } from '@/providers/conversation.provider'
 import type { Conversation, Message } from '@/types/conversation'
@@ -17,11 +17,11 @@ interface ConversationItemProps {
 
 export function ConversationItem({ conversation, setSelectedConversation }: ConversationItemProps) {
   const { selectedConversation } = useConversationContext()
-  const { data: currentUser } = useCurrentUser()
+  const profile = useGetProfile()
 
   const lastMessage: Message | undefined = conversation.messages[0]
-  const conversationName = getConversationName(conversation, currentUser!.id)
-  const conversationAvatar = getConversationAvatar(conversation, currentUser!.id)
+  const conversationName = profile.data && getConversationName(conversation, profile.data.id)
+  const conversationAvatar = profile.data && getConversationAvatar(conversation, profile.data.id)
 
   const isActive = selectedConversation?.id === conversation.id
 
@@ -30,14 +30,17 @@ export function ConversationItem({ conversation, setSelectedConversation }: Conv
       onClick={() => setSelectedConversation(conversation)}
       className={cn(
         'bg-background cursor-pointer rounded-none border-none px-4 py-3 shadow-none transition-colors md:rounded-sm md:px-3',
-        'hover:bg-foreground/5',
+        'hover:bg-foreground/10',
         {
-          'bg-foreground/5': isActive,
+          'bg-foreground/10': isActive,
         }
       )}
     >
       <div className='flex items-center gap-3'>
-        <UserAvatar picture={conversationAvatar || undefined} name={conversationName} />
+        <UserAvatar
+          avatarUrl={conversationAvatar || undefined}
+          name={conversationName || 'Unknown'}
+        />
         <div className='flex-1'>
           <div className='flex items-center justify-between'>
             <h3 className='text-foreground text-lg font-medium'>{conversationName}</h3>
@@ -48,12 +51,14 @@ export function ConversationItem({ conversation, setSelectedConversation }: Conv
             )}
           </div>
           {lastMessage && (
-            <p className='text-muted-foreground inline-flex truncate text-sm'>
-              <span className='mr-1'>
-                <CheckCheck className='text-secondary size-5' />
+            <div className='flex'>
+              <span className='text-secondary mr-1'>
+                <CheckCheck className='size-5' />
               </span>
-              {lastMessage.isDeleted ? 'Message deleted' : lastMessage.content}
-            </p>
+              <p className='text-muted-foreground line-clamp-1 text-sm'>
+                {lastMessage.isDeleted ? 'Message deleted' : lastMessage.content}
+              </p>
+            </div>
           )}
         </div>
       </div>
@@ -66,7 +71,7 @@ export function ConversationItemSkeleton() {
     <Card
       className={cn(
         'bg-background rounded-none border-none px-4 py-3 shadow-none transition-colors md:rounded-sm md:px-3',
-        'hover:bg-foreground/5'
+        'hover:bg-foreground/10'
       )}
     >
       <div className='flex items-center gap-3'>

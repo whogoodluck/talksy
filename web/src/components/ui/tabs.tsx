@@ -32,7 +32,7 @@ export function Tabs({ tabs, activeTab, setActiveTab, className }: TabsProps) {
               'disabled:cursor-not-allowed disabled:opacity-50',
               'hover:text-foreground/60 hover:border-foreground/60 hover:bg-foreground/10',
               isActive
-                ? 'text-primary bg-primary/20 border-primary hover:text-primary hover:bg-primary/20 hover:border-primary'
+                ? 'text-secondary bg-secondary/20 border-secondary hover:text-secondary hover:bg-secondary/20 hover:border-secondary'
                 : 'text-muted-foreground'
             )}
             onClick={() => {

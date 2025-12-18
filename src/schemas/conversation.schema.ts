@@ -14,14 +14,13 @@ export const createGroupConversationSchema = z.object({
   participantIds: z.array(z.string().cuid()).min(1, 'At least one participant is required'),
 })
 
-export enum TAB {
-  ALL = 'ALL',
-  GROUP = 'GROUP',
-  DIRECT = 'DIRECT',
-}
+const HOME_TAB = {
+  ALL: 'ALL',
+  ...ConversationType,
+} as const
 
 export const getConversationsSchema = z.object({
-  tab: z.nativeEnum(TAB).default(TAB.ALL),
+  tab: z.nativeEnum(HOME_TAB).default(HOME_TAB.ALL),
 })
 
 export const searchConversationsSchema = z.object({
