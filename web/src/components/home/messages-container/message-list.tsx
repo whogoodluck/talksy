@@ -1,6 +1,6 @@
 import { Badge } from '@/components/ui/badge'
+import { useGetProfile } from '@/hooks/useAuth'
 import { useMessages } from '@/hooks/useMessages'
-import { useGetProfile } from '@/hooks/useUsers'
 import { formatDateLabel } from '@/lib/utils'
 import { useConversationContext } from '@/providers/conversation.provider'
 import type { Message } from '@/types/conversation'
@@ -14,10 +14,8 @@ function MessagesList() {
   if (!messages.data) return
 
   const messagesList: Message[] = [...messages.data.messages].sort(
-  (a, b) =>
-    new Date(a.createdAt).getTime() -
-    new Date(b.createdAt).getTime()
-)
+    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+  )
 
   const groupMessagesByDate = (messages: Message[]) => {
     return messages.reduce<Record<string, Message[]>>((groups, message) => {
@@ -38,7 +36,7 @@ function MessagesList() {
     <div className='bg-accent flex-1 overflow-y-auto p-2 md:p-4'>
       {Object.entries(grouped).map(([dateKey, msgs]) => (
         <div key={dateKey}>
-          <div className='text-center mb-1'>
+          <div className='mb-1 text-center'>
             <Badge variant='secondary' className='bg-foreground/5 text-secondary'>
               {formatDateLabel(new Date(dateKey))}
             </Badge>

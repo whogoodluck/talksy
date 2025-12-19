@@ -1,4 +1,4 @@
-import { useGetProfile } from '@/hooks/useUsers'
+import { useGetProfile } from '@/hooks/useAuth'
 import { cn, formatMessageTime } from '@/lib/utils'
 import { useConversationContext } from '@/providers/conversation.provider'
 import type { Conversation, Message } from '@/types/conversation'

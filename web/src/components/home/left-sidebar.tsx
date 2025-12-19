@@ -35,9 +35,7 @@ function LeftSidebar() {
         'hidden md:flex': !!selectedConversation,
       })}
     >
-      <div
-        className={cn('flex w-full flex-col gap-4 p-4', 'sticky top-0 right-0 z-10')}
-      >
+      <div className={cn('flex w-full flex-col gap-4 p-4', 'sticky top-0 right-0 z-10')}>
         <div className='flex items-center justify-between'>
           <Logo />
           <div className='flex items-center'>

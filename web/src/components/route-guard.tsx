@@ -1,19 +1,39 @@
+import { useGetProfile } from '@/hooks/useAuth'
+import socket from '@/lib/socket'
+import { useEffect } from 'react'
 import { Navigate, Outlet } from 'react-router-dom'
-import { useAuthContext } from '../providers/auth.provider'
 import { FullPageLoader } from './loader'
 
 export const PublicRoute = () => {
-  const { isAuthenticated, isLoading } = useAuthContext()
+  const profile = useGetProfile()
 
-  if (isLoading) return <FullPageLoader />
+  const isAuthenticated = !!profile.data
+
+  if (profile.isLoading) return <FullPageLoader />
 
   return !isAuthenticated ? <Outlet /> : <Navigate to='/' replace />
 }
 
 export const ProtectedRoute = () => {
-  const { isAuthenticated, isLoading } = useAuthContext()
+  const profile = useGetProfile()
 
-  if (isLoading) return <FullPageLoader />
+  useEffect(() => {
+    if (profile.data) {
+      if (!socket.connected) {
+        socket.connect()
+      }
+    }
+
+    return () => {
+      if (socket.connected) {
+        socket.disconnect()
+      }
+    }
+  }, [profile.data])
+
+  const isAuthenticated = !!profile.data
+
+  if (profile.isLoading) return <FullPageLoader />
 
   return isAuthenticated ? <Outlet /> : <Navigate to='/auth/signin' replace />
 }

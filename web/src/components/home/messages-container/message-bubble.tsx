@@ -16,7 +16,7 @@ function MessageBubble({ message, isSender }: MessageBubbleProps) {
       <div
         className={cn('chat-bubble bg-foreground/10 max-w-3/4 rounded-t-sm', {
           'bg-primary text-primary-foreground rounded-bl-sm': isSender,
-          'rounded-br-sm text-foreground': !isSender,
+          'text-foreground rounded-br-sm': !isSender,
         })}
       >
         {message.content}

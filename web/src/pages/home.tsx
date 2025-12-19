@@ -13,7 +13,7 @@ function Home() {
       {selectedConversation ? (
         <MessagesContainer />
       ) : (
-        <div className='hidden md:flex flex-1 items-center justify-center'>
+        <div className='hidden flex-1 items-center justify-center md:flex'>
           <FallbackState
             icon={Send}
             title='Your messages'

@@ -1,6 +1,6 @@
 import type { SigninRequest, SignupRequest, VerifyEmailRequest } from '@/schemas/user.schema'
 import type { User } from '@/types/user'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { api } from '../lib/api'
@@ -21,8 +21,6 @@ export const useSignup = () => {
     },
   })
 }
-
-
 
 export const useVerifyEmail = () => {
   const queryClient = useQueryClient()
@@ -93,5 +91,18 @@ export const useSignout = () => {
     onError: (error: Error) => {
       toast.error(error.message)
     },
+  })
+}
+
+export const useGetProfile = () => {
+  return useQuery({
+    queryKey: ['profile'],
+    queryFn: async () => {
+      const res = await api.get<User>('/users/me')
+
+      return res.data
+    },
+    staleTime: Infinity,
+    retry: false,
   })
 }

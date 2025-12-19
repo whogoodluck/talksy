@@ -1,6 +1,7 @@
 import UserAvatar from '@/components/common/user-avatar'
 import { Button } from '@/components/ui/button'
-import { useGetProfile } from '@/hooks/useUsers'
+import { useGetProfile } from '@/hooks/useAuth'
+import { useGetOnlineUserIds } from '@/hooks/useOnlineUsers'
 import { useConversationContext } from '@/providers/conversation.provider'
 import { ConversationEnum } from '@/types/conversation'
 import {
@@ -31,8 +32,15 @@ function MessagesContainerHeader() {
 
   if (!selectedConversation) return
 
+  const onlineUsers = useGetOnlineUserIds()
+
+  const isOnline =
+    selectedConversation.type === ConversationEnum.DIRECT
+      ? onlineUsers.includes(otherParticipant!.user.id)
+      : false
+
   return (
-    <header className='border-b flex h-16 items-center justify-between p-2 md:h-20 md:p-4'>
+    <header className='flex h-16 items-center justify-between border-b p-2 md:h-20 md:p-4'>
       <div className='flex items-center space-x-1'>
         <Button
           variant='ghost'
@@ -54,8 +62,8 @@ function MessagesContainerHeader() {
               {conversationName}
               {selectedConversation.type === ConversationEnum.DIRECT ? (
                 <>
-                  {otherParticipant?.user.isOnline ? (
-                    <p className='text-secondary text-xs'>Online</p>
+                  {isOnline ? (
+                    <p className='text-xs text-green-500'>Online</p>
                   ) : (
                     <p className='text-muted-foreground text-xs'>
                       {otherParticipant?.user.lastSeen || 'Offline'}
