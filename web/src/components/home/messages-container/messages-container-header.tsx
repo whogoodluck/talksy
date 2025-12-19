@@ -30,14 +30,14 @@ function MessagesContainerHeader() {
     selectedConversation &&
     getOtherParticipantFromDirectConversation(selectedConversation, profile.data.id)
 
-  if (!selectedConversation) return
-
   const onlineUsers = useGetOnlineUserIds()
 
   const isOnline =
-    selectedConversation.type === ConversationEnum.DIRECT
+    selectedConversation && selectedConversation.type === ConversationEnum.DIRECT
       ? onlineUsers.includes(otherParticipant!.user.id)
       : false
+
+  if (!selectedConversation) return
 
   return (
     <header className='flex h-16 items-center justify-between border-b p-2 md:h-20 md:p-4'>

@@ -1,6 +1,6 @@
-import userService from '@/services/user.service'
 import { Server as SocketIOServer } from 'socket.io'
 import authMiddleware, { SocketWithUser } from '../middlewares/auth.middleware'
+import userService from '../services/user.service'
 import logger from '../utils/logger'
 
 export const initSocket = (io: SocketIOServer) => {

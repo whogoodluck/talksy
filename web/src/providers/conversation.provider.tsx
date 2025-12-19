@@ -1,5 +1,12 @@
 import type { Conversation } from '@/types/conversation'
-import { createContext, useContext, useState, type Dispatch, type SetStateAction } from 'react'
+import {
+  createContext,
+  useContext,
+  useState,
+  type Dispatch,
+  type ReactNode,
+  type SetStateAction,
+} from 'react'
 
 interface ConversationContextType {
   selectedConversation: Conversation | null
@@ -11,7 +18,11 @@ const conversationContext = createContext<ConversationContextType>({
   setSelectedConversation: () => {},
 })
 
-export function ConversationProvider({ children }: any) {
+interface ConversationProviderProps {
+  children: ReactNode
+}
+
+export function ConversationProvider({ children }: ConversationProviderProps) {
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null)
 
   return (
