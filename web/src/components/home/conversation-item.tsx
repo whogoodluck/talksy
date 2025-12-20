@@ -1,5 +1,5 @@
 import { useGetProfile } from '@/hooks/useAuth'
-import { cn, formatMessageTime } from '@/lib/utils'
+import { cn, formatDate } from '@/lib/utils'
 import { useConversationContext } from '@/providers/conversation.provider'
 import type { Conversation, Message } from '@/types/conversation'
 import { getConversationAvatar, getConversationName } from '@/utils/conversation'
@@ -46,7 +46,7 @@ export function ConversationItem({ conversation, setSelectedConversation }: Conv
             <h3 className='text-foreground text-lg font-medium'>{conversationName}</h3>
             {lastMessage && (
               <span className='text-muted-foreground text-xs'>
-                {formatMessageTime(lastMessage.createdAt)}
+                {formatDate(lastMessage.createdAt)}
               </span>
             )}
           </div>

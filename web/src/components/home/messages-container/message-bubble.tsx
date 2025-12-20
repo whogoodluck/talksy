@@ -1,5 +1,5 @@
 import UserAvatar from '@/components/common/user-avatar'
-import { cn, formatMessageTime } from '@/lib/utils'
+import { cn, getTime } from '@/lib/utils'
 import type { Message } from '@/types/conversation'
 
 interface MessageBubbleProps {
@@ -21,7 +21,7 @@ function MessageBubble({ message, isSender }: MessageBubbleProps) {
       >
         {message.content}
         <p className='mt-1 text-end text-xs'>
-          {formatMessageTime(message.createdAt)}
+          {getTime(message.createdAt)}
           {message.isEdited && ' (edited)'}
         </p>
       </div>

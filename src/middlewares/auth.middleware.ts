@@ -77,7 +77,7 @@ const requireAuthForSocket = async (socket: SocketWithUser, next: (err?: Error) 
     }
 
     next()
-  } catch (err) {
+  } catch {
     next(new Error('Authentication error'))
   }
 }

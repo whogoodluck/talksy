@@ -2,7 +2,7 @@ import FallbackState from '@/components/fallback-state'
 import LeftSidebar from '@/components/home/left-sidebar'
 import MessagesContainer from '@/components/home/messages-container'
 import { useConversationContext } from '@/providers/conversation.provider'
-import { Send } from 'lucide-react'
+import { Mail } from 'lucide-react'
 
 function Home() {
   const { selectedConversation } = useConversationContext()
@@ -15,9 +15,11 @@ function Home() {
       ) : (
         <div className='hidden flex-1 items-center justify-center md:flex'>
           <FallbackState
-            icon={Send}
+            icon={Mail}
             title='Your messages'
-            description='Select a conversation to start messaging'
+            description='Choose from your existing conversations, or start a new one.'
+            actionLabel='New Chat'
+            onAction={() => {}}
           />
         </div>
       )}

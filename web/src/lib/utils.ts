@@ -15,15 +15,20 @@ export const formatDuration = (seconds: number) => {
   return `${remainingSeconds}s`
 }
 
-export const formatMessageTime = (dateString: string) => {
-  const date = new Date(dateString)
-  const now = new Date()
-  const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60)
+export const getTime = (dateStr: string) => {
+  const time = new Date(dateStr)
+  return time.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+}
 
-  if (diffInHours < 24) {
-    return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
-  }
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+export function formatDate(date: string) {
+  const givenDate = new Date(date)
+
+  const year = givenDate.getFullYear().toString().slice(-2)
+
+  const month = String(givenDate.getMonth() + 1).padStart(2, '0')
+  const day = String(givenDate.getDate()).padStart(2, '0')
+
+  return `${day}/${month}/${year}`
 }
 
 export const formatDateLabel = (date: Date) => {
@@ -39,4 +44,61 @@ export const formatDateLabel = (date: Date) => {
     month: 'short',
     year: 'numeric',
   })
+}
+
+export const formatTimeAgo = (date: string) => {
+  const today = new Date()
+  const givenDate = new Date(date)
+
+  if (isNaN(givenDate.getTime())) {
+    return 'Invalidate Date'
+  }
+
+  const seconds = Math.floor((today.getTime() - givenDate.getTime()) / 1000)
+
+  const units = [
+    { label: 'y', seconds: 31536000 },
+    { label: 'mo', seconds: 2592000 },
+    { label: 'd', seconds: 86400 },
+    { label: 'h', seconds: 3600 },
+    { label: 'm', seconds: 60 },
+    { label: 's', seconds: 1 },
+  ]
+
+  for (const unit of units) {
+    if (seconds >= unit.seconds) {
+      const value = Math.floor(seconds / unit.seconds)
+      return `${value}${unit.label}`
+    }
+  }
+
+  return 'Just now'
+}
+
+export const formatLastSeen = (date: string) => {
+  const today = new Date()
+  const givenDate = new Date(date)
+
+  if (isNaN(givenDate.getTime())) {
+    return 'Invalidate Date'
+  }
+
+  const seconds = Math.floor((today.getTime() - givenDate.getTime()) / 1000)
+
+  const units = [
+    { label: 'y', seconds: 31536000 },
+    { label: 'mo', seconds: 2592000 },
+    { label: 'd', seconds: 86400 },
+    { label: 'h', seconds: 3600 },
+    { label: 'm', seconds: 60 },
+  ]
+
+  for (const unit of units) {
+    if (seconds >= unit.seconds) {
+      const value = Math.floor(seconds / unit.seconds)
+      return `Last seen ${value}${unit.label} ago`
+    }
+  }
+
+  return 'Last seen recently'
 }

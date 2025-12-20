@@ -31,7 +31,7 @@ function LeftSidebar() {
 
   return (
     <aside
-      className={cn('flex w-full flex-col md:w-1/4 md:border-r', {
+      className={cn('flex w-full flex-col md:w-2/7 md:border-r', {
         'hidden md:flex': !!selectedConversation,
       })}
     >
@@ -51,7 +51,7 @@ function LeftSidebar() {
             onChange={e => setSearchQuery(e.target.value)}
             className={cn(
               'rounded-full px-12',
-              'focus-visible:border-primary focus-visible:border focus-visible:ring-0'
+              'focus-visible:border-border focus-visible:bordr focus-visible:ring-0'
             )}
           />
           {searchQuery && (

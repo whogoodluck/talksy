@@ -3,7 +3,7 @@ import z from 'zod'
 
 export const sendMessageSchema = z
   .object({
-    content: z.string().min(1).optional(),
+    content: z.string().min(1),
     type: z.nativeEnum(MessageType).default(MessageType.TEXT),
     fileUrl: z.string().url().optional(),
     fileName: z.string().optional(),

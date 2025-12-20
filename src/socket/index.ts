@@ -1,3 +1,4 @@
+import conversationService from '@/services/conversation.service'
 import { Server as SocketIOServer } from 'socket.io'
 import authMiddleware, { SocketWithUser } from '../middlewares/auth.middleware'
 import userService from '../services/user.service'
@@ -7,13 +8,12 @@ export const initSocket = (io: SocketIOServer) => {
   io.use(authMiddleware.requireAuthForSocket)
 
   const onlineUsers = new Map<string, Set<string>>()
-  const getOnlineUserIds = () => Array.from(onlineUsers.keys())
 
   io.on('connection', async (socket: SocketWithUser) => {
     const user = socket.user
     if (!user) return
 
-    logger.info(`🟢 User connected: ${socket.id} | ${user.email}`)
+    logger.info(`🟢 A user connected: ${socket.id} | ${user.email}`)
 
     if (!onlineUsers.has(user.id)) {
       onlineUsers.set(user.id, new Set())
@@ -24,14 +24,46 @@ export const initSocket = (io: SocketIOServer) => {
     }
 
     onlineUsers.get(user.id)!.add(socket.id)
-    io.emit('user:online', getOnlineUserIds())
+
+    const conversations = await conversationService.getUserConversations(user.id)
+    const contactIds = new Set<string>()
+
+    conversations.forEach(conversation => {
+      conversation.participants.forEach(participant => {
+        if (participant.user.id !== user.id) {
+          contactIds.add(participant.userId)
+        }
+      })
+    })
+
+    contactIds.forEach(contactId => {
+      const contactSocketIds = onlineUsers.get(contactId)
+
+      if (contactSocketIds) {
+        contactSocketIds.forEach(contactSocketId => {
+          socket.to(contactSocketId).emit('user:online', user.id)
+        })
+      }
+    })
+
+    const myOnlineContactIds = () => {
+      const online: string[] = []
+
+      contactIds.forEach(contactId => {
+        if (onlineUsers.has(contactId)) {
+          online.push(contactId)
+        }
+      })
+
+      return online
+    }
 
     socket.on('user:online:request', () => {
-      socket.emit('user:online', getOnlineUserIds())
+      socket.emit('user:online:response', myOnlineContactIds())
     })
 
     socket.on('disconnect', async () => {
-      logger.info(`🔴 User disconnected: ${socket.id} | ${user.email}`)
+      logger.info(`🔴 A user disconnected: ${socket.id} | ${user.email}`)
 
       const userSockets = onlineUsers.get(user.id)
       if (!userSockets) return
@@ -45,9 +77,17 @@ export const initSocket = (io: SocketIOServer) => {
           isOnline: false,
           lastSeen: new Date(),
         })
-      }
 
-      io.emit('user:online', getOnlineUserIds())
+        contactIds.forEach(contactId => {
+          const contactSocketIds = onlineUsers.get(contactId)
+
+          if (contactSocketIds) {
+            contactSocketIds.forEach(contactSocketId => {
+              socket.to(contactSocketId).emit('user:offline', user.id)
+            })
+          }
+        })
+      }
     })
   })
 }

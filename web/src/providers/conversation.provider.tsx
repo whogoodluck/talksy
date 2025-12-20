@@ -33,5 +33,10 @@ export function ConversationProvider({ children }: ConversationProviderProps) {
 }
 
 export const useConversationContext = () => {
-  return useContext(conversationContext)
+  const context = useContext(conversationContext)
+
+  if (context === undefined)
+    throw new Error('useConversationContext must be used within a ConversationProvider')
+
+  return context
 }

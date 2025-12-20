@@ -33,10 +33,10 @@ function MessagesList() {
   const grouped = groupMessagesByDate(messagesList)
 
   return (
-    <div className='bg-accent flex-1 overflow-y-auto p-2 md:p-4'>
+    <div className='flex-1 overflow-y-auto p-2 md:p-4'>
       {Object.entries(grouped).map(([dateKey, msgs]) => (
         <div key={dateKey}>
-          <div className='mb-1 text-center'>
+          <div className='py-1 text-center'>
             <Badge variant='secondary' className='bg-foreground/5 text-secondary'>
               {formatDateLabel(new Date(dateKey))}
             </Badge>

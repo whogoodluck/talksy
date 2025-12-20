@@ -18,10 +18,9 @@ export const ProtectedRoute = () => {
   const profile = useGetProfile()
 
   useEffect(() => {
-    if (profile.data) {
-      if (!socket.connected) {
-        socket.connect()
-      }
+    if (!profile.data) return
+    if (!socket.connected) {
+      socket.connect()
     }
 
     return () => {

@@ -111,8 +111,7 @@ const createGroupConversation = async (userId: string, data: CreateGroupConversa
   })
 }
 
-const getUserConversations = async (userId: string, params: GetConversationsRequest) => {
-  const { tab } = params
+const getUserConversations = async (userId: string, params?: GetConversationsRequest) => {
   const whereClause: any = {
     participants: {
       some: {
@@ -122,11 +121,15 @@ const getUserConversations = async (userId: string, params: GetConversationsRequ
     },
   }
 
-  if (tab) {
-    if (tab === ConversationType.GROUP) {
-      whereClause.type = ConversationType.GROUP
-    } else if (tab === ConversationType.DIRECT) {
-      whereClause.type = ConversationType.DIRECT
+  if (params) {
+    const { tab } = params
+
+    if (tab) {
+      if (tab === ConversationType.GROUP) {
+        whereClause.type = ConversationType.GROUP
+      } else if (tab === ConversationType.DIRECT) {
+        whereClause.type = ConversationType.DIRECT
+      }
     }
   }
 
