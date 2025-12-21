@@ -1,5 +1,6 @@
 import { ConversationType } from '@prisma/client'
 import { NextFunction, Response } from 'express'
+import { io } from '../index'
 import { ExpressRequest } from '../middlewares/auth.middleware'
 import {
   createDirectConversationSchema,
@@ -128,6 +129,8 @@ const sendMessage = async (req: ExpressRequest, res: Response, next: NextFunctio
     }
 
     const message = await messageService.sendMessage(conversationId, userId, payload)
+
+    io.to(conversationId).emit('message:new', message)
 
     res.status(201).json(
       new JsonResponse({

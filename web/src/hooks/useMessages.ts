@@ -1,7 +1,9 @@
 import { api } from '@/lib/api'
+import { useSocketContext } from '@/providers/socket.provider'
 import type { SendMessageRequest } from '@/schemas/message.schema'
 import type { Message } from '@/types/conversation'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useEffect } from 'react'
 import { useGetProfile } from './useAuth'
 
 export const useSendMessage = (conversationId: string) => {
@@ -64,7 +66,11 @@ export const useSendMessage = (conversationId: string) => {
 }
 
 export const useMessages = (conversationId: string, limit = 50) => {
-  return useQuery({
+  const queryClient = useQueryClient()
+  const { socket } = useSocketContext()
+  const profile = useGetProfile()
+
+  const query = useQuery({
     queryKey: ['messages', conversationId],
     queryFn: async () => {
       const response = await api.get<{
@@ -76,4 +82,36 @@ export const useMessages = (conversationId: string, limit = 50) => {
     },
     enabled: !!conversationId,
   })
+
+  useEffect(() => {
+    if (!socket) return
+
+    const handleNewMessage = (message: Message) => {
+      if (message.senderId === profile.data?.id) return
+
+      queryClient.setQueryData(
+        ['messages', conversationId],
+        (old: { messages: Message[]; total: number } | undefined) => {
+          if (!old)
+            return {
+              messages: [message],
+              total: 1,
+            }
+
+          const exists = old.messages.find(m => m.id === message.id)
+          if (exists) return old
+
+          return {
+            ...old,
+            messages: [message, ...old.messages],
+            total: old.total + 1,
+          }
+        }
+      )
+    }
+
+    socket.on('message:new', handleNewMessage)
+  }, [socket])
+
+  return query
 }

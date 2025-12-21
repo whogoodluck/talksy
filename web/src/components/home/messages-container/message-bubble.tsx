@@ -1,13 +1,17 @@
 import UserAvatar from '@/components/common/user-avatar'
+import { useGetProfile } from '@/hooks/useAuth'
 import { cn, getTime } from '@/lib/utils'
 import type { Message } from '@/types/conversation'
 
 interface MessageBubbleProps {
   message: Message
-  isSender: boolean
 }
 
-function MessageBubble({ message, isSender }: MessageBubbleProps) {
+function MessageBubble({ message }: MessageBubbleProps) {
+  const profile = useGetProfile()
+
+  const isSender = message.senderId === profile.data?.id
+
   return (
     <div className={cn('chat', { 'chat-end': isSender, 'chat-start': !isSender })}>
       <div className='chat-image avatar'>

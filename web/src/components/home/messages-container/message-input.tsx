@@ -1,15 +1,33 @@
 import { Textarea } from '@/components/ui/textarea'
 import { useSendMessage } from '@/hooks/useMessages'
+import { useTypingUsers } from '@/hooks/useTypingUser'
 import { cn } from '@/lib/utils'
 import { useConversationContext } from '@/providers/conversation.provider'
 import { sendMessageSchema } from '@/schemas/message.schema'
 import { ArrowUp, Camera, Plus, Smile } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 function MessageInput() {
   const { selectedConversation } = useConversationContext()
   const sendMessage = useSendMessage(selectedConversation!.id)
   const [message, setMessage] = useState('')
+
+  const { startTyping, stopTyping } = useTypingUsers()
+
+  useEffect(() => {
+    if (!message.trim()) return
+
+    startTyping(selectedConversation!.id)
+
+    const timeout = setTimeout(() => {
+      stopTyping(selectedConversation!.id)
+    }, 1000)
+
+    return () => {
+      stopTyping(selectedConversation!.id)
+      clearTimeout(timeout)
+    }
+  }, [message])
 
   const handleSendMessage = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()

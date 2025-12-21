@@ -1,6 +1,4 @@
 import { useGetProfile } from '@/hooks/useAuth'
-import socket from '@/lib/socket'
-import { useEffect } from 'react'
 import { Navigate, Outlet } from 'react-router-dom'
 import { FullPageLoader } from './loader'
 
@@ -16,19 +14,6 @@ export const PublicRoute = () => {
 
 export const ProtectedRoute = () => {
   const profile = useGetProfile()
-
-  useEffect(() => {
-    if (!profile.data) return
-    if (!socket.connected) {
-      socket.connect()
-    }
-
-    return () => {
-      if (socket.connected) {
-        socket.disconnect()
-      }
-    }
-  }, [profile.data])
 
   const isAuthenticated = !!profile.data
 

@@ -1,15 +1,24 @@
+import UserAvatar from '@/components/common/user-avatar'
 import { Badge } from '@/components/ui/badge'
 import { useGetProfile } from '@/hooks/useAuth'
 import { useMessages } from '@/hooks/useMessages'
+import { useTypingUsers } from '@/hooks/useTypingUser'
 import { formatDateLabel } from '@/lib/utils'
 import { useConversationContext } from '@/providers/conversation.provider'
 import type { Message } from '@/types/conversation'
+import { getOtherParticipantFromDirectConversation } from '@/utils/conversation'
 import MessageBubble from './message-bubble'
 
 function MessagesList() {
   const profile = useGetProfile()
   const { selectedConversation } = useConversationContext()
   const messages = useMessages(selectedConversation!.id)
+  const {typingUserIds} = useTypingUsers()
+
+  const otherParticipant =
+    profile.data &&
+    selectedConversation &&
+    getOtherParticipantFromDirectConversation(selectedConversation, profile.data.id)
 
   if (!messages.data) return
 
@@ -43,14 +52,25 @@ function MessagesList() {
           </div>
 
           {msgs.map(msg => (
-            <MessageBubble
-              key={msg.id}
-              message={msg}
-              isSender={msg.senderId === profile.data?.id}
-            />
+            <MessageBubble key={msg.id} message={msg} />
           ))}
         </div>
       ))}
+
+      {otherParticipant && typingUserIds.includes(otherParticipant.user.id) && (
+        <div className='chat chat-start'>
+          <div className='chat-image avatar'>
+            <UserAvatar
+              size='xs'
+              avatarUrl={otherParticipant.user.picture}
+              name={otherParticipant.user.name}
+            />
+          </div>
+          <div className='chat-bubble bg-foreground/10 text-secondary max-w-3/4 rounded-t-sm rounded-br-sm'>
+            Typing...
+          </div>
+        </div>
+      )}
     </div>
   )
 }

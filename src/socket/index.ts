@@ -1,6 +1,6 @@
-import conversationService from '@/services/conversation.service'
 import { Server as SocketIOServer } from 'socket.io'
 import authMiddleware, { SocketWithUser } from '../middlewares/auth.middleware'
+import conversationService from '../services/conversation.service'
 import userService from '../services/user.service'
 import logger from '../utils/logger'
 
@@ -29,6 +29,8 @@ export const initSocket = (io: SocketIOServer) => {
     const contactIds = new Set<string>()
 
     conversations.forEach(conversation => {
+      socket.join(conversation.id)
+
       conversation.participants.forEach(participant => {
         if (participant.user.id !== user.id) {
           contactIds.add(participant.userId)
@@ -60,6 +62,22 @@ export const initSocket = (io: SocketIOServer) => {
 
     socket.on('user:online:request', () => {
       socket.emit('user:online:response', myOnlineContactIds())
+    })
+
+    // socket.on('join:conversation', conversationId => {
+    //   socket.join(conversationId)
+    // })
+
+    // socket.on('leave:conversation', conversationId => {
+    //   socket.leave(conversationId)
+    // })
+
+    socket.on('typing:start', conversationId => {
+      socket.to(conversationId).emit('typing:start', user.id)
+    })
+
+    socket.on('typing:stop', conversationId => {
+      socket.to(conversationId).emit('typing:stop', user.id)
     })
 
     socket.on('disconnect', async () => {
