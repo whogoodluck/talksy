@@ -1,5 +1,5 @@
+import { MessageEnum } from '@/types/conversation'
 import z from 'zod'
-import  { MessageEnum } from '@/types/conversation'
 
 export const sendMessageSchema = z
   .object({

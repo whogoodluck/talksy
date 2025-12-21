@@ -2,8 +2,6 @@
 @import 'tw-animate-css';
 @import '@fontsource-variable/inter';
 
-@plugin 'daisyui';
-
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {

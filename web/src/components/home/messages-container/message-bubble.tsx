@@ -9,26 +9,33 @@ interface MessageBubbleProps {
 
 function MessageBubble({ message }: MessageBubbleProps) {
   const profile = useGetProfile()
-
   const isSender = message.senderId === profile.data?.id
 
   return (
-    <div className={cn('chat', { 'chat-end': isSender, 'chat-start': !isSender })}>
-      <div className='chat-image avatar'>
+    <div className={cn('flex w-full items-end gap-2', isSender ? 'justify-end' : 'justify-start')}>
+      {!isSender && (
         <UserAvatar size='xs' avatarUrl={message.sender.picture} name={message.sender.name} />
-      </div>
+      )}
+
       <div
-        className={cn('chat-bubble bg-foreground/10 max-w-3/4 rounded-t-sm', {
-          'bg-primary text-primary-foreground rounded-bl-sm': isSender,
-          'text-foreground rounded-br-sm': !isSender,
-        })}
+        className={cn(
+          'mb-0.5 max-w-3/4 rounded-t-md px-4 py-2 text-sm',
+          isSender
+            ? 'bg-primary text-primary-foreground rounded-bl-md'
+            : 'bg-foreground/10 text-foreground rounded-br-md'
+        )}
       >
-        {message.content}
-        <p className='mt-1 text-end text-xs'>
+        <div>{message.content}</div>
+
+        <p className={cn('mt-0.5 text-xs opacity-70', isSender ? 'text-right' : 'text-left')}>
           {getTime(message.createdAt)}
           {message.isEdited && ' (edited)'}
         </p>
       </div>
+
+      {isSender && (
+        <UserAvatar size='xs' avatarUrl={message.sender.picture} name={message.sender.name} />
+      )}
     </div>
   )
 }

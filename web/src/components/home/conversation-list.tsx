@@ -1,7 +1,7 @@
 import { useConversations, useSearchConversations } from '@/hooks/useConversations'
 import { useConversationContext } from '@/providers/conversation.provider'
 import { ConversationEnum, type Conversation, type ConversationType } from '@/types/conversation'
-import { MessageSquareMore, Plus, RotateCw } from 'lucide-react'
+import { MessageSquareMore, RotateCw } from 'lucide-react'
 import { useEffect } from 'react'
 import FallbackState from '../fallback-state'
 import { ConversationItem, ConversationItemSkeleton } from './conversation-item'
@@ -84,7 +84,6 @@ function ConversationList({ debouncedSearchQuery, activeTab }: ConversationListP
         }
         onAction={() => {}}
         actionLabel={activeTab === ConversationEnum.GROUP ? 'Create a group' : 'New Conversation'}
-        actionIcon={Plus}
       />
     )
 

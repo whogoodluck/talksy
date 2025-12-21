@@ -26,17 +26,23 @@ export const useTypingUsers = () => {
     }
   }, [socket])
 
-  const startTyping = useCallback((conversationId: string) => {
-    if (!socket) return
+  const startTyping = useCallback(
+    (conversationId: string) => {
+      if (!socket) return
 
-    socket.emit('typing:start', conversationId)
-  }, [socket])
+      socket.emit('typing:start', conversationId)
+    },
+    [socket]
+  )
 
-  const stopTyping = useCallback((conversationId: string) => {
-    if (!socket) return
+  const stopTyping = useCallback(
+    (conversationId: string) => {
+      if (!socket) return
 
-    socket.emit('typing:stop', conversationId)
-  }, [socket])
+      socket.emit('typing:stop', conversationId)
+    },
+    [socket]
+  )
 
-  return {typingUserIds, startTyping, stopTyping}
+  return { typingUserIds, startTyping, stopTyping }
 }

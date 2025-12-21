@@ -111,7 +111,7 @@ export const useMessages = (conversationId: string, limit = 50) => {
     }
 
     socket.on('message:new', handleNewMessage)
-  }, [socket])
+  }, [socket, conversationId, queryClient, profile.data?.id])
 
   return query
 }
