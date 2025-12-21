@@ -1,17 +1,17 @@
-import { MessageType } from '@prisma/client'
 import z from 'zod'
+import  { MessageEnum } from '@/types/conversation'
 
 export const sendMessageSchema = z
   .object({
     content: z.string().min(1),
-    type: z.nativeEnum(MessageType).default(MessageType.TEXT),
+    type: z.nativeEnum(MessageEnum).default(MessageEnum.TEXT),
     fileUrl: z.string().url().optional(),
     fileName: z.string().optional(),
     fileSize: z.number().int().positive().optional(),
     replyToId: z.string().cuid().optional(),
   })
   .superRefine((data, ctx) => {
-    if (data.type === MessageType.TEXT && !data.content) {
+    if (data.type === MessageEnum.TEXT && !data.content) {
       ctx.addIssue({
         path: ['content'],
         message: 'Content is required for text messages',
@@ -19,7 +19,7 @@ export const sendMessageSchema = z
       })
     }
 
-    if (data.type !== MessageType.TEXT && !data.fileUrl) {
+    if (data.type !== MessageEnum.TEXT && !data.fileUrl) {
       ctx.addIssue({
         path: ['fileUrl'],
         message: 'File URL is required for non-text messages',

@@ -40,18 +40,3 @@ export const useTypingUsers = () => {
 
   return {typingUserIds, startTyping, stopTyping}
 }
-
-// export const startTyping = (conversationId: string) => {
-//   const { socket } = useSocketContext()
-//   if (!socket) return
-
-//   socket.emit('typing:start', conversationId)
-// }
-
-// export const stopTyping = (conversationId: string) => {
-//   const { socket } = useSocketContext()
-
-//   if (!socket) return
-
-//   socket.emit('typing:stop', conversationId)
-// }
