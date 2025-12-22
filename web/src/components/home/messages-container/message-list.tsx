@@ -8,6 +8,7 @@ import { useConversationContext } from '@/providers/conversation.provider'
 import type { Message } from '@/types/conversation'
 import { getOtherParticipantFromDirectConversation } from '@/utils/conversation'
 import MessageBubble from './message-bubble'
+import { Loader } from '@/components/loader'
 
 function MessagesList() {
   const profile = useGetProfile()
@@ -20,11 +21,17 @@ function MessagesList() {
     selectedConversation &&
     getOtherParticipantFromDirectConversation(selectedConversation, profile.data.id)
 
-  if (!messages.data) return
+    if(messages.isLoading) {
+      return (
+        <div className='flex-1 flex items-center justify-center'>
+          <Loader />
+        </div>
+      )
+    }
 
-  const messagesList: Message[] = [...messages.data.messages].sort(
+  const messagesList: Message[] = messages.data?.messages ? [...messages.data.messages].sort(
     (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-  )
+  ) : []
 
   const groupMessagesByDate = (messages: Message[]) => {
     return messages.reduce<Record<string, Message[]>>((groups, message) => {
@@ -43,7 +50,21 @@ function MessagesList() {
 
   return (
     <div className='flex-1 overflow-y-auto p-2 md:p-4'>
-      {Object.entries(grouped).map(([dateKey, msgs]) => (
+      {
+        messagesList.length ?
+        <div className='flex flex-col items-center space-y-2'>
+            {/* <Badge className='bg-foreground/5 text-secondary'>
+              {formatDateLabel(new Date(selectedConversation!.createdAt))}
+            </Badge> */}
+          <div className='py-1 px-3 text-foreground rounded-full bg-foreground/5 text-sm text-center max-w:md'>
+            <p>
+              No messages yet. Send a message to start this conversation.
+            </p>
+          </div>
+        </div>
+        :
+        <>
+           {Object.entries(grouped).map(([dateKey, msgs]) => (
         <div key={dateKey}>
           <div className='py-1 text-center'>
             <Badge variant='secondary' className='bg-foreground/5 text-secondary'>
@@ -74,6 +95,9 @@ function MessagesList() {
           </div>
         </div>
       )}
+        </>
+      }
+
     </div>
   )
 }

@@ -2,13 +2,14 @@ import { HOME_TABS } from '@/constants'
 import { cn } from '@/lib/utils'
 import { useConversationContext } from '@/providers/conversation.provider'
 import { ConversationEnum, type ConversationType } from '@/types/conversation'
-import { Search, X } from 'lucide-react'
+import { Search, UserPlus, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import Logo from '../common/logo'
 import { Input } from '../ui/input'
 import { Tabs } from '../ui/tabs'
 import ConversationList from './conversation-list'
 import { HomeMenu } from './home-menu'
+import { Button } from '../ui/button'
 
 function LeftSidebar() {
   const { selectedConversation } = useConversationContext()
@@ -35,12 +36,15 @@ function LeftSidebar() {
         'hidden md:flex': !!selectedConversation,
       })}
     >
-      <div className={cn('flex w-full flex-col gap-4 p-4', 'sticky top-0 right-0 z-10')}>
+      <div className={cn('bg-background flex w-full flex-col gap-4 px-2 py-3 md:p-4', 'sticky top-0 right-0 z-10')}>
         <div className='flex items-center justify-between'>
           <Logo />
-          <div className='flex items-center'>
-            <HomeMenu />
-          </div>
+          <div className='flex items-center gap-1'>
+        <Button variant='ghost' size='icon' className='rounded-full'>
+          <UserPlus size={30} strokeWidth={3} />
+        </Button>
+        <HomeMenu />
+      </div>
         </div>
         <div className='relative'>
           <Search size={20} className='absolute top-1/2 left-5 -translate-y-1/2 transform' />
@@ -69,7 +73,7 @@ function LeftSidebar() {
         <Tabs tabs={HOME_TABS} activeTab={activeTab} setActiveTab={setActiveTab} />
       </div>
 
-      <div className='flex flex-1 md:px-2'>
+      <div className='h-full md:px-2'>
         <ConversationList debouncedSearchQuery={debouncedSearchQuery} activeTab={activeTab} />
       </div>
     </aside>

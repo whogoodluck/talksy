@@ -52,9 +52,9 @@ export function ConversationItem({ conversation, setSelectedConversation }: Conv
           </div>
           {lastMessage && (
             <div className='flex'>
-              <span className='text-secondary mr-1'>
+              {/* <span className='text-secondary mr-1'>
                 <CheckCheck className='size-5' />
-              </span>
+              </span> */}
               <p className='text-muted-foreground line-clamp-1 text-sm'>
                 {lastMessage.isDeleted ? 'Message deleted' : lastMessage.content}
               </p>
