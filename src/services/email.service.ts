@@ -4,11 +4,12 @@ import config from '../utils/config'
 const transporter = nodemailer.createTransport({
   host: config.SMTP_HOST,
   port: config.SMTP_PORT,
-  secure: false,
+  secure: true,
   auth: {
     user: config.SMTP_USER,
     pass: config.SMTP_PASS,
   },
+  debug: true,
 })
 
 const createEmailTemplate = (content: string, currentYear: number) => `

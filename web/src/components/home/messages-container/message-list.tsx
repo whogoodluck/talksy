@@ -51,7 +51,7 @@ function MessagesList() {
   return (
     <div className='flex-1 overflow-y-auto p-2 md:p-4'>
       {
-        messagesList.length ?
+        !messagesList.length ?
         <div className='flex flex-col items-center space-y-2'>
             {/* <Badge className='bg-foreground/5 text-secondary'>
               {formatDateLabel(new Date(selectedConversation!.createdAt))}
