@@ -274,10 +274,29 @@ const getUserConversationById = async (userId: string, conversationId: string) =
   })
 }
 
+const getDirectConversationByCurrentUserIdAndParticipantId = async (
+  currentUserId: string,
+  participantId: string
+) => {
+  return await prisma.conversation.findFirst({
+    where: {
+      type: ConversationType.DIRECT,
+      participants: {
+        every: {
+          userId: {
+            in: [currentUserId, participantId],
+          },
+        },
+      },
+    },
+  })
+}
+
 export default {
   createDirectConversation,
   createGroupConversation,
   getUserConversations,
   getUserConversationsByQuery,
   getUserConversationById,
+  getDirectConversationByCurrentUserIdAndParticipantId,
 }

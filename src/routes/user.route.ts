@@ -12,7 +12,7 @@ userRouter.post('/resend-email-verification-code', userController.resendEmailVer
 
 userRouter.get('/me', authMiddleware.requireAuth, userController.getProfile)
 
-userRouter.get('/', authMiddleware.requireAuth, userController.getAllUsers)
+userRouter.get('/search', authMiddleware.requireAuth, userController.getUsersByQuery)
 userRouter.get('/:username', authMiddleware.requireAuth, userController.getUserByUsername)
 
 export default userRouter

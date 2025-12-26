@@ -1,6 +1,5 @@
 import { ConversationType } from '@prisma/client'
 import { z } from 'zod'
-import { requiredString } from './helper'
 
 export const createDirectConversationSchema = z.object({
   type: z.nativeEnum(ConversationType).default(ConversationType.DIRECT),
@@ -9,7 +8,7 @@ export const createDirectConversationSchema = z.object({
 
 export const createGroupConversationSchema = z.object({
   type: z.nativeEnum(ConversationType).default(ConversationType.GROUP),
-  name: requiredString('Name').max(100, 'Name cannot exceed 100 characters'),
+  name: z.string().trim().max(100, 'Name cannot exceed 100 characters').default('Unnamed Group'),
   picture: z.string().url().optional(),
   participantIds: z.array(z.string().cuid()).min(1, 'At least one participant is required'),
 })

@@ -4,6 +4,7 @@ import { comparePassword, hashPassword, signToken } from '../lib/utils'
 import { ExpressRequest } from '../middlewares/auth.middleware'
 import {
   resendCodeSchema,
+  searchUsersSchema,
   signinSchema,
   signupSchema,
   usernameSchema,
@@ -233,9 +234,12 @@ async function getProfile(req: ExpressRequest, res: Response, next: NextFunction
   }
 }
 
-const getAllUsers = async (_req: ExpressRequest, res: Response, next: NextFunction) => {
+const getUsersByQuery = async (req: ExpressRequest, res: Response, next: NextFunction) => {
   try {
-    const users = await userService.getAll()
+    const userId = req.user!.id
+    const payload = searchUsersSchema.parse(req.query)
+
+    const users = await userService.searchUsers(payload, userId)
 
     res.status(200).json(
       new JsonResponse({
@@ -281,6 +285,6 @@ export default {
   signin,
   signout,
   getProfile,
-  getAllUsers,
+  getUsersByQuery,
   getUserByUsername,
 }

@@ -4,10 +4,10 @@ import MessagesContainerHeader from './messages-container-header'
 
 function MessagesContainer() {
   return (
-    <div className='bg-accent flex flex-col w-full h-full'>
+    <div className='bg-accent relative flex h-full w-full flex-col'>
       <MessagesContainerHeader />
       <MessagesList />
-      <div className='p-1 md:p-2 bg-background'>
+      <div className='bg-background absolute bottom-0 w-full p-1 md:p-2'>
         <MessageInput />
       </div>
     </div>

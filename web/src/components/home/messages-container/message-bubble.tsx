@@ -12,7 +12,9 @@ function MessageBubble({ message }: MessageBubbleProps) {
   const isSender = message.senderId === profile.data?.id
 
   return (
-    <div className={cn('flex w-full items-end gap-2', isSender ? 'justify-end' : 'justify-start')}>
+    <div
+      className={cn('flex w-full items-end space-x-1', isSender ? 'justify-end' : 'justify-start')}
+    >
       {!isSender && (
         <UserAvatar size='xs' avatarUrl={message.sender.picture} name={message.sender.name} />
       )}
@@ -22,7 +24,7 @@ function MessageBubble({ message }: MessageBubbleProps) {
           'mb-0.5 max-w-3/4 rounded-t-md px-4 py-2 text-sm',
           isSender
             ? 'bg-primary text-primary-foreground rounded-bl-md'
-            : 'bg-foreground/10 text-foreground rounded-br-md'
+            : 'bg-foreground/10 rounded-br-md'
         )}
       >
         <div>{message.content}</div>

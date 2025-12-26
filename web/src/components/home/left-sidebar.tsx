@@ -2,14 +2,13 @@ import { HOME_TABS } from '@/constants'
 import { cn } from '@/lib/utils'
 import { useConversationContext } from '@/providers/conversation.provider'
 import { ConversationEnum, type ConversationType } from '@/types/conversation'
-import { Search, UserPlus, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import Logo from '../common/logo'
-import { Input } from '../ui/input'
+import { SearchInput } from '../ui/search-input'
 import { Tabs } from '../ui/tabs'
 import ConversationList from './conversation-list'
+import CreateNewConversation from './create-new-conversation'
 import { HomeMenu } from './home-menu'
-import { Button } from '../ui/button'
 
 function LeftSidebar() {
   const { selectedConversation } = useConversationContext()
@@ -36,44 +35,25 @@ function LeftSidebar() {
         'hidden md:flex': !!selectedConversation,
       })}
     >
-      <div className={cn('bg-background flex w-full flex-col gap-4 px-2 py-3 md:p-4', 'sticky top-0 right-0 z-10')}>
+      <div
+        className={cn(
+          'bg-background flex w-full flex-col gap-4 px-2 py-3 md:p-4',
+          'sticky top-0 right-0 z-10'
+        )}
+      >
         <div className='flex items-center justify-between'>
           <Logo />
           <div className='flex items-center gap-1'>
-        <Button variant='ghost' size='icon' className='rounded-full'>
-          <UserPlus size={30} strokeWidth={3} />
-        </Button>
-        <HomeMenu />
-      </div>
+            <CreateNewConversation />
+            <HomeMenu />
+          </div>
         </div>
-        <div className='relative'>
-          <Search size={20} className='absolute top-1/2 left-5 -translate-y-1/2 transform' />
-          <Input
-            type='text'
-            placeholder='Search'
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-            className={cn(
-              'rounded-full px-12',
-              'focus-visible:border-border focus-visible:bordr focus-visible:ring-0'
-            )}
-          />
-          {searchQuery && (
-            <button
-              type='button'
-              className='absolute top-1/2 right-4 -translate-y-1/2 cursor-pointer'
-              onClick={handleCloseSearch}
-              tabIndex={-1}
-            >
-              <X className='size-4' />
-            </button>
-          )}
-        </div>
+        <SearchInput value={searchQuery} onChange={setSearchQuery} onClear={handleCloseSearch} />
 
         <Tabs tabs={HOME_TABS} activeTab={activeTab} setActiveTab={setActiveTab} />
       </div>
 
-      <div className='h-full md:px-2'>
+      <div className='flex h-full md:px-2'>
         <ConversationList debouncedSearchQuery={debouncedSearchQuery} activeTab={activeTab} />
       </div>
     </aside>

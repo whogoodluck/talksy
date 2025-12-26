@@ -42,6 +42,10 @@ export type SignupRequest = Omit<OriginalSignupRequest, 'password'> & {
   username: string
 }
 
+export const searchUsersSchema = z.object({
+  q: z.string().trim().max(50, 'Query cannot exceed 50 characters').optional(),
+})
+
 type OriginalSigninRequest = z.infer<typeof signinSchema>
 
 export type SigninRequest = Omit<OriginalSigninRequest, 'password'> & {
@@ -51,3 +55,5 @@ export type SigninRequest = Omit<OriginalSigninRequest, 'password'> & {
 export type VerifyEmailRequest = z.infer<typeof verifyEmailSchema>
 
 export type ResendCodeRequest = z.infer<typeof resendCodeSchema>
+
+export type SearchUsersRequest = z.infer<typeof searchUsersSchema>

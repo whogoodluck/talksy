@@ -1,5 +1,4 @@
 import { LoadingButton } from '@/components/loading-button'
-import { PasswordInput } from '@/components/password-input'
 import {
   Form,
   FormControl,
@@ -9,6 +8,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { PasswordInput } from '@/components/ui/password-input'
 import { useSignup } from '@/hooks/useAuth'
 import { signupSchema, type SignupRequest } from '@/schemas/user.schema'
 import { zodResolver } from '@hookform/resolvers/zod'

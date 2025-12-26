@@ -58,16 +58,19 @@ function MessageInput() {
         value={message}
         onChange={e => setMessage(e.target.value)}
         className={cn(
-          'bg-transparent my-auto mr-1 max-h-[150px] resize-none border-none pl-1 break-words whitespace-pre-wrap',
+          'my-auto mr-1 max-h-[150px] resize-none border-none bg-transparent pl-1 break-words whitespace-pre-wrap',
           'focus-visible:ring-0'
         )}
       />
       <div className='my-auto flex items-center gap-1'>
         {message.trim() ? (
           <button
-            className={cn('bg-secondary cursor-pointer rounded-full p-2 text-black', {
-              invisible: !message,
-            })}
+            className={cn(
+              'bg-secondary text-secondary-foreground cursor-pointer rounded-full p-2',
+              {
+                invisible: !message,
+              }
+            )}
           >
             <ArrowUp />
           </button>

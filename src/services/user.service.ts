@@ -1,6 +1,6 @@
 import { User } from '@prisma/client'
 import { prisma } from '../lib/prisma'
-import { SignupRequest } from '../schemas/user.schema'
+import { SearchUsersRequest, SignupRequest } from '../schemas/user.schema'
 
 export const USER_SAFE_FIELDS = {
   hashPassword: true,
@@ -41,8 +41,41 @@ const verifyUserEmail = async (userId: string) => {
   })
 }
 
-const getAll = async () => {
+const searchUsers = async (params: SearchUsersRequest, userId: string) => {
+  const { q } = params
+
+  const whereClause: any = {
+    isEmailVerified: true,
+    id: {
+      not: userId,
+    },
+  }
+
+  if (q) {
+    whereClause.OR = [
+      {
+        name: {
+          contains: q,
+          mode: 'insensitive',
+        },
+      },
+      {
+        username: {
+          contains: q,
+          mode: 'insensitive',
+        },
+      },
+      {
+        email: {
+          contains: q,
+          mode: 'insensitive',
+        },
+      },
+    ]
+  }
+
   return await prisma.user.findMany({
+    where: whereClause,
     orderBy: {
       createdAt: 'desc',
     },
@@ -121,7 +154,7 @@ export default {
   generateUniqueUsernameFromEmail,
   createNew,
   verifyUserEmail,
-  getAll,
+  searchUsers,
   getOneById,
   getOneByEmail,
   getOneByEmailForLogin,

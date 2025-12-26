@@ -24,6 +24,16 @@ const createConversation = async (req: ExpressRequest, res: Response, next: Next
     if (body.type === ConversationType.DIRECT || body.participantId) {
       const payload = createDirectConversationSchema.parse(body)
 
+      const existDirectConversation =
+        await conversationService.getDirectConversationByCurrentUserIdAndParticipantId(
+          userId,
+          payload.participantId
+        )
+
+      if (existDirectConversation) {
+        throw new HttpError(400, 'Conversation already exists')
+      }
+
       if (payload.participantId === userId) {
         throw new HttpError(400, 'You cannot create a conversation with yourself')
       }
