@@ -77,9 +77,7 @@ function CreateConversationForm({
     }
   }
 
-  if (users.isLoading) {
-    return <div>Loading...</div>
-  }
+  if (users.isLoading) return
 
   const usersList: User[] = users.data!.users
 
@@ -114,7 +112,6 @@ function CreateConversationForm({
               Create
             </LoadingButton>
             <Button
-              className=''
               variant='ghost'
               onClick={() => {
                 onOpenChange(false)
@@ -151,7 +148,7 @@ function CreateConversationForm({
         <div className='flex flex-col space-y-2'>
           <LoadingButton
             isLoading={directConversation.isPending || groupConversation.isPending}
-            onClick={() => {}}
+            onClick={handleCreateConversation}
           >
             Create
           </LoadingButton>

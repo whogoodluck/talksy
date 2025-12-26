@@ -21,10 +21,10 @@ function MessageBubble({ message }: MessageBubbleProps) {
 
       <div
         className={cn(
-          'mb-0.5 max-w-3/4 rounded-t-md px-4 py-2 text-sm',
+          'mb-0.5 max-w-3/4 px-4 py-2 text-sm rounded-sm',
           isSender
-            ? 'bg-primary text-primary-foreground rounded-bl-md'
-            : 'bg-foreground/10 rounded-br-md'
+            ? 'bg-primary text-primary-foreground'
+            : 'bg-foreground/10'
         )}
       >
         <div>{message.content}</div>

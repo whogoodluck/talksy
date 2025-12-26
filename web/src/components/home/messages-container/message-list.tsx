@@ -68,9 +68,11 @@ function MessagesList() {
                 </Badge>
               </div>
 
-              {msgs.map(msg => (
+              <div className='space-y-1'>
+                {msgs.map(msg => (
                 <MessageBubble key={msg.id} message={msg} />
               ))}
+              </div>
             </div>
           ))}
         </>

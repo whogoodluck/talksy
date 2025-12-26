@@ -11,10 +11,8 @@ const DEV_DATABASE_URL = process.env.DEV_DATABASE_URL
 
 const JWT_SECRET = process.env.JWT_SECRET
 
-const SMTP_HOST = process.env.SMTP_HOST
-const SMTP_PORT = Number(process.env.SMTP_PORT) || 587
-const SMTP_USER = process.env.SMTP_USER
-const SMTP_PASS = process.env.SMTP_PASS
+const BREVO_USER = process.env.BREVO_USER
+const BREVO_SMTP_KEY = process.env.BREVO_SMTP_KEY
 
 const APP_NAME = process.env.APP_NAME
 const SENDER_EMAIL = process.env.SENDER_EMAIL
@@ -25,10 +23,8 @@ export default {
   DATABASE_URL,
   DEV_DATABASE_URL,
   JWT_SECRET,
-  SMTP_HOST,
-  SMTP_PORT,
-  SMTP_USER,
-  SMTP_PASS,
+  BREVO_USER,
+  BREVO_SMTP_KEY,
   APP_NAME,
   SENDER_EMAIL,
 }

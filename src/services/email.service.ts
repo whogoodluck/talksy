@@ -2,14 +2,21 @@ import nodemailer from 'nodemailer'
 import config from '../utils/config'
 
 const transporter = nodemailer.createTransport({
-  host: config.SMTP_HOST,
-  port: config.SMTP_PORT,
-  secure: true,
+  host: 'smtp-relay.brevo.com',
+  port: 587,
+  secure: false,
   auth: {
-    user: config.SMTP_USER,
-    pass: config.SMTP_PASS,
+    user: config.BREVO_USER,
+    pass: config.BREVO_SMTP_KEY,
   },
-  debug: true,
+})
+
+transporter.verify((error, success) => {
+  if (error) {
+    console.error('SMTP server is not ready', error)
+  } else {
+    console.log('SMTP server is ready')
+  }
 })
 
 const createEmailTemplate = (content: string, currentYear: number) => `
