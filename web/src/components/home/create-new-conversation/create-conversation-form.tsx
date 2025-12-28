@@ -17,6 +17,7 @@ import {
   DrawerTitle,
 } from '@/components/ui/drawer'
 import { Input } from '@/components/ui/input'
+import { SearchInput } from '@/components/ui/search-input'
 import { useCreateDirectConversation, useCreateGroupConversation } from '@/hooks/useConversations'
 import { useIsMobile } from '@/hooks/useMediaQuery'
 import { useSearchUsers } from '@/hooks/useUsers'
@@ -25,7 +26,6 @@ import type { User } from '@/types/user'
 import { XIcon } from 'lucide-react'
 import { useEffect, useState, type Dispatch, type SetStateAction } from 'react'
 import { Button } from '../../ui/button'
-import { SearchInput } from '@/components/ui/search-input'
 
 interface CreateConversationFormProps {
   open: boolean
@@ -186,7 +186,6 @@ function ConversationForm({
   groupName,
   setGroupName,
 }: ConversationFormProps) {
-
   const handleAddUser = (user: User) => {
     if (conversationType === ConversationEnum.DIRECT && selectedUsers.length > 0) return
 
@@ -213,45 +212,49 @@ function ConversationForm({
             </Badge>
           ))}
       </div>
-      <div className='bg-foreground/5 max-h-[250px] min-h-[100px] overflow-y-auto rounded-sm p-2'>
-        {!!usersList.length ? usersList.map(user => (
-          <div
-            key={user.id}
-            className='hover:bg-accent flex items-center justify-between rounded-sm p-2'
-          >
-            <div className='flex items-center'>
-              <UserAvatar size='sm' avatarUrl={user.picture} name={user.name} />
-              <div className='ml-2 text-sm'>
-                <p>{user.name}</p>
-                <p className='text-foreground/50'>{user.username}</p>
+      <div className='bg-foreground/5 flex max-h-[250px] min-h-[100px] flex-col overflow-y-auto rounded-sm p-2'>
+        {!!usersList.length ? (
+          usersList.map(user => (
+            <div
+              key={user.id}
+              className='hover:bg-accent flex items-center justify-between rounded-sm p-2'
+            >
+              <div className='flex items-center'>
+                <UserAvatar size='sm' avatarUrl={user.picture} name={user.name} />
+                <div className='ml-2 text-sm'>
+                  <p>{user.name}</p>
+                  <p className='text-foreground/50'>{user.username}</p>
+                </div>
               </div>
+              {selectedUsers.includes(user) ? (
+                <Button
+                  variant='ghost'
+                  size='sm'
+                  className='text-destructive w-[80px]'
+                  onClick={() => handleRemoveUser(user.id)}
+                >
+                  remove
+                </Button>
+              ) : (
+                <Button
+                  variant='ghost'
+                  size='sm'
+                  className='text-secondary w-[80px]'
+                  disabled={
+                    conversationType === ConversationEnum.DIRECT && selectedUsers.length > 0
+                  }
+                  onClick={() => handleAddUser(user)}
+                >
+                  Add
+                </Button>
+              )}
             </div>
-            {selectedUsers.includes(user) ? (
-              <Button
-                variant='ghost'
-                size='sm'
-                className='text-destructive w-[80px]'
-                onClick={() => handleRemoveUser(user.id)}
-              >
-                remove
-              </Button>
-            ) : (
-              <Button
-                variant='ghost'
-                size='sm'
-                className='text-secondary w-[80px]'
-                disabled={conversationType === ConversationEnum.DIRECT && selectedUsers.length > 0}
-                onClick={() => handleAddUser(user)}
-              >
-                Add
-              </Button>
-            )}
-          </div>
-        )) : 
-        <div className='h-full flex items-center justify-center'>
+          ))
+        ) : (
+          <div className='flex flex-1 items-center justify-center'>
             <p>No users found.</p>
-        </div>
-      }
+          </div>
+        )}
       </div>
       {conversationType === ConversationEnum.GROUP && (
         <Input

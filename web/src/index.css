@@ -99,7 +99,9 @@
     @apply bg-background text-foreground;
     font-family: 'Inter Variable';
   }
+}
 
+@layer utilities {
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;

@@ -70,8 +70,8 @@ function MessagesList() {
 
               <div className='space-y-1'>
                 {msgs.map(msg => (
-                <MessageBubble key={msg.id} message={msg} />
-              ))}
+                  <MessageBubble key={msg.id} message={msg} />
+                ))}
               </div>
             </div>
           ))}

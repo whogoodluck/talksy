@@ -73,7 +73,7 @@ function MessagesContainerHeader() {
                 </>
               ) : (
                 <p className='text-muted-foreground text-xs'>
-                  You and {selectedConversation.participants.length - 1} more 
+                  You and {selectedConversation.participants.length - 1} more
                 </p>
               )}
             </h3>

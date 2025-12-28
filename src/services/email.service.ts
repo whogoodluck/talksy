@@ -11,14 +11,6 @@ const transporter = nodemailer.createTransport({
   },
 })
 
-transporter.verify((error, success) => {
-  if (error) {
-    console.error('SMTP server is not ready', error)
-  } else {
-    console.log('SMTP server is ready')
-  }
-})
-
 const createEmailTemplate = (content: string, currentYear: number) => `
 <!DOCTYPE html>
 <html lang="en">
