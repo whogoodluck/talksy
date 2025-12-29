@@ -33,7 +33,7 @@ export function SocketProvider({ children }: SocketProviderProps) {
       return
     }
 
-    const newSocket: Socket = io('http://localhost:3002', {
+    const newSocket: Socket = io('/', {
       withCredentials: true,
       autoConnect: false,
     })
