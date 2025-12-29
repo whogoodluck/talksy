@@ -44,7 +44,9 @@ function App() {
                   <Route path='/' element={<Home />} />
                 </Route>
 
-                <Route path='*' element={<ComingSoon />} />
+                <Route element={<ProtectedRoute />}>
+                  <Route path='*' element={<ComingSoon />} />
+                </Route>
               </Routes>
               <Toaster />
             </ConversationProvider>

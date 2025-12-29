@@ -64,14 +64,6 @@ export const initSocket = (io: SocketIOServer) => {
       socket.emit('user:online:response', myOnlineContactIds())
     })
 
-    // socket.on('join:conversation', conversationId => {
-    //   socket.join(conversationId)
-    // })
-
-    // socket.on('leave:conversation', conversationId => {
-    //   socket.leave(conversationId)
-    // })
-
     socket.on('typing:start', conversationId => {
       socket.to(conversationId).emit('typing:start', user.id)
     })

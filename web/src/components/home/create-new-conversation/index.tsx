@@ -15,6 +15,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { useIsMobile } from '@/hooks/useMediaQuery'
 import { ConversationEnum, type ConversationType } from '@/types/conversation'
 import { User, UserPlus, Users } from 'lucide-react'
 import { useState } from 'react'
@@ -25,7 +26,7 @@ function CreateNewConversation() {
   const [conversationType, setConversationType] = useState<ConversationType | null>(null)
   const [openForm, setOpenForm] = useState(false)
 
-  const isMobile = window.innerWidth < 768
+  const isMobile = useIsMobile()
 
   if (isMobile) {
     return (

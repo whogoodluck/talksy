@@ -57,15 +57,7 @@ function Signin() {
               name='password'
               render={({ field }) => (
                 <FormItem>
-                  <div className='flex items-center justify-between'>
-                    <FormLabel>Password*</FormLabel>
-                    <Link
-                      to='/auth/forgot-password'
-                      className='text-secondary text-sm font-medium underline-offset-4 hover:underline active:underline'
-                    >
-                      Forgot password?
-                    </Link>
-                  </div>
+                  <FormLabel>Password*</FormLabel>
                   <FormControl>
                     <PasswordInput placeholder='Enter your password' {...field} />
                   </FormControl>

@@ -51,86 +51,97 @@ function MessageInput() {
 
   return (
     <div>
-      {
-        img && (
-          <div className='pb-2 px-2 flex items-center justify-end'>
-            <div className='h-full relative size-40 rounded-sm overflow-hidden'>
+      {img && (
+        <div className='flex items-center justify-end px-2 pb-2'>
+          <div className='relative size-40 h-full overflow-hidden rounded-sm'>
             <img src={URL.createObjectURL(img)} className='w-full object-cover' />
-            <Button size='icon' variant='ghost' className='absolute top-1 right-1 rounded-full size-6' onClick={() => setImg(null)}><XIcon /></Button>
+            <Button
+              size='icon'
+              variant='ghost'
+              className='absolute top-1 right-1 size-6 rounded-full'
+              onClick={() => setImg(null)}
+            >
+              <XIcon />
+            </Button>
           </div>
-          </div>
-        )
-      }
+        </div>
+      )}
       <form
-      onSubmit={handleSendMessage}
-      className={cn('bg-foreground/5 flex items-end rounded-full border px-4 py-[6px] shadow-sm')}
-    >
-      <div className='my-auto flex items-center'>
-        {/* <button
+        onSubmit={handleSendMessage}
+        className={cn('bg-foreground/5 flex items-end rounded-full border px-4 py-[6px] shadow-sm')}
+      >
+        <div className='my-auto flex items-center'>
+          {/* <button
           type='button'
           className='hover:bg-foreground/5 active:bg-foreground/5 cursor-pointer rounded-full p-2'
         >
           <Plus />
         </button> */}
 
-        <Popover>
-          <PopoverTrigger asChild>
+          <Popover>
+            <PopoverTrigger asChild>
+              <button
+                type='button'
+                className='hover:bg-foreground/5 active:bg-foreground/5 cursor-pointer rounded-full p-2'
+              >
+                <Smile />
+              </button>
+            </PopoverTrigger>
+
+            <PopoverContent className='mb-2 ml-2 flex items-center justify-center border-none'>
+              <EmojiPicker
+                onEmojiSelect={({ emoji }) => setMessage(prev => prev + emoji)}
+                className='h-80'
+              >
+                <EmojiPickerSearch />
+                <EmojiPickerContent />
+              </EmojiPicker>
+            </PopoverContent>
+          </Popover>
+        </div>
+        <Textarea
+          name='comment'
+          id='comment'
+          wrap='soft'
+          placeholder='Type a message'
+          value={message}
+          onChange={e => setMessage(e.target.value)}
+          className={cn(
+            'my-auto mr-1 max-h-[150px] resize-none border-none bg-transparent pl-1 break-words whitespace-pre-wrap',
+            'focus-visible:ring-0'
+          )}
+        />
+        <div className='my-auto flex items-center gap-1'>
+          {message.trim() || img ? (
+            <button
+              type='submit'
+              className={cn(
+                'bg-secondary text-secondary-foreground cursor-pointer rounded-full p-2',
+                {
+                  invisible: !message && !img,
+                }
+              )}
+            >
+              <ArrowUp />
+            </button>
+          ) : (
             <button
               type='button'
+              onClick={handleSelectImg}
               className='hover:bg-foreground/5 active:bg-foreground/5 cursor-pointer rounded-full p-2'
             >
-              <Smile />
+              <Camera />
             </button>
-          </PopoverTrigger>
-
-          <PopoverContent className='flex items-center justify-center border-none ml-2 mb-2'>
-            <EmojiPicker
-              onEmojiSelect={({ emoji }) => setMessage(prev => prev + emoji)}
-              className='h-80 '
-            >
-              <EmojiPickerSearch />
-              <EmojiPickerContent />
-            </EmojiPicker>
-          </PopoverContent>
-        </Popover>
-      </div>
-      <Textarea
-        name='comment'
-        id='comment'
-        wrap='soft'
-        placeholder='Type a message'
-        value={message}
-        onChange={e => setMessage(e.target.value)}
-        className={cn(
-          'my-auto mr-1 max-h-[150px] resize-none border-none bg-transparent pl-1 break-words whitespace-pre-wrap',
-          'focus-visible:ring-0'
-        )}
-      />
-      <div className='my-auto flex items-center gap-1'>
-        {message.trim() || img ? (
-          <button
-            type='submit'
-            className={cn(
-              'bg-secondary text-secondary-foreground cursor-pointer rounded-full p-2',
-              {
-                invisible: !message && !img,
-              }
-            )}
-          >
-            <ArrowUp />
-          </button>
-        ) : (
-          <button
-            type='button'
-            onClick={handleSelectImg}
-            className='hover:bg-foreground/5 active:bg-foreground/5 cursor-pointer rounded-full p-2'
-          >
-            <Camera />
-          </button>
-        )}
-        <input type='file' accept='image/*' ref={inputRef} onChange={e => setImg(e.target.files![0])} className='hidden' />
-      </div>
-    </form>
+          )}
+          <input
+            type='file'
+            accept='image/*'
+            ref={inputRef}
+            onChange={e => setImg(e.target.files![0])}
+            className='hidden'
+          />
+        </div>
+      </form>
     </div>
   )
 }

@@ -28,7 +28,7 @@ export function ConversationItem({ conversation, setSelectedConversation }: Conv
     <Card
       onClick={() => setSelectedConversation(conversation)}
       className={cn(
-        'bg-background cursor-pointer rounded-none border-none px-4 py-3 shadow-none transition-colors md:rounded-sm md:px-3',
+        'bg-background cursor-pointer rounded-none border-none p-4 shadow-none transition-colors',
         'hover:bg-foreground/10',
         {
           'bg-foreground/10': isActive,

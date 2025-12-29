@@ -1,14 +1,18 @@
 import FallbackState from '@/components/fallback-state'
+import CreateConversationForm from '@/components/home/create-new-conversation/create-conversation-form'
 import LeftSidebar from '@/components/home/left-sidebar'
 import MessagesContainer from '@/components/home/messages-container'
 import { useConversationContext } from '@/providers/conversation.provider'
+import { ConversationEnum } from '@/types/conversation'
 import { MessageSquareMore } from 'lucide-react'
+import { useState } from 'react'
 
 function Home() {
+  const [openForm, setOpenForm] = useState(false)
   const { selectedConversation } = useConversationContext()
 
   return (
-    <div className='flex h-screen'>
+    <div className='flex h-full'>
       <LeftSidebar />
       {selectedConversation ? (
         <MessagesContainer />
@@ -19,7 +23,12 @@ function Home() {
             title='Your messages'
             description='Choose from your existing conversations, or start a new one.'
             actionLabel='New Conversation'
-            onAction={() => {}}
+            onAction={() => setOpenForm(true)}
+          />
+          <CreateConversationForm
+            open={openForm}
+            onOpenChange={setOpenForm}
+            conversationType={ConversationEnum.DIRECT}
           />
         </div>
       )}

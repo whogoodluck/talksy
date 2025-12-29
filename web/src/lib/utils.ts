@@ -91,6 +91,7 @@ export const formatLastSeen = (date: string) => {
     { label: 'd', seconds: 86400 },
     { label: 'h', seconds: 3600 },
     { label: 'm', seconds: 60 },
+    { label: 's', seconds: 1 },
   ]
 
   for (const unit of units) {
@@ -100,5 +101,5 @@ export const formatLastSeen = (date: string) => {
     }
   }
 
-  return 'Last seen recently'
+  return 'Last seen 1s ago'
 }

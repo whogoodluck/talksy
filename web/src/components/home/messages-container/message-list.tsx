@@ -79,14 +79,14 @@ function MessagesList() {
       )}
 
       {otherParticipant && typingUserIds.includes(otherParticipant.user.id) && (
-        <div className='flex w-full items-end justify-start gap-2'>
+        <div className='flex w-full items-end justify-start space-x-1'>
           <UserAvatar
             size='xs'
             avatarUrl={otherParticipant.user.picture}
             name={otherParticipant.user.name}
           />
 
-          <div className='bg-foreground/10 text-muted-foreground mb-0.5 rounded-t-md rounded-br-md px-5 py-[14px]'>
+          <div className='bg-foreground/10 text-muted-foreground rounded-sm px-5 py-[14px]'>
             <div className='flex items-center gap-1'>
               <span className='h-2 w-2 animate-bounce rounded-full bg-current [animation-delay:0ms]' />
               <span className='h-2 w-2 animate-bounce rounded-full bg-current [animation-delay:150ms]' />

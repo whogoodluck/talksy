@@ -53,7 +53,7 @@ function LeftSidebar() {
         <Tabs tabs={HOME_TABS} activeTab={activeTab} setActiveTab={setActiveTab} />
       </div>
 
-      <div className='flex h-full md:px-2'>
+      <div className='flex h-full'>
         <ConversationList debouncedSearchQuery={debouncedSearchQuery} activeTab={activeTab} />
       </div>
     </aside>

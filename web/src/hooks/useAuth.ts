@@ -31,7 +31,7 @@ export const useVerifyEmail = () => {
       return await api.post<User>('/users/verify-email', verifyEmailData)
     },
     onSuccess: data => {
-      queryClient.setQueryData(['profile'], data)
+      queryClient.setQueryData(['profile'], data.data)
       toast.success(data.message)
       navigate('/')
     },
@@ -64,7 +64,7 @@ export const useSignin = () => {
       return await api.post<User>('/users/signin', credentials)
     },
     onSuccess: data => {
-      queryClient.setQueryData(['profile'], data)
+      queryClient.setQueryData(['profile'], data.data)
       toast.success(data.message)
       navigate('/')
     },

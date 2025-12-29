@@ -5,9 +5,10 @@ interface UserAvatarProps {
   avatarUrl: string | undefined
   name: string
   size?: 'xs' | 'sm' | 'md' | 'lg'
+  className?: string
 }
 
-function UserAvatar({ avatarUrl, name, size }: UserAvatarProps) {
+function UserAvatar({ avatarUrl, name, size, className }: UserAvatarProps) {
   const sizeConfig = {
     xs: { avatar: 'size-8', avatarFallbackText: 'text-xs' },
     sm: { avatar: 'size-10', avatarFallbackText: 'text-sm' },
@@ -18,11 +19,11 @@ function UserAvatar({ avatarUrl, name, size }: UserAvatarProps) {
   const sizeClass = sizeConfig[size || 'md']
 
   return (
-    <Avatar className={cn(sizeClass.avatar)}>
+    <Avatar className={cn(className, sizeClass.avatar)}>
       <AvatarImage src={avatarUrl} alt={name} />
       <AvatarFallback
         className={cn(
-          'bg-foreground/5 text-foreground font-semibold',
+          'bg-foreground/5 font-semibold',
           sizeClass.avatarFallbackText
         )}
       >

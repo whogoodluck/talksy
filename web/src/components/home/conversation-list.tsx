@@ -2,9 +2,10 @@ import { useConversations, useSearchConversations } from '@/hooks/useConversatio
 import { useConversationContext } from '@/providers/conversation.provider'
 import { ConversationEnum, type Conversation, type ConversationType } from '@/types/conversation'
 import { MessageSquareMore, RotateCw } from 'lucide-react'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import FallbackState from '../fallback-state'
 import { ConversationItem, ConversationItemSkeleton } from './conversation-item'
+import CreateConversationForm from './create-new-conversation/create-conversation-form'
 
 type ConversationListProps = {
   debouncedSearchQuery: string
@@ -12,6 +13,7 @@ type ConversationListProps = {
 }
 
 function ConversationList({ debouncedSearchQuery, activeTab }: ConversationListProps) {
+  const [openForm, setOpenForm] = useState(false)
   const { setSelectedConversation } = useConversationContext()
   const conversations = useConversations(activeTab)
   const searchConversations = useSearchConversations(debouncedSearchQuery)
@@ -70,25 +72,32 @@ function ConversationList({ debouncedSearchQuery, activeTab }: ConversationListP
 
   if (conversationList.length === 0)
     return (
-      <FallbackState
-        icon={MessageSquareMore}
-        title={
-          activeTab === ConversationEnum.ALL
-            ? 'No conversations yet'
-            : `No ${activeTab.toLowerCase()} conversations yet`
-        }
-        description={
-          activeTab === ConversationEnum.GROUP
-            ? 'Create a group to start a conversation'
-            : 'Start a new conversation'
-        }
-        onAction={() => {}}
-        actionLabel={activeTab === ConversationEnum.GROUP ? 'Create a group' : 'New Conversation'}
-      />
+      <>
+        <FallbackState
+          icon={MessageSquareMore}
+          title={
+            activeTab === ConversationEnum.ALL
+              ? 'No conversations yet'
+              : `No ${activeTab.toLowerCase()} conversations yet`
+          }
+          description={
+            activeTab === ConversationEnum.GROUP
+              ? 'Create a group to start a conversation'
+              : 'Start a new conversation'
+          }
+          onAction={() => setOpenForm(true)}
+          actionLabel={activeTab === ConversationEnum.GROUP ? 'Create a group' : 'New Conversation'}
+        />
+        <CreateConversationForm
+          open={openForm}
+          onOpenChange={setOpenForm}
+          conversationType={ConversationEnum.DIRECT}
+        />
+      </>
     )
 
   return (
-    <div className='scrollbar-hide w-full space-y-[6px] overflow-y-auto'>
+    <div className='scrollbar-hide w-full space-y-0.5 overflow-y-auto'>
       {debouncedSearchQuery && searchConversationList
         ? searchConversationList.map(conversation => (
             <ConversationItem

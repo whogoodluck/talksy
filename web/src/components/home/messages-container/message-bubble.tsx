@@ -21,7 +21,7 @@ function MessageBubble({ message }: MessageBubbleProps) {
 
       <div
         className={cn(
-          'mb-0.5 max-w-3/4 rounded-sm px-4 py-2 text-sm',
+          'max-w-3/4 rounded-sm px-4 py-2 text-sm',
           isSender ? 'bg-primary text-primary-foreground' : 'bg-foreground/10'
         )}
       >
