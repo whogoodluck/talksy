@@ -4,14 +4,41 @@ import { useCallback, useEffect, useState } from 'react'
 export const useTypingUsers = () => {
   const { socket } = useSocketContext()
 
-  const [typingUserIds, setTypingUserIds] = useState<string[]>([])
+  const [conversationTypingUserIds, setConversationTypingUserIds] = useState<
+    Record<string, string[]>
+  >({})
 
-  const handleAddTypingUserId = (userId: string) => {
-    setTypingUserIds(ids => [...ids, userId])
+  const handleAddTypingUserId = ({
+    conversationId,
+    userId,
+  }: {
+    conversationId: string
+    userId: string
+  }) => {
+    if (conversationTypingUserIds[conversationId]) {
+      setConversationTypingUserIds(old => ({
+        ...old,
+        [conversationId]: [...old[conversationId], userId],
+      }))
+    } else {
+      setConversationTypingUserIds(old => ({
+        ...old,
+        [conversationId]: [userId],
+      }))
+    }
   }
 
-  const handleRemoveTypingUserId = (userId: string) => {
-    setTypingUserIds(ids => ids.filter(id => id !== userId))
+  const handleRemoveTypingUserId = ({
+    conversationId,
+    userId,
+  }: {
+    conversationId: string
+    userId: string
+  }) => {
+    setConversationTypingUserIds(old => ({
+      ...old,
+      [conversationId]: old[conversationId].filter(id => id !== userId),
+    }))
   }
 
   useEffect(() => {
@@ -44,5 +71,5 @@ export const useTypingUsers = () => {
     [socket]
   )
 
-  return { typingUserIds, startTyping, stopTyping }
+  return { conversationTypingUserIds, startTyping, stopTyping }
 }

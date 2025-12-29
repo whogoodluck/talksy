@@ -65,11 +65,15 @@ export const initSocket = (io: SocketIOServer) => {
     })
 
     socket.on('typing:start', conversationId => {
-      socket.to(conversationId).emit('typing:start', user.id)
+      socket
+        .to(conversationId)
+        .emit('typing:start', { conversationId: conversationId, userId: user.id })
     })
 
     socket.on('typing:stop', conversationId => {
-      socket.to(conversationId).emit('typing:stop', user.id)
+      socket
+        .to(conversationId)
+        .emit('typing:stop', { conversationId: conversationId, userId: user.id })
     })
 
     socket.on('disconnect', async () => {

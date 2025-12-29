@@ -7,7 +7,7 @@ function MessagesContainer() {
     <div className='bg-accent relative flex flex-1 flex-col'>
       <MessagesContainerHeader />
       <MessagesList />
-      <div className='bg-background z-20 absolute bottom-0 w-full p-1 py-2 md:px-2'>
+      <div className='bg-background absolute bottom-0 z-20 w-full p-1 py-2 md:px-2'>
         <MessageInput />
       </div>
     </div>

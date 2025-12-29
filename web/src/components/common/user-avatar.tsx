@@ -21,12 +21,7 @@ function UserAvatar({ avatarUrl, name, size, className }: UserAvatarProps) {
   return (
     <Avatar className={cn(className, sizeClass.avatar)}>
       <AvatarImage src={avatarUrl} alt={name} />
-      <AvatarFallback
-        className={cn(
-          'bg-foreground/5 font-semibold',
-          sizeClass.avatarFallbackText
-        )}
-      >
+      <AvatarFallback className={cn('bg-foreground/5 font-semibold', sizeClass.avatarFallbackText)}>
         {name.charAt(0).toUpperCase()}
       </AvatarFallback>
     </Avatar>
