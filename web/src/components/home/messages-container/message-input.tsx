@@ -82,12 +82,10 @@ function MessageInput() {
     if (data.fileSize) msgData.append('fileSize', data.fileSize.toString())
     if (data.replyToId) msgData.append('replyToId', data.replyToId)
 
-    sendMessage.mutate(msgData, {
-      onSuccess: () => {
-        form.reset()
-        setImg(null)
-      },
-    })
+    sendMessage.mutate(msgData)
+
+    form.reset()
+    setImg(null)
   }
 
   return (

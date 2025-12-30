@@ -3,7 +3,7 @@ import { SendMessageRequest } from '../schemas/message.schema'
 import { USER_SAFE_FIELDS } from './user.service'
 
 const sendMessage = async (conversationId: string, senderId: string, data: SendMessageRequest) => {
-  return await prisma.message.create({
+  const message = await prisma.message.create({
     data: {
       conversationId,
       senderId,
@@ -23,6 +23,17 @@ const sendMessage = async (conversationId: string, senderId: string, data: SendM
       },
     },
   })
+
+  await prisma.conversation.update({
+    where: {
+      id: conversationId,
+    },
+    data: {
+      updatedAt: new Date(),
+    },
+  })
+
+  return message
 }
 
 const getMessages = async (conversationId: string, limit: number) => {
