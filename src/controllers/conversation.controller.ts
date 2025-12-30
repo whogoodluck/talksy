@@ -1,6 +1,7 @@
 import { ConversationType } from '@prisma/client'
 import { NextFunction, Response } from 'express'
 import { io } from '../index'
+import { uploadImage } from '../lib/cloudinary'
 import { ExpressRequest } from '../middlewares/auth.middleware'
 import {
   createDirectConversationSchema,
@@ -131,6 +132,12 @@ const sendMessage = async (req: ExpressRequest, res: Response, next: NextFunctio
     const userId = req.user!.id
     const { conversationId } = req.params
     const payload = sendMessageSchema.parse(req.body)
+    const file = req.file
+
+    if (file) {
+      const res = await uploadImage(file)
+      payload.fileUrl = res.url
+    }
 
     const conversation = await conversationService.getUserConversationById(userId, conversationId)
 

@@ -1,7 +1,7 @@
 import UserAvatar from '@/components/common/user-avatar'
 import { useGetProfile } from '@/hooks/useAuth'
 import { cn, getTime } from '@/lib/utils'
-import type { Message } from '@/types/conversation'
+import { MessageEnum, type Message } from '@/types/conversation'
 
 interface MessageBubbleProps {
   message: Message
@@ -21,13 +21,16 @@ function MessageBubble({ message }: MessageBubbleProps) {
 
       <div
         className={cn(
-          'max-w-3/4 rounded-sm px-4 py-2 text-sm',
+          'flex max-w-3/4 flex-col gap-1 rounded-sm p-2',
           isSender ? 'bg-primary text-primary-foreground' : 'bg-foreground/10'
         )}
       >
-        <div>{message.content}</div>
+        {message.type === MessageEnum.IMAGE && (
+          <img src={message.fileUrl} alt={message.content} className='w-full max-w-[250px] rounded-sm' />
+        )}
+        <p className='text-sm md:text-base'>{message.content}</p>
 
-        <p className={cn('mt-0.5 text-xs opacity-70', isSender ? 'text-right' : 'text-left')}>
+        <p className={cn('w-full text-xs opacity-70', isSender ? 'text-right' : 'text-left')}>
           {getTime(message.createdAt)}
           {message.isEdited && ' (edited)'}
         </p>

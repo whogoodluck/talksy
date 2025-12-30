@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import conversationController from '../controllers/conversation.controller'
 import authMiddleware from '../middlewares/auth.middleware'
+import { uploadSingleFileForMessage } from '../middlewares/multer'
 
 const conversationRouter = Router()
 
@@ -14,7 +15,11 @@ conversationRouter.get('/search', conversationController.getUserConversationsByQ
 conversationRouter.get('/:conversationId', conversationController.getUserConversationById)
 
 // Messages routes
-conversationRouter.post('/:conversationId/messages', conversationController.sendMessage)
+conversationRouter.post(
+  '/:conversationId/messages',
+  uploadSingleFileForMessage,
+  conversationController.sendMessage
+)
 conversationRouter.get('/:conversationId/messages', conversationController.getMessages)
 
 export default conversationRouter

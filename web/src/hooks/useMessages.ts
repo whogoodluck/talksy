@@ -1,6 +1,5 @@
 import { api } from '@/lib/api'
 import { useSocketContext } from '@/providers/socket.provider'
-import type { SendMessageRequest } from '@/schemas/message.schema'
 import type { Message } from '@/types/conversation'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
@@ -11,7 +10,7 @@ export const useSendMessage = (conversationId: string) => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (data: SendMessageRequest) => {
+    mutationFn: async (data: FormData) => {
       const res = await api.post(`/conversations/${conversationId}/messages`, data)
       return res.data
     },
@@ -19,6 +18,11 @@ export const useSendMessage = (conversationId: string) => {
       await queryClient.cancelQueries({
         queryKey: ['messages', conversationId],
       })
+
+      const mutateData: Record<string, any> = {}
+      for(const [key, value] of data.entries()) {
+          mutateData[key] = value
+      }
 
       const tempMessage = {
         id: `temp-${Date.now()}`,
@@ -29,15 +33,20 @@ export const useSendMessage = (conversationId: string) => {
           name: profile.data?.name,
         },
         createdAt: new Date().toISOString(),
-        ...data,
+        fileUrl: mutateData.file ? URL.createObjectURL(mutateData.file) : undefined,
+        ...mutateData,
       }
 
       queryClient.setQueryData(
         ['messages', conversationId],
-        (old: { messages: Message[]; total: number }) => ({
+        (old: { messages: Message[]; total: number } | undefined) => {
+          old = old || { messages: [], total: 0 }
+
+          return {
           messages: [...old.messages, tempMessage],
           total: old.total + 1,
-        })
+        }
+        }
       )
 
       return { tempMessage }
@@ -45,22 +54,38 @@ export const useSendMessage = (conversationId: string) => {
     onSuccess: (data, _variables, context) => {
       queryClient.setQueryData(
         ['messages', conversationId],
-        (old: { messages: Message[]; total: number }) => ({
+        (old: { messages: Message[]; total: number } | undefined) => {
+          if(!old) return { messages: [data], total: 1 }
+
+          return {
           ...old,
           messages: old.messages.map(m => (m.id === context.tempMessage.id ? data : m)),
-          total: old.total + 1,
-        })
+          total: old.total,
+        }
+        }
       )
+
+      if(context.tempMessage.fileUrl) {
+        URL.revokeObjectURL(context.tempMessage.fileUrl)
+      }
     },
     onError: (_, _variables, context) => {
       queryClient.setQueryData(
         ['messages', conversationId],
-        (old: { messages: Message[]; total: number }) => ({
+        (old: { messages: Message[]; total: number } | undefined) => {
+          if(!old) return { messages: [], total: 0 }
+
+          return {
           ...old,
           messages: old.messages.filter(m => m.id !== context?.tempMessage.id),
           total: old.total - 1,
-        })
+        }
+        }
       )
+
+      if(context?.tempMessage.fileUrl) {
+        URL.revokeObjectURL(context.tempMessage.fileUrl)
+      }
     },
   })
 }
@@ -103,7 +128,7 @@ export const useMessages = (conversationId: string, limit = 50) => {
 
           return {
             ...old,
-            messages: [message, ...old.messages],
+            messages: [...old.messages, message],
             total: old.total + 1,
           }
         }
@@ -111,6 +136,10 @@ export const useMessages = (conversationId: string, limit = 50) => {
     }
 
     socket.on('message:new', handleNewMessage)
+
+    return () => {
+      socket.off('message:new', handleNewMessage)
+    }
   }, [socket, conversationId, queryClient, profile.data?.id])
 
   return query

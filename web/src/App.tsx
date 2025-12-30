@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 import ComingSoon from './components/coming-soon'
+import NavigationLayout from './components/navigation-layout'
 import { ProtectedRoute, PublicRoute } from './components/route-guard'
 import { Toaster } from './components/ui/sonner'
 import Signin from './pages/auth/signin'
@@ -41,11 +42,25 @@ function App() {
                 </Route>
 
                 <Route element={<ProtectedRoute />}>
-                  <Route path='/' element={<Home />} />
+                  <Route
+                    path='/'
+                    element={
+                      <NavigationLayout>
+                        <Home />
+                      </NavigationLayout>
+                    }
+                  />
                 </Route>
 
                 <Route element={<ProtectedRoute />}>
-                  <Route path='*' element={<ComingSoon />} />
+                  <Route
+                    path='*'
+                    element={
+                      <NavigationLayout>
+                        <ComingSoon />
+                      </NavigationLayout>
+                    }
+                  />
                 </Route>
               </Routes>
               <Toaster />

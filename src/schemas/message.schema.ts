@@ -3,11 +3,11 @@ import z from 'zod'
 
 export const sendMessageSchema = z
   .object({
-    content: z.string().min(1).optional(),
+    content: z.string().optional(),
     type: z.nativeEnum(MessageType).default(MessageType.TEXT),
-    fileUrl: z.string().url().optional(),
+    fileUrl: z.string().url('Invalid file URL').optional(),
     fileName: z.string().optional(),
-    fileSize: z.number().int().positive().optional(),
+    fileSize: z.coerce.number().optional(),
     replyToId: z.string().cuid().optional(),
   })
   .superRefine((data, ctx) => {
@@ -19,13 +19,13 @@ export const sendMessageSchema = z
       })
     }
 
-    if (data.type !== MessageType.TEXT && !data.fileUrl) {
-      ctx.addIssue({
-        path: ['fileUrl'],
-        message: 'File URL is required for non-text messages',
-        code: z.ZodIssueCode.custom,
-      })
-    }
+    // if (data.type !== MessageType.TEXT && !data.fileUrl) {
+    //   ctx.addIssue({
+    //     path: ['fileUrl'],
+    //     message: 'File URL is required for non-text messages',
+    //     code: z.ZodIssueCode.custom,
+    //   })
+    // }
   })
 
 export const getMessagesQuerySchema = z.object({

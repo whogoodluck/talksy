@@ -19,9 +19,9 @@ export default defineConfig({
       },
       '/socket.io': {
         target: 'http://localhost:3002',
-        ws: true,  // WebSocket option
+        ws: true, // WebSocket option
         changeOrigin: true,
-    },
+      },
     },
   },
 })

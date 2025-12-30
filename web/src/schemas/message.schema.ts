@@ -1,11 +1,18 @@
 import { MessageEnum } from '@/types/conversation'
 import z from 'zod'
 
+export const file = () =>
+  z
+    .instanceof(File, { message: 'File must be a file' })
+    .refine(file => file.size <= 5 * 1024 * 1024, {
+      message: 'File size must be less than 5MB',
+    })
+
 export const sendMessageSchema = z
   .object({
-    content: z.string().min(1),
-    type: z.nativeEnum(MessageEnum).default(MessageEnum.TEXT),
-    fileUrl: z.string().url().optional(),
+    content: z.string().optional(),
+    type: z.nativeEnum(MessageEnum).default(MessageEnum.TEXT).optional(),
+    file: file().optional(),
     fileName: z.string().optional(),
     fileSize: z.number().int().positive().optional(),
     replyToId: z.string().cuid().optional(),
@@ -19,10 +26,10 @@ export const sendMessageSchema = z
       })
     }
 
-    if (data.type !== MessageEnum.TEXT && !data.fileUrl) {
+    if (data.type !== MessageEnum.TEXT && !data.file) {
       ctx.addIssue({
-        path: ['fileUrl'],
-        message: 'File URL is required for non-text messages',
+        path: ['file'],
+        message: 'File is required for non-text messages',
         code: z.ZodIssueCode.custom,
       })
     }

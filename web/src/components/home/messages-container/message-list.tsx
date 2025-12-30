@@ -51,9 +51,9 @@ function MessagesList() {
   const grouped = groupMessagesByDate(messagesList)
 
   return (
-    <div className='flex-1 overflow-y-auto p-2 md:p-4'>
+    <div className='bg-accent mb-[70px] flex-1 overflow-y-auto px-2 pb-[6px] md:px-4'>
       {!messagesList.length ? (
-        <div className='flex flex-col items-center space-y-2'>
+        <div className='my-2 flex flex-col items-center'>
           <div className='text-foreground bg-foreground/5 max-w:sm rounded-full px-3 py-1 text-center text-sm'>
             <p>No messages yet. Send a message to start this conversation.</p>
           </div>
@@ -62,7 +62,7 @@ function MessagesList() {
         <>
           {Object.entries(grouped).map(([dateKey, msgs]) => (
             <div key={dateKey}>
-              <div className='py-1 text-center'>
+              <div className='my-2 text-center'>
                 <Badge variant='secondary' className='bg-foreground/5 text-secondary'>
                   {formatDateLabel(new Date(dateKey))}
                 </Badge>
