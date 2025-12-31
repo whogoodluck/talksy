@@ -68,7 +68,7 @@ export const useConversations = (activeTab?: ConversationType) => {
 
 export const useSearchConversations = (query: string) => {
   return useQuery({
-    queryKey: ['search-conversations', query],
+    queryKey: ['search-conversations'],
     queryFn: async () => {
       const res = await api.get<{ conversations: Conversation[]; total: number }>(
         `/conversations/search?q=${query}`

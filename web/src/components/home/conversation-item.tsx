@@ -1,8 +1,9 @@
 import { useGetProfile } from '@/hooks/useAuth'
 import { cn, formatDate } from '@/lib/utils'
 import { useConversationContext } from '@/providers/conversation.provider'
-import type { Conversation, Message } from '@/types/conversation'
+import { MessageEnum, type Conversation, type Message } from '@/types/conversation'
 import { getConversationAvatar, getConversationName } from '@/utils/conversation'
+import { Ban, CheckCheck, ImageIcon } from 'lucide-react'
 import type { Dispatch, SetStateAction } from 'react'
 import UserAvatar from '../common/user-avatar'
 import { Avatar } from '../ui/avatar'
@@ -49,16 +50,7 @@ export function ConversationItem({ conversation, setSelectedConversation }: Conv
               </span>
             )}
           </div>
-          {lastMessage && (
-            <div className='flex'>
-              {/* <span className='text-secondary mr-1'>
-                <CheckCheck className='size-5' />
-              </span> */}
-              <p className='text-muted-foreground line-clamp-1 text-sm'>
-                {lastMessage.isDeleted ? 'Message deleted' : lastMessage.content}
-              </p>
-            </div>
-          )}
+          {lastMessage && <ShowLastMessagge message={lastMessage} />}
         </div>
       </div>
     </Card>
@@ -88,5 +80,42 @@ export function ConversationItemSkeleton() {
         </div>
       </div>
     </Card>
+  )
+}
+
+function ShowLastMessagge({ message }: { message: Message }) {
+  const profile = useGetProfile()
+
+  if (message.isDeleted) {
+    return (
+      <div className='text-muted-foreground flex'>
+        <span className='mr-1'>
+          <Ban className='size-[18px]' />
+        </span>
+        <p className='line-clamp-1 text-sm'>Message deleted</p>
+      </div>
+    )
+  }
+
+  if (message.type === MessageEnum.IMAGE) {
+    return (
+      <div className='text-muted-foreground flex'>
+        <span className='mr-1'>
+          <ImageIcon className='size-[18px]' />
+        </span>
+        <p className='line-clamp-1 text-sm'>{message.fileName || 'Photo'}</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className='flex'>
+      {message.senderId === profile.data?.id && (
+        <span className='text-muted-foreground mt-[1px] mr-1'>
+          <CheckCheck className='size-[18px]' />
+        </span>
+      )}
+      <p className='text-muted-foreground line-clamp-1 text-sm'>{message.content}</p>
+    </div>
   )
 }

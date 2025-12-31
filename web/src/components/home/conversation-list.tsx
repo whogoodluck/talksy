@@ -22,6 +22,10 @@ function ConversationList({ debouncedSearchQuery, activeTab }: ConversationListP
     conversations.refetch()
   }, [activeTab])
 
+  useEffect(() => {
+    searchConversations.refetch()
+  }, [debouncedSearchQuery])
+
   const conversationList: Conversation[] = conversations.data?.conversations || []
   const searchConversationList: Conversation[] = searchConversations.data?.conversations || []
 

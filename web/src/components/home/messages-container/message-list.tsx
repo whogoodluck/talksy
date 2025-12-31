@@ -51,7 +51,7 @@ function MessagesList() {
   const grouped = groupMessagesByDate(messagesList)
 
   return (
-    <div className='bg-accent mb-[70px] flex-1 overflow-y-auto px-2 pb-[6px] md:px-4'>
+    <div className='bg-accent mb-[70px] flex-1 overflow-y-auto px-3 pb-[6px] md:px-4'>
       {!messagesList.length ? (
         <div className='my-2 flex flex-col items-center'>
           <div className='text-foreground bg-foreground/5 max-w:sm rounded-full px-3 py-1 text-center text-sm'>

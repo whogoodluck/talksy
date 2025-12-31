@@ -20,8 +20,8 @@ export const useSendMessage = (conversationId: string) => {
       })
 
       const mutateData: Record<string, any> = {}
-      for(const [key, value] of data.entries()) {
-          mutateData[key] = value
+      for (const [key, value] of data.entries()) {
+        mutateData[key] = value
       }
 
       const tempMessage = {
@@ -43,9 +43,9 @@ export const useSendMessage = (conversationId: string) => {
           old = old || { messages: [], total: 0 }
 
           return {
-          messages: [...old.messages, tempMessage],
-          total: old.total + 1,
-        }
+            messages: [...old.messages, tempMessage],
+            total: old.total + 1,
+          }
         }
       )
 
@@ -55,17 +55,19 @@ export const useSendMessage = (conversationId: string) => {
       queryClient.setQueryData(
         ['messages', conversationId],
         (old: { messages: Message[]; total: number } | undefined) => {
-          if(!old) return { messages: [data], total: 1 }
+          if (!old) return { messages: [data], total: 1 }
 
           return {
-          ...old,
-          messages: old.messages.map(m => (m.id === context.tempMessage.id ? data : m)),
-          total: old.total,
-        }
+            ...old,
+            messages: old.messages.map(m => (m.id === context.tempMessage.id ? data : m)),
+            total: old.total,
+          }
         }
       )
 
-      if(context.tempMessage.fileUrl) {
+      queryClient.invalidateQueries({ queryKey: ['conversations'] })
+
+      if (context.tempMessage.fileUrl) {
         URL.revokeObjectURL(context.tempMessage.fileUrl)
       }
     },
@@ -73,17 +75,17 @@ export const useSendMessage = (conversationId: string) => {
       queryClient.setQueryData(
         ['messages', conversationId],
         (old: { messages: Message[]; total: number } | undefined) => {
-          if(!old) return { messages: [], total: 0 }
+          if (!old) return { messages: [], total: 0 }
 
           return {
-          ...old,
-          messages: old.messages.filter(m => m.id !== context?.tempMessage.id),
-          total: old.total - 1,
-        }
+            ...old,
+            messages: old.messages.filter(m => m.id !== context?.tempMessage.id),
+            total: old.total - 1,
+          }
         }
       )
 
-      if(context?.tempMessage.fileUrl) {
+      if (context?.tempMessage.fileUrl) {
         URL.revokeObjectURL(context.tempMessage.fileUrl)
       }
     },
@@ -133,6 +135,8 @@ export const useMessages = (conversationId: string, limit = 50) => {
           }
         }
       )
+
+      queryClient.invalidateQueries({ queryKey: ['conversations'] })
     }
 
     socket.on('message:new', handleNewMessage)
