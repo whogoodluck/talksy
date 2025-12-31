@@ -1,6 +1,6 @@
 import { api } from '@/lib/api'
 import { useSocketContext } from '@/providers/socket.provider'
-import type { Message } from '@/types/conversation'
+import type { Message, ReadReceipt } from '@/types/conversation'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { useGetProfile } from './useAuth'
@@ -141,10 +141,44 @@ export const useMessages = (conversationId: string, limit = 50) => {
 
     socket.on('message:new', handleNewMessage)
 
+    const handleReadMessage = (readReceipt: ReadReceipt) => {
+      if (readReceipt.userId === profile.data?.id) return
+
+      queryClient.setQueryData(
+        ['messages', conversationId],
+        (old: { messages: Message[]; total: number } | undefined) => {
+          if (!old) return { messages: [], total: 0 }
+
+          return {
+            ...old,
+            messages: old.messages.map(m => {
+              if (m.id === readReceipt.messageId) {
+                return {
+                  ...m,
+                  readReceipts: m.readReceipts ? [...m.readReceipts, readReceipt] : [readReceipt],
+                }
+              }
+              return m
+            }),
+          }
+        }
+      )
+    }
+
+    socket.on('message:read', handleReadMessage)
+
     return () => {
       socket.off('message:new', handleNewMessage)
     }
   }, [socket, conversationId, queryClient, profile.data?.id])
 
   return query
+}
+
+export const useMarkAsRead = (conversationId: string) => {
+  return useMutation({
+    mutationFn: async (messageId: string) => {
+      await api.post(`/conversations/${conversationId}/messages/${messageId}/read`)
+    },
+  })
 }

@@ -34,7 +34,7 @@ export interface Message {
   conversationId: string
   senderId: string
   sender: User
-  content: string
+  content?: string
   type: MessageType
   fileUrl?: string
   fileName?: string

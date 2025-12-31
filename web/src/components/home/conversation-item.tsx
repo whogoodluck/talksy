@@ -3,7 +3,7 @@ import { cn, formatDate } from '@/lib/utils'
 import { useConversationContext } from '@/providers/conversation.provider'
 import { MessageEnum, type Conversation, type Message } from '@/types/conversation'
 import { getConversationAvatar, getConversationName } from '@/utils/conversation'
-import { Ban, CheckCheck, ImageIcon } from 'lucide-react'
+import { Ban, CheckCheck, ImageIcon, MessageSquare } from 'lucide-react'
 import type { Dispatch, SetStateAction } from 'react'
 import UserAvatar from '../common/user-avatar'
 import { Avatar } from '../ui/avatar'
@@ -50,7 +50,18 @@ export function ConversationItem({ conversation, setSelectedConversation }: Conv
               </span>
             )}
           </div>
-          {lastMessage && <ShowLastMessagge message={lastMessage} />}
+          {lastMessage ? (
+            <ShowLastMessagge message={lastMessage} />
+          ) : (
+            <div className='text-muted-foreground flex items-center'>
+              <span className='mr-1'>
+                <MessageSquare className='size-4' />
+              </span>
+              <p className='text-muted-foreground line-clamp-1 max-w-4/5 text-sm'>
+                No messages yet.
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </Card>
@@ -88,9 +99,9 @@ function ShowLastMessagge({ message }: { message: Message }) {
 
   if (message.isDeleted) {
     return (
-      <div className='text-muted-foreground flex'>
+      <div className='text-muted-foreground flex items-center'>
         <span className='mr-1'>
-          <Ban className='size-[18px]' />
+          <Ban className='size-4' />
         </span>
         <p className='line-clamp-1 text-sm'>Message deleted</p>
       </div>
@@ -99,9 +110,14 @@ function ShowLastMessagge({ message }: { message: Message }) {
 
   if (message.type === MessageEnum.IMAGE) {
     return (
-      <div className='text-muted-foreground flex'>
+      <div className='text-muted-foreground flex items-center'>
+        {message.senderId === profile.data?.id && (
+          <span className='mr-1'>
+            <CheckCheck className='size-4' />
+          </span>
+        )}
         <span className='mr-1'>
-          <ImageIcon className='size-[18px]' />
+          <ImageIcon className='size-4' />
         </span>
         <p className='line-clamp-1 text-sm'>{message.fileName || 'Photo'}</p>
       </div>
@@ -109,13 +125,13 @@ function ShowLastMessagge({ message }: { message: Message }) {
   }
 
   return (
-    <div className='flex'>
+    <div className='text-muted-foreground flex items-center'>
       {message.senderId === profile.data?.id && (
-        <span className='text-muted-foreground mt-[1px] mr-1'>
-          <CheckCheck className='size-[18px]' />
+        <span className='mr-1'>
+          <CheckCheck className='size-4' />
         </span>
       )}
-      <p className='text-muted-foreground line-clamp-1 text-sm'>{message.content}</p>
+      <p className='text-muted-foreground line-clamp-1 max-w-4/5 text-sm'>{message.content}</p>
     </div>
   )
 }

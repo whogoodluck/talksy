@@ -192,6 +192,38 @@ const getMessages = async (req: ExpressRequest, res: Response, next: NextFunctio
   }
 }
 
+const markAsRead = async (req: ExpressRequest, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id
+    const { conversationId, messageId } = req.params
+
+    const conversation = await conversationService.getUserConversationById(userId, conversationId)
+
+    if (!conversation) {
+      throw new HttpError(404, 'Conversation not found')
+    }
+
+    const message = await messageService.getMessageById(messageId)
+
+    if (!message) {
+      throw new HttpError(404, 'Message not found')
+    }
+
+    const readReceipt = await messageService.markAsRead(messageId, userId)
+
+    io.to(conversationId).emit('message:read', readReceipt)
+
+    res.status(200).json(
+      new JsonResponse({
+        status: 'success',
+        message: 'Message marked as read successfully!',
+      })
+    )
+  } catch (err) {
+    next(err)
+  }
+}
+
 export default {
   createConversation,
   getUserConversations,
@@ -199,4 +231,5 @@ export default {
   getUserConversationById,
   sendMessage,
   getMessages,
+  markAsRead,
 }

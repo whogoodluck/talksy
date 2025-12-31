@@ -21,5 +21,9 @@ conversationRouter.post(
   conversationController.sendMessage
 )
 conversationRouter.get('/:conversationId/messages', conversationController.getMessages)
+conversationRouter.post(
+  '/:conversationId/messages/:messageId/read',
+  conversationController.markAsRead
+)
 
 export default conversationRouter

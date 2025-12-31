@@ -67,6 +67,32 @@ const getMessages = async (conversationId: string, limit: number) => {
   })
 }
 
+const getMessageById = async (messageId: string) => {
+  return await prisma.message.findUnique({
+    where: {
+      id: messageId,
+    },
+  })
+}
+
+const markAsRead = async (messageId: string, userId: string) => {
+  return await prisma.readReceipt.upsert({
+    where: {
+      messageId_userId: {
+        messageId,
+        userId,
+      },
+    },
+    create: {
+      messageId,
+      userId,
+    },
+    update: {
+      readAt: new Date(),
+    },
+  })
+}
+
 const updateLastRead = async (conversationId: string, userId: string) => {
   return await prisma.conversationParticipant.updateMany({
     where: {
@@ -82,5 +108,7 @@ const updateLastRead = async (conversationId: string, userId: string) => {
 export default {
   sendMessage,
   getMessages,
+  getMessageById,
+  markAsRead,
   updateLastRead,
 }
