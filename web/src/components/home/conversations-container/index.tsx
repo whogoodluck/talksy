@@ -3,14 +3,14 @@ import { cn } from '@/lib/utils'
 import { useConversationContext } from '@/providers/conversation.provider'
 import { ConversationEnum, type ConversationType } from '@/types/conversation'
 import { useEffect, useState } from 'react'
-import Logo from '../common/logo'
-import { SearchInput } from '../ui/search-input'
-import { Tabs } from '../ui/tabs'
-import ConversationList from './conversation-list'
-import CreateNewConversation from './create-new-conversation'
-import { HomeMenu } from './home-menu'
+import Logo from '../../common/logo'
+import { SearchInput } from '../../ui/search-input'
+import { Tabs } from '../../ui/tabs'
+import ConversationList from './conversations-list'
+import CreateNewConversation from '../create-new-conversation'
+import { HomeMenu } from '../home-menu'
 
-function LeftSidebar() {
+function ConversationsContainer() {
   const { selectedConversation } = useConversationContext()
   const [activeTab, setActiveTab] = useState<ConversationType>(ConversationEnum.ALL)
   const [searchQuery, setSearchQuery] = useState('')
@@ -60,4 +60,4 @@ function LeftSidebar() {
   )
 }
 
-export default LeftSidebar
+export default ConversationsContainer

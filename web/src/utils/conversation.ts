@@ -4,6 +4,7 @@ export const getOtherParticipantFromDirectConversation = (
   conversation: Conversation,
   currentUserId: string
 ) => {
+  if (conversation.type !== ConversationEnum.DIRECT) return
   return conversation.participants.find(p => p.user.id !== currentUserId)
 }
 
@@ -15,13 +16,10 @@ export const getConversationName = (conversation: Conversation, currentUserId: s
   return otherParticipant?.user.name || 'Unknown User'
 }
 
-export const getConversationAvatar = (
-  conversation: Conversation,
-  currentUserId: string
-): string | null => {
+export const getConversationAvatar = (conversation: Conversation, currentUserId: string) => {
   if (conversation.type === ConversationEnum.GROUP) {
-    return conversation.picture || null
+    return conversation.picture
   }
   const otherParticipant = conversation.participants.find(p => p.user.id !== currentUserId)
-  return otherParticipant?.user.picture || null
+  return otherParticipant?.user.picture
 }

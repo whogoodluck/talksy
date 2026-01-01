@@ -17,14 +17,15 @@ import { useConversationContext } from '@/providers/conversation.provider'
 import { sendMessageSchema, type SendMessageRequest } from '@/schemas/message.schema'
 import { MessageEnum } from '@/types/conversation'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ArrowUp, Camera, Smile, XIcon } from 'lucide-react'
-import { useEffect, useRef, useState, type ChangeEvent } from 'react'
+import { ArrowUp, Camera, Plus, Smile, XIcon } from 'lucide-react'
+import { useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 
 function MessageInput() {
   const { selectedConversation } = useConversationContext()
   const sendMessage = useSendMessage(selectedConversation!.id)
-  const [img, setImg] = useState<File | null>(null)
+  const [imgFile, setImgFile] = useState<File | null>(null)
 
   const { startTyping, stopTyping } = useTypingUsers()
 
@@ -32,6 +33,7 @@ function MessageInput() {
     resolver: zodResolver(sendMessageSchema),
     defaultValues: {
       content: '',
+      type: undefined,
       file: undefined,
       fileName: undefined,
       fileSize: undefined,
@@ -39,10 +41,18 @@ function MessageInput() {
     },
   })
 
+  useEffect(() => {
+  form.reset()
+  setImgFile(null)
+}, [selectedConversation?.id])
+
   const msgContent = form.watch('content')
 
   useEffect(() => {
-    if (!msgContent || !msgContent.trim()) return
+    if (!msgContent?.trim()) {
+      stopTyping(selectedConversation!.id)
+      return
+    }
 
     startTyping(selectedConversation!.id)
 
@@ -54,9 +64,22 @@ function MessageInput() {
       stopTyping(selectedConversation!.id)
       clearTimeout(timeout)
     }
-  }, [msgContent])
+  }, [msgContent, startTyping, stopTyping, selectedConversation?.id])
 
-  const inputRef: any = useRef(null)
+  const imgUrl = useMemo(() => {
+    if(!imgFile) return null
+    return  URL.createObjectURL(imgFile)
+  }, [imgFile])
+
+  useEffect(() => {
+    if(!imgUrl) return
+
+    return () => {
+      URL.revokeObjectURL(imgUrl)
+    }
+  }, [imgUrl])
+
+  const inputRef = useRef<HTMLInputElement | null>(null)
 
   const triggerImageFileInput = () => {
     if (inputRef.current) {
@@ -65,14 +88,33 @@ function MessageInput() {
   }
 
   const handleSelectImage = (e: ChangeEvent<HTMLInputElement>) => {
-    setImg(e.target.files![0])
+    const file = e.target.files?.[0]
+    if(!file) return
+
+    const maxSize = 5 * 1024 * 1024
+    if (file.size > maxSize) {
+      toast.error('Image size must be less than 5MB')
+      return
+    }
+
+    setImgFile(file)
     form.setValue('type', MessageEnum.IMAGE)
-    form.setValue('file', e.target.files![0])
-    form.setValue('fileName', e.target.files![0].name)
-    form.setValue('fileSize', e.target.files![0].size)
+    form.setValue('file', file)
+    form.setValue('fileName', file.name)
+    form.setValue('fileSize', file.size)
+  }
+
+  const clearImage = () => {
+    setImgFile(null)
+    form.setValue('type', undefined)
+    form.setValue('file', undefined)
+    form.setValue('fileName', undefined)
+    form.setValue('fileSize', undefined)
   }
 
   const onSubmit = (data: SendMessageRequest) => {
+    if(!data.content?.trim() && !data.file) return
+
     const msgData = new FormData()
 
     if (data.type) msgData.append('type', data.type)
@@ -85,20 +127,20 @@ function MessageInput() {
     sendMessage.mutate(msgData)
 
     form.reset()
-    setImg(null)
+    setImgFile(null)
   }
 
   return (
-    <div>
-      {img && (
-        <div className='flex items-center justify-end px-2 pb-2'>
-          <div className='relative size-40 h-full overflow-hidden rounded-sm'>
-            <img src={URL.createObjectURL(img)} className='w-full object-cover' />
+    <div className='bg-background fixed bottom-0 z-20 w-full px-2 py-3 md:absolute md:px-4'>
+      {imgUrl && (
+        <div className='flex items-center justify-end px-2 mb-4'>
+          <div className='relative w-[200px] h-full overflow-hidden rounded-sm'>
+            <img src={imgUrl} alt={imgFile?.name ?? 'Selected image'} className='w-full object-cover' />
             <Button
               size='icon'
               variant='ghost'
               className='absolute top-1 right-1 size-6 rounded-full'
-              onClick={() => setImg(null)}
+              onClick={clearImage}
             >
               <XIcon />
             </Button>
@@ -109,32 +151,35 @@ function MessageInput() {
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           className={cn(
-            'bg-foreground/5 flex items-end rounded-full border px-4 py-[6px] shadow-sm'
+            'flex'
           )}
         >
-          <div className='my-auto flex items-center'>
-            {/* <button
+          <div className='my-auto flex items-center space-x-0.5'>
+            <Button
               type='button'
-              className='hover:bg-foreground/5 active:bg-foreground/5 cursor-pointer rounded-full p-2'
+              variant='ghost'
+              size='icon'
+              className='rounded-full p-2'
             >
-              <Plus />
-            </button> */}
-
+              <Plus className='size-6' />
+            </Button>
             <Popover>
               <PopoverTrigger asChild>
-                <button
+                <Button
                   type='button'
-                  className='hover:bg-foreground/5 active:bg-foreground/5 cursor-pointer rounded-full p-2'
+                  variant='ghost'
+                  size='icon'
+                  className='rounded-full p-2'
                 >
-                  <Smile />
-                </button>
+                  <Smile className='size-6' />
+                </Button>
               </PopoverTrigger>
 
               <PopoverContent className='mb-2 ml-2 flex items-center justify-center border-none'>
                 <EmojiPicker
                   onEmojiSelect={({ emoji }) => {
                     form.setValue('content', form.getValues('content') + emoji)
-                    // setMessage(prev => prev + emoji)
+                    document.getElementById('content')?.focus()
                   }}
                   className='h-80'
                 >
@@ -157,31 +202,41 @@ function MessageInput() {
                     placeholder='Type a message'
                     {...field}
                     className={cn(
-                      'my-auto mr-1 max-h-[150px] resize-none border-none bg-transparent pl-1 break-words whitespace-pre-wrap',
+                      'my-auto mr-1 max-h-[120px] resize-none border-none shadow-none bg-transparent pl-1 break-words whitespace-pre-wrap',
                       'focus-visible:ring-0'
                     )}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault()
+                        form.handleSubmit(onSubmit)()
+                      }
+                    }}
                   />
                 </FormControl>
                 <FormMessage className='hidden' />
               </FormItem>
             )}
           />
-          <div className='my-auto flex items-center gap-1'>
-            {(msgContent && msgContent.trim()) || img ? (
-              <button
+          <div className='my-auto flex items-center space-x-0.5'>
+            {(msgContent && msgContent.trim()) || imgFile ? (
+              <Button
                 type='submit'
-                className='bg-secondary text-secondary-foreground cursor-pointer rounded-full p-2'
+                variant='secondary'
+                size='icon'
+                className='rounded-full p-2'
               >
-                <ArrowUp />
-              </button>
+                <ArrowUp className='size-6' />
+              </Button>
             ) : (
-              <button
+              <Button
                 type='button'
+                variant='ghost'
+                size='icon'
+                className='rounded-full p-2'
                 onClick={triggerImageFileInput}
-                className='hover:bg-foreground/5 active:bg-foreground/5 cursor-pointer rounded-full p-2'
               >
-                <Camera />
-              </button>
+                <Camera className='size-6' />
+              </Button>
             )}
             <input
               type='file'

@@ -55,7 +55,7 @@ export const useCreateGroupConversation = () => {
 
 export const useConversations = (activeTab?: ConversationType) => {
   return useQuery({
-    queryKey: ['conversations'],
+    queryKey: ['conversations', activeTab],
     queryFn: async () => {
       const res = await api.get<{ conversations: Conversation[]; total: number }>(
         `/conversations?tab=${activeTab || ConversationEnum.ALL}`
@@ -68,7 +68,7 @@ export const useConversations = (activeTab?: ConversationType) => {
 
 export const useSearchConversations = (query: string) => {
   return useQuery({
-    queryKey: ['search-conversations'],
+    queryKey: ['search-conversations', query],
     queryFn: async () => {
       const res = await api.get<{ conversations: Conversation[]; total: number }>(
         `/conversations/search?q=${query}`

@@ -1,6 +1,6 @@
 import FallbackState from '@/components/fallback-state'
+import ConversationsContainer from '@/components/home/conversations-container'
 import CreateConversationForm from '@/components/home/create-new-conversation/create-conversation-form'
-import LeftSidebar from '@/components/home/left-sidebar'
 import MessagesContainer from '@/components/home/messages-container'
 import { useConversationContext } from '@/providers/conversation.provider'
 import { ConversationEnum } from '@/types/conversation'
@@ -13,7 +13,7 @@ function Home() {
 
   return (
     <div className='flex h-full'>
-      <LeftSidebar />
+      <ConversationsContainer />
       {selectedConversation ? (
         <MessagesContainer />
       ) : (

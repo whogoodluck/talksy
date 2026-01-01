@@ -1,14 +1,19 @@
 import { useGetProfile } from '@/hooks/useAuth'
+import { useTypingUsers } from '@/hooks/useTypingUser'
 import { cn, formatDate } from '@/lib/utils'
 import { useConversationContext } from '@/providers/conversation.provider'
 import { MessageEnum, type Conversation, type Message } from '@/types/conversation'
-import { getConversationAvatar, getConversationName } from '@/utils/conversation'
+import {
+  getConversationAvatar,
+  getConversationName,
+  getOtherParticipantFromDirectConversation,
+} from '@/utils/conversation'
 import { Ban, CheckCheck, ImageIcon, MessageSquare } from 'lucide-react'
-import type { Dispatch, SetStateAction } from 'react'
-import UserAvatar from '../common/user-avatar'
-import { Avatar } from '../ui/avatar'
-import { Card } from '../ui/card'
-import { Skeleton } from '../ui/skeleton'
+import { type Dispatch, type SetStateAction } from 'react'
+import UserAvatar from '../../common/user-avatar'
+import { Avatar } from '../../ui/avatar'
+import { Card } from '../../ui/card'
+import { Skeleton } from '../../ui/skeleton'
 
 interface ConversationItemProps {
   conversation: Conversation
@@ -19,11 +24,17 @@ export function ConversationItem({ conversation, setSelectedConversation }: Conv
   const { selectedConversation } = useConversationContext()
   const profile = useGetProfile()
 
-  const lastMessage: Message | undefined = conversation.messages[0]
-  const conversationName = profile.data && getConversationName(conversation, profile.data.id)
-  const conversationAvatar = profile.data && getConversationAvatar(conversation, profile.data.id)
+  if (!profile.data) return null
 
-  const isActive = selectedConversation?.id === conversation.id
+  const { conversationTypingUserIds } = useTypingUsers()
+  const lastMessage: Message | undefined = conversation.messages[0]
+  const conversationName = getConversationName(conversation, profile.data.id)
+  const conversationAvatar = getConversationAvatar(conversation, profile.data.id)
+  const otherParticipant = getOtherParticipantFromDirectConversation(conversation, profile.data.id)
+
+  const isActive = !!selectedConversation && selectedConversation.id === conversation.id
+
+  const isTyping = !!otherParticipant && conversationTypingUserIds[conversation.id]?.includes(otherParticipant.user.id)
 
   return (
     <Card
@@ -50,17 +61,10 @@ export function ConversationItem({ conversation, setSelectedConversation }: Conv
               </span>
             )}
           </div>
-          {lastMessage ? (
-            <ShowLastMessagge message={lastMessage} />
+          {isTyping ? (
+            <p className='text-sm font-semibold text-secondary'>Typing...</p>
           ) : (
-            <div className='text-muted-foreground flex items-center'>
-              <span className='mr-1'>
-                <MessageSquare className='size-4' />
-              </span>
-              <p className='text-muted-foreground line-clamp-1 max-w-4/5 text-sm'>
-                No messages yet.
-              </p>
-            </div>
+            <ShowLastMessagge message={lastMessage} />
           )}
         </div>
       </div>
@@ -94,8 +98,19 @@ export function ConversationItemSkeleton() {
   )
 }
 
-function ShowLastMessagge({ message }: { message: Message }) {
+function ShowLastMessagge({ message }: { message: Message | undefined }) {
   const profile = useGetProfile()
+
+  if (!message) {
+    return (
+      <div className='text-muted-foreground flex items-center'>
+        <span className='mr-1'>
+          <MessageSquare className='size-4' />
+        </span>
+        <p className='text-muted-foreground line-clamp-1 max-w-4/5 text-sm'>No messages yet.</p>
+      </div>
+    )
+  }
 
   if (message.isDeleted) {
     return (

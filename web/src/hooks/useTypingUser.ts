@@ -1,6 +1,11 @@
 import { useSocketContext } from '@/providers/socket.provider'
 import { useCallback, useEffect, useState } from 'react'
 
+type TypingPayload = {
+  conversationId: string
+  userId: string
+}
+
 export const useTypingUsers = () => {
   const { socket } = useSocketContext()
 
@@ -8,38 +13,43 @@ export const useTypingUsers = () => {
     Record<string, string[]>
   >({})
 
-  const handleAddTypingUserId = ({
-    conversationId,
-    userId,
-  }: {
-    conversationId: string
-    userId: string
-  }) => {
-    if (conversationTypingUserIds[conversationId]) {
-      setConversationTypingUserIds(old => ({
-        ...old,
-        [conversationId]: [...old[conversationId], userId],
-      }))
-    } else {
-      setConversationTypingUserIds(old => ({
-        ...old,
-        [conversationId]: [userId],
-      }))
-    }
-  }
+  const handleAddTypingUserId = useCallback(
+    ({ conversationId, userId }: TypingPayload) => {
+      setConversationTypingUserIds(old => {
+        const existing = old[conversationId] ?? []
 
-  const handleRemoveTypingUserId = ({
-    conversationId,
-    userId,
-  }: {
-    conversationId: string
-    userId: string
-  }) => {
-    setConversationTypingUserIds(old => ({
-      ...old,
-      [conversationId]: old[conversationId].filter(id => id !== userId),
-    }))
-  }
+        if (existing.includes(userId)) return old
+
+        return {
+          ...old,
+          [conversationId]: [...existing, userId],
+        }
+      })
+    },
+    []
+  )
+
+  const handleRemoveTypingUserId = useCallback(
+    ({ conversationId, userId }: TypingPayload) => {
+      setConversationTypingUserIds(old => {
+        const existing = old[conversationId]
+        if (!existing) return old
+
+        const updated = existing.filter(id => id !== userId)
+
+        if (updated.length === 0) {
+          const { [conversationId]: _, ...rest } = old
+          return rest
+        }
+
+        return {
+          ...old,
+          [conversationId]: updated,
+        }
+      })
+    },
+    []
+  )
 
   useEffect(() => {
     if (!socket) return
@@ -51,12 +61,11 @@ export const useTypingUsers = () => {
       socket.off('typing:start', handleAddTypingUserId)
       socket.off('typing:stop', handleRemoveTypingUserId)
     }
-  }, [socket])
+  }, [socket, handleAddTypingUserId, handleRemoveTypingUserId])
 
   const startTyping = useCallback(
     (conversationId: string) => {
       if (!socket) return
-
       socket.emit('typing:start', conversationId)
     },
     [socket]
@@ -65,7 +74,6 @@ export const useTypingUsers = () => {
   const stopTyping = useCallback(
     (conversationId: string) => {
       if (!socket) return
-
       socket.emit('typing:stop', conversationId)
     },
     [socket]

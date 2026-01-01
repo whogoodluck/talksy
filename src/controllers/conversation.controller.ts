@@ -209,6 +209,10 @@ const markAsRead = async (req: ExpressRequest, res: Response, next: NextFunction
       throw new HttpError(404, 'Message not found')
     }
 
+    if (message.senderId === userId) {
+      throw new HttpError(400, 'You cannot mark your own message as read')
+    }
+
     const readReceipt = await messageService.markAsRead(messageId, userId)
 
     io.to(conversationId).emit('message:read', readReceipt)

@@ -2,10 +2,10 @@ import { useConversations, useSearchConversations } from '@/hooks/useConversatio
 import { useConversationContext } from '@/providers/conversation.provider'
 import { ConversationEnum, type Conversation, type ConversationType } from '@/types/conversation'
 import { MessageSquareMore, RotateCw } from 'lucide-react'
-import { useEffect, useState } from 'react'
-import FallbackState from '../fallback-state'
+import { useState } from 'react'
+import FallbackState from '../../fallback-state'
 import { ConversationItem, ConversationItemSkeleton } from './conversation-item'
-import CreateConversationForm from './create-new-conversation/create-conversation-form'
+import CreateConversationForm from '../create-new-conversation/create-conversation-form'
 
 type ConversationListProps = {
   debouncedSearchQuery: string
@@ -18,18 +18,10 @@ function ConversationList({ debouncedSearchQuery, activeTab }: ConversationListP
   const conversations = useConversations(activeTab)
   const searchConversations = useSearchConversations(debouncedSearchQuery)
 
-  useEffect(() => {
-    conversations.refetch()
-  }, [activeTab])
-
-  useEffect(() => {
-    searchConversations.refetch()
-  }, [debouncedSearchQuery])
-
   const conversationList: Conversation[] = conversations.data?.conversations || []
   const searchConversationList: Conversation[] = searchConversations.data?.conversations || []
 
-  if (conversations.isPending || searchConversations.isPending)
+  if (conversations.isPending || searchConversations.isPending) {
     return (
       <div className='scrollbar-hide w-full space-y-[6px] overflow-y-hidden'>
         {Array.from({ length: 10 }).map((_, i) => (
@@ -37,6 +29,7 @@ function ConversationList({ debouncedSearchQuery, activeTab }: ConversationListP
         ))}
       </div>
     )
+  }
 
   if (debouncedSearchQuery && searchConversations.isError)
     return (
