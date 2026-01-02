@@ -6,9 +6,9 @@ import { useEffect, useState } from 'react'
 import Logo from '../../common/logo'
 import { SearchInput } from '../../ui/search-input'
 import { Tabs } from '../../ui/tabs'
-import ConversationList from './conversations-list'
 import CreateNewConversation from '../create-new-conversation'
 import { HomeMenu } from '../home-menu'
+import ConversationList from './conversations-list'
 
 function ConversationsContainer() {
   const { selectedConversation } = useConversationContext()

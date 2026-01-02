@@ -12,5 +12,7 @@ export function useIsMobile() {
     return () => mq.removeEventListener('change', handler)
   }, [])
 
-  return isMobile
+  return {
+    isMobile,
+  }
 }

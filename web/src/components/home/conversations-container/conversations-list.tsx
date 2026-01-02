@@ -4,8 +4,8 @@ import { ConversationEnum, type Conversation, type ConversationType } from '@/ty
 import { MessageSquareMore, RotateCw } from 'lucide-react'
 import { useState } from 'react'
 import FallbackState from '../../fallback-state'
-import { ConversationItem, ConversationItemSkeleton } from './conversation-item'
 import CreateConversationForm from '../create-new-conversation/create-conversation-form'
+import { ConversationItem, ConversationItemSkeleton } from './conversation-item'
 
 type ConversationListProps = {
   debouncedSearchQuery: string

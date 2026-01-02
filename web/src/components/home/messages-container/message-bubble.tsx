@@ -1,16 +1,27 @@
+import UserAvatar from '@/components/common/user-avatar'
 import { useGetProfile } from '@/hooks/useAuth'
 import { cn, getTime } from '@/lib/utils'
-import { MessageEnum, type Message } from '@/types/conversation'
+import { useConversationContext } from '@/providers/conversation.provider'
+import { ConversationEnum, MessageEnum, type Message } from '@/types/conversation'
+import { getOtherParticipantFromDirectConversation } from '@/utils/conversation'
 import { useEffect, useRef } from 'react'
 
 interface MessageBubbleProps {
   message: Message
   onMessageVisible?: (messageId: string) => void
-  isMessageRead?: boolean
 }
 
-function MessageBubble({ message, onMessageVisible, isMessageRead }: MessageBubbleProps) {
+function MessageBubble({ message, onMessageVisible }: MessageBubbleProps) {
+  const { selectedConversation } = useConversationContext()
   const profile = useGetProfile()
+
+  if (!profile.data || !selectedConversation) return null
+
+  const otherParticipant = getOtherParticipantFromDirectConversation(
+    selectedConversation,
+    profile.data.id
+  )
+
   const isSender = message.senderId === profile.data?.id
 
   const observerRef = useRef<HTMLDivElement | null>(null)
@@ -39,6 +50,34 @@ function MessageBubble({ message, onMessageVisible, isMessageRead }: MessageBubb
     }
   }, [isSender, message.id])
 
+  const isMessageRead = () => {
+    if (!message.readReceipts) return false
+
+    if (selectedConversation.type === ConversationEnum.DIRECT && otherParticipant) {
+      return message.readReceipts.some(r => r.userId === otherParticipant.userId)
+    }
+
+    if (selectedConversation.type === ConversationEnum.GROUP) {
+      let isRead = true
+
+      selectedConversation.participants.forEach(p => {
+        if(!isRead) return
+        
+        if (!message.readReceipts) {
+          isRead = false
+        } else {
+            if (p.userId !== profile.data?.id && message.readReceipts.some(r => r.userId !== p.userId)) {
+              isRead = false
+            }
+        }
+      })
+
+      return isRead
+    }
+
+    return false
+  }
+
   return (
     <div ref={observerRef}>
       <div
@@ -47,6 +86,9 @@ function MessageBubble({ message, onMessageVisible, isMessageRead }: MessageBubb
           isSender ? 'justify-end' : 'justify-start'
         )}
       >
+        {selectedConversation?.type === ConversationEnum.GROUP && !isSender && (
+          <UserAvatar size='xs' user={message.sender} />
+        )}
         <div
           className={cn(
             'flex max-w-[75%] flex-col gap-1 rounded-t-lg p-2',
@@ -68,7 +110,8 @@ function MessageBubble({ message, onMessageVisible, isMessageRead }: MessageBubb
       <p
         className={cn(
           'text-foreground/50 w-full text-[10px] md:text-xs',
-          isSender ? 'text-right' : 'text-left'
+          isSender ? 'text-right' : 'text-left',
+          { 'pl-9': selectedConversation?.type === ConversationEnum.GROUP && !isSender }
         )}
       >
         {getTime(message.createdAt)}
@@ -81,7 +124,7 @@ function MessageBubble({ message, onMessageVisible, isMessageRead }: MessageBubb
         {isSender && (
           <>
             <span className='mx-[2px]'>･</span>
-            {isMessageRead ? (
+            {isMessageRead() ? (
               <span className='text-foreground'>Seen</span>
             ) : (
               <span className=''>Sent</span>

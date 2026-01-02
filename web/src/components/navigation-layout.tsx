@@ -47,8 +47,7 @@ function NavigationLayout({ children }: { children: React.ReactNode }) {
           >
             <UserAvatar
               size='xs'
-              avatarUrl={profile.data!.picture}
-              name={profile.data!.name}
+              user={profile.data!}
               className={cn({ 'text-secondary': pathname === '/profile' })}
             />
           </div>

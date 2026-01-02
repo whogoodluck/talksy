@@ -1,14 +1,16 @@
 import { cn } from '@/lib/utils'
+import type { User } from '@/types/user'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 
 interface UserAvatarProps {
-  avatarUrl: string | undefined
-  name: string
+  user: Partial<User>
   size?: 'xs' | 'sm' | 'md' | 'lg'
   className?: string
 }
 
-function UserAvatar({ avatarUrl, name, size, className }: UserAvatarProps) {
+function UserAvatar({ user, size, className }: UserAvatarProps) {
+  const { picture, name = 'Unknown' } = user
+
   const sizeConfig = {
     xs: { avatar: 'size-8', avatarFallbackText: 'text-xs' },
     sm: { avatar: 'size-10', avatarFallbackText: 'text-sm' },
@@ -20,7 +22,7 @@ function UserAvatar({ avatarUrl, name, size, className }: UserAvatarProps) {
 
   return (
     <Avatar className={cn(className, sizeClass.avatar)}>
-      <AvatarImage src={avatarUrl} alt={name} />
+      <AvatarImage src={picture} alt={name} />
       <AvatarFallback className={cn('bg-foreground/5 font-semibold', sizeClass.avatarFallbackText)}>
         {name.charAt(0).toUpperCase()}
       </AvatarFallback>

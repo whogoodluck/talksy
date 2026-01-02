@@ -12,12 +12,17 @@ export const useCreateDirectConversation = () => {
       return res.data
     },
     onSuccess: data => {
-      queryClient.setQueryData(
-        ['conversations'],
-        (old: { conversations: Conversation[]; total: number }) => ({
-          conversations: [data, ...old.conversations],
-          total: old.total + 1,
-        })
+      queryClient.setQueriesData(
+        { queryKey: ['conversations'] },
+        (old?: { conversations: Conversation[]; total: number }) => {
+          if (!old) return old
+
+          return {
+            ...old,
+            conversations: [data, ...old.conversations],
+            total: old.total + 1,
+          }
+        }
       )
     },
     onError: (error: Error) => {
@@ -39,12 +44,17 @@ export const useCreateGroupConversation = () => {
       return res.data
     },
     onSuccess: data => {
-      queryClient.setQueryData(
-        ['conversations'],
-        (old: { conversations: Conversation[]; total: number }) => ({
-          conversations: [data, ...old.conversations],
-          total: old.total + 1,
-        })
+      queryClient.setQueriesData(
+        { queryKey: ['conversations'] },
+        (old?: { conversations: Conversation[]; total: number }) => {
+          if (!old) return old
+
+          return {
+            ...old,
+            conversations: [data, ...old.conversations],
+            total: old.total + 1,
+          }
+        }
       )
     },
     onError: (error: Error) => {

@@ -26,7 +26,7 @@ function CreateNewConversation() {
   const [conversationType, setConversationType] = useState<ConversationType | null>(null)
   const [openForm, setOpenForm] = useState(false)
 
-  const isMobile = useIsMobile()
+  const { isMobile } = useIsMobile()
 
   if (isMobile) {
     return (

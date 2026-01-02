@@ -13,43 +13,37 @@ export const useTypingUsers = () => {
     Record<string, string[]>
   >({})
 
-  const handleAddTypingUserId = useCallback(
-    ({ conversationId, userId }: TypingPayload) => {
-      setConversationTypingUserIds(old => {
-        const existing = old[conversationId] ?? []
+  const handleAddTypingUserId = useCallback(({ conversationId, userId }: TypingPayload) => {
+    setConversationTypingUserIds(old => {
+      const existing = old[conversationId] ?? []
 
-        if (existing.includes(userId)) return old
+      if (existing.includes(userId)) return old
 
-        return {
-          ...old,
-          [conversationId]: [...existing, userId],
-        }
-      })
-    },
-    []
-  )
+      return {
+        ...old,
+        [conversationId]: [...existing, userId],
+      }
+    })
+  }, [])
 
-  const handleRemoveTypingUserId = useCallback(
-    ({ conversationId, userId }: TypingPayload) => {
-      setConversationTypingUserIds(old => {
-        const existing = old[conversationId]
-        if (!existing) return old
+  const handleRemoveTypingUserId = useCallback(({ conversationId, userId }: TypingPayload) => {
+    setConversationTypingUserIds(old => {
+      const existing = old[conversationId]
+      if (!existing) return old
 
-        const updated = existing.filter(id => id !== userId)
+      const updated = existing.filter(id => id !== userId)
 
-        if (updated.length === 0) {
-          const { [conversationId]: _, ...rest } = old
-          return rest
-        }
+      if (updated.length === 0) {
+        const { [conversationId]: _, ...rest } = old
+        return rest
+      }
 
-        return {
-          ...old,
-          [conversationId]: updated,
-        }
-      })
-    },
-    []
-  )
+      return {
+        ...old,
+        [conversationId]: updated,
+      }
+    })
+  }, [])
 
   useEffect(() => {
     if (!socket) return

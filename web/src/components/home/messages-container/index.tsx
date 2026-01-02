@@ -1,6 +1,6 @@
 import MessageInput from './message-input'
-import MessagesList from './messages-list'
 import MessagesContainerHeader from './messages-container-header'
+import MessagesList from './messages-list'
 
 function MessagesContainer() {
   return (

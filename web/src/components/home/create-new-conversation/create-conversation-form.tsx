@@ -43,7 +43,7 @@ function CreateConversationForm({
   const [selectedUsers, setSelectedUsers] = useState<User[]>([])
   const [groupName, setGroupName] = useState('')
   const users = useSearchUsers(debouncedSearchValue)
-  const isMobile = useIsMobile()
+  const { isMobile } = useIsMobile()
 
   const directConversation = useCreateDirectConversation()
   const groupConversation = useCreateGroupConversation()
@@ -220,7 +220,7 @@ function ConversationForm({
               className='hover:bg-accent flex items-center justify-between rounded-sm p-2'
             >
               <div className='flex items-center'>
-                <UserAvatar size='sm' avatarUrl={user.picture} name={user.name} />
+                <UserAvatar size='sm' user={user} />
                 <div className='ml-2 text-sm'>
                   <p>{user.name}</p>
                   <p className='text-foreground/50'>{user.username}</p>

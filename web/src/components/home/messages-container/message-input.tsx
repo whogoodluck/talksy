@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/form'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Textarea } from '@/components/ui/textarea'
+import { useIsMobile } from '@/hooks/useMediaQuery'
 import { useSendMessage } from '@/hooks/useMessages'
 import { useTypingUsers } from '@/hooks/useTypingUser'
 import { cn } from '@/lib/utils'
@@ -17,14 +18,18 @@ import { useConversationContext } from '@/providers/conversation.provider'
 import { sendMessageSchema, type SendMessageRequest } from '@/schemas/message.schema'
 import { MessageEnum } from '@/types/conversation'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ArrowUp, Camera, Plus, Smile, XIcon } from 'lucide-react'
+import { ArrowUp, Camera, Smile, XIcon } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
 function MessageInput() {
   const { selectedConversation } = useConversationContext()
-  const sendMessage = useSendMessage(selectedConversation!.id)
+  const { isMobile } = useIsMobile()
+
+  if (!selectedConversation) return null
+
+  const sendMessage = useSendMessage(selectedConversation.id)
   const [imgFile, setImgFile] = useState<File | null>(null)
 
   const { startTyping, stopTyping } = useTypingUsers()
@@ -42,37 +47,37 @@ function MessageInput() {
   })
 
   useEffect(() => {
-  form.reset()
-  setImgFile(null)
-}, [selectedConversation?.id])
+    form.reset()
+    setImgFile(null)
+  }, [selectedConversation.id])
 
   const msgContent = form.watch('content')
 
   useEffect(() => {
     if (!msgContent?.trim()) {
-      stopTyping(selectedConversation!.id)
+      stopTyping(selectedConversation.id)
       return
     }
 
-    startTyping(selectedConversation!.id)
+    startTyping(selectedConversation.id)
 
     const timeout = setTimeout(() => {
-      stopTyping(selectedConversation!.id)
+      stopTyping(selectedConversation.id)
     }, 1000)
 
     return () => {
-      stopTyping(selectedConversation!.id)
+      stopTyping(selectedConversation.id)
       clearTimeout(timeout)
     }
-  }, [msgContent, startTyping, stopTyping, selectedConversation?.id])
+  }, [msgContent, startTyping, stopTyping, selectedConversation.id])
 
   const imgUrl = useMemo(() => {
-    if(!imgFile) return null
-    return  URL.createObjectURL(imgFile)
+    if (!imgFile) return null
+    return URL.createObjectURL(imgFile)
   }, [imgFile])
 
   useEffect(() => {
-    if(!imgUrl) return
+    if (!imgUrl) return
 
     return () => {
       URL.revokeObjectURL(imgUrl)
@@ -89,7 +94,7 @@ function MessageInput() {
 
   const handleSelectImage = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    if(!file) return
+    if (!file) return
 
     const maxSize = 5 * 1024 * 1024
     if (file.size > maxSize) {
@@ -113,7 +118,7 @@ function MessageInput() {
   }
 
   const onSubmit = (data: SendMessageRequest) => {
-    if(!data.content?.trim() && !data.file) return
+    if (!data.content?.trim() && !data.file) return
 
     const msgData = new FormData()
 
@@ -133,9 +138,13 @@ function MessageInput() {
   return (
     <div className='bg-background fixed bottom-0 z-20 w-full px-2 py-3 md:absolute md:px-4'>
       {imgUrl && (
-        <div className='flex items-center justify-end px-2 mb-4'>
-          <div className='relative w-[200px] h-full overflow-hidden rounded-sm'>
-            <img src={imgUrl} alt={imgFile?.name ?? 'Selected image'} className='w-full object-cover' />
+        <div className='mb-4 flex items-center justify-end px-2'>
+          <div className='relative h-full w-[200px] overflow-hidden rounded-sm'>
+            <img
+              src={imgUrl}
+              alt={imgFile?.name ?? 'Selected image'}
+              className='w-full object-cover'
+            />
             <Button
               size='icon'
               variant='ghost'
@@ -148,29 +157,19 @@ function MessageInput() {
         </div>
       )}
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className={cn(
-            'flex'
-          )}
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)} className={cn('flex')}>
           <div className='my-auto flex items-center space-x-0.5'>
-            <Button
+            {/* <Button
               type='button'
               variant='ghost'
               size='icon'
               className='rounded-full p-2'
             >
               <Plus className='size-6' />
-            </Button>
+            </Button> */}
             <Popover>
               <PopoverTrigger asChild>
-                <Button
-                  type='button'
-                  variant='ghost'
-                  size='icon'
-                  className='rounded-full p-2'
-                >
+                <Button type='button' variant='ghost' size='icon' className='rounded-full p-2'>
                   <Smile className='size-6' />
                 </Button>
               </PopoverTrigger>
@@ -199,14 +198,14 @@ function MessageInput() {
                   <Textarea
                     id='content'
                     wrap='soft'
-                    placeholder='Type a message'
+                    placeholder='Message'
                     {...field}
                     className={cn(
-                      'my-auto mr-1 max-h-[120px] resize-none border-none shadow-none bg-transparent pl-1 break-words whitespace-pre-wrap',
+                      'my-auto mr-1 max-h-[120px] resize-none border-none bg-transparent pl-1 break-words whitespace-pre-wrap shadow-none',
                       'focus-visible:ring-0'
                     )}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && !e.shiftKey) {
+                    onKeyDown={e => {
+                      if (!isMobile && e.key === 'Enter' && !e.shiftKey) {
                         e.preventDefault()
                         form.handleSubmit(onSubmit)()
                       }
@@ -219,12 +218,7 @@ function MessageInput() {
           />
           <div className='my-auto flex items-center space-x-0.5'>
             {(msgContent && msgContent.trim()) || imgFile ? (
-              <Button
-                type='submit'
-                variant='secondary'
-                size='icon'
-                className='rounded-full p-2'
-              >
+              <Button type='submit' variant='secondary' size='icon' className='rounded-full p-2'>
                 <ArrowUp className='size-6' />
               </Button>
             ) : (

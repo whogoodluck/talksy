@@ -2,7 +2,12 @@ import { useGetProfile } from '@/hooks/useAuth'
 import { useTypingUsers } from '@/hooks/useTypingUser'
 import { cn, formatDate } from '@/lib/utils'
 import { useConversationContext } from '@/providers/conversation.provider'
-import { MessageEnum, type Conversation, type Message } from '@/types/conversation'
+import {
+  ConversationEnum,
+  MessageEnum,
+  type Conversation,
+  type Message,
+} from '@/types/conversation'
 import {
   getConversationAvatar,
   getConversationName,
@@ -34,7 +39,12 @@ export function ConversationItem({ conversation, setSelectedConversation }: Conv
 
   const isActive = !!selectedConversation && selectedConversation.id === conversation.id
 
-  const isTyping = !!otherParticipant && conversationTypingUserIds[conversation.id]?.includes(otherParticipant.user.id)
+  const lastTypingUserId = conversationTypingUserIds[conversation.id]?.at(-1)
+  const typingUserInGroup = conversation.participants.find(p => p.userId === lastTypingUserId)?.user
+
+  const isUserTypingInDirect =
+    !!otherParticipant &&
+    conversationTypingUserIds[conversation.id]?.includes(otherParticipant.user.id)
 
   return (
     <Card
@@ -48,10 +58,7 @@ export function ConversationItem({ conversation, setSelectedConversation }: Conv
       )}
     >
       <div className='flex items-center gap-3'>
-        <UserAvatar
-          avatarUrl={conversationAvatar || undefined}
-          name={conversationName || 'Unknown'}
-        />
+        <UserAvatar user={{ picture: conversationAvatar, name: conversationName }} />
         <div className='flex-1'>
           <div className='flex items-center justify-between'>
             <h3 className='text-foreground text-lg font-medium'>{conversationName}</h3>
@@ -61,10 +68,24 @@ export function ConversationItem({ conversation, setSelectedConversation }: Conv
               </span>
             )}
           </div>
-          {isTyping ? (
-            <p className='text-sm font-semibold text-secondary'>Typing...</p>
+          {conversation.type === ConversationEnum.GROUP ? (
+            <>
+              {!!typingUserInGroup ? (
+                <p className='text-secondary line-clamp-1 max-w-4/5 text-sm font-semibold'>
+                  {typingUserInGroup.name.split(' ')[0]} is typing...
+                </p>
+              ) : (
+                <ShowLastMessagge message={lastMessage} />
+              )}
+            </>
           ) : (
-            <ShowLastMessagge message={lastMessage} />
+            <>
+              {isUserTypingInDirect ? (
+                <p className='text-secondary text-sm font-semibold'>Typing...</p>
+              ) : (
+                <ShowLastMessagge message={lastMessage} />
+              )}
+            </>
           )}
         </div>
       </div>

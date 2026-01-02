@@ -16,26 +16,22 @@ function MessagesContainerHeader() {
   const profile = useGetProfile()
   const { selectedConversation, setSelectedConversation } = useConversationContext()
 
-  const conversationName =
-    profile.data &&
-    selectedConversation &&
-    getConversationName(selectedConversation, profile.data.id)
+  if (!profile.data || !selectedConversation) return
 
-  const conversationAvatar =
-    profile.data &&
-    selectedConversation &&
-    getConversationAvatar(selectedConversation, profile.data.id)
+  const conversationName = getConversationName(selectedConversation, profile.data.id)
 
-  const otherParticipant =
-    profile.data &&
-    selectedConversation &&
-    getOtherParticipantFromDirectConversation(selectedConversation, profile.data.id)
+  const conversationAvatar = getConversationAvatar(selectedConversation, profile.data.id)
 
-  const onlineUsers = useGetOnlineUserIds()
+  const otherParticipant = getOtherParticipantFromDirectConversation(
+    selectedConversation,
+    profile.data.id
+  )
+
+  const { onlineUserIds } = useGetOnlineUserIds()
 
   const isOnline =
-    selectedConversation && selectedConversation.type === ConversationEnum.DIRECT
-      ? onlineUsers.includes(otherParticipant!.user.id)
+    selectedConversation.type === ConversationEnum.DIRECT
+      ? onlineUserIds.includes(otherParticipant!.userId)
       : false
 
   if (!selectedConversation) return
@@ -53,11 +49,7 @@ function MessagesContainerHeader() {
         </Button>
 
         <div className='flex items-center gap-3 md:gap-4'>
-          <UserAvatar
-            size='sm'
-            avatarUrl={conversationAvatar || undefined}
-            name={conversationName || 'Unknown'}
-          />
+          <UserAvatar size='sm' user={{ picture: conversationAvatar, name: conversationName }} />
           <div>
             <h3>
               {conversationName}
