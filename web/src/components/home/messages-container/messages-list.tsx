@@ -55,16 +55,6 @@ function MessagesList() {
 
   const grouped = useMemo(() => groupMessagesByDate(messagesList), [messagesList])
 
-  const isMessageRead = (msg: Message) => {
-    if (!msg.readReceipts) return false
-
-    if (selectedConversation.type === ConversationEnum.DIRECT && otherParticipant) {
-      return msg.readReceipts.some(r => r.userId === otherParticipant.userId)
-    }
-
-    return false
-  }
-
   if (messages.isLoading) {
     return (
       <div className='flex flex-1 items-center justify-center'>
@@ -99,7 +89,6 @@ function MessagesList() {
                     onMessageVisible={(messageId: string) => {
                       markAsRead.mutate(messageId)
                     }}
-                    isMessageRead={isMessageRead(msg)}
                   />
                 ))}
               </div>

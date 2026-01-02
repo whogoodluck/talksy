@@ -61,14 +61,17 @@ function MessageBubble({ message, onMessageVisible }: MessageBubbleProps) {
       let isRead = true
 
       selectedConversation.participants.forEach(p => {
-        if(!isRead) return
-        
+        if (!isRead) return
+
         if (!message.readReceipts) {
           isRead = false
         } else {
-            if (p.userId !== profile.data?.id && message.readReceipts.some(r => r.userId !== p.userId)) {
-              isRead = false
-            }
+          if (
+            p.userId !== profile.data?.id &&
+            message.readReceipts.some(r => r.userId !== p.userId)
+          ) {
+            isRead = false
+          }
         }
       })
 
