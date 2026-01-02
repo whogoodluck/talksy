@@ -32,9 +32,7 @@ const createDirectConversation = async (userId: string, data: CreateDirectConver
         take: 1,
         orderBy: { createdAt: 'desc' },
         include: {
-          sender: {
-            omit: USER_SAFE_FIELDS,
-          },
+          readReceipts: true,
         },
       },
     },
@@ -67,9 +65,7 @@ const createDirectConversation = async (userId: string, data: CreateDirectConver
         take: 1,
         orderBy: { createdAt: 'desc' },
         include: {
-          sender: {
-            omit: USER_SAFE_FIELDS,
-          },
+          readReceipts: true,
         },
       },
     },
@@ -102,9 +98,7 @@ const createGroupConversation = async (userId: string, data: CreateGroupConversa
         take: 1,
         orderBy: { createdAt: 'desc' },
         include: {
-          sender: {
-            omit: USER_SAFE_FIELDS,
-          },
+          readReceipts: true,
         },
       },
     },
@@ -150,9 +144,7 @@ const getUserConversations = async (userId: string, params?: GetConversationsReq
         take: 1,
         orderBy: { createdAt: 'desc' },
         include: {
-          sender: {
-            omit: USER_SAFE_FIELDS,
-          },
+          readReceipts: true,
         },
       },
       _count: {
@@ -226,9 +218,7 @@ const getUserConversationsByQuery = async (userId: string, params: SearchConvers
         take: 1,
         orderBy: { createdAt: 'desc' },
         include: {
-          sender: {
-            omit: USER_SAFE_FIELDS,
-          },
+          readReceipts: true,
         },
       },
       _count: {

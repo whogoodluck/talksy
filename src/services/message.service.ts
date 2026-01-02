@@ -56,13 +56,7 @@ const getMessages = async (conversationId: string, limit: number) => {
           },
         },
       },
-      readReceipts: {
-        include: {
-          user: {
-            omit: USER_SAFE_FIELDS,
-          },
-        },
-      },
+      readReceipts: true,
     },
   })
 }

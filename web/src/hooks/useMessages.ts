@@ -163,12 +163,15 @@ export const useMessages = (conversationId: string, limit = 50) => {
           }
         }
       )
+
+      queryClient.invalidateQueries({ queryKey: ['conversations'] })
     }
 
     socket.on('message:read', handleReadMessage)
 
     return () => {
       socket.off('message:new', handleNewMessage)
+      socket.off('message:read', handleReadMessage)
     }
   }, [socket, conversationId, queryClient, profile.data?.id])
 

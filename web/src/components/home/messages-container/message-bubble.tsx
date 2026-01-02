@@ -58,24 +58,9 @@ function MessageBubble({ message, onMessageVisible }: MessageBubbleProps) {
     }
 
     if (selectedConversation.type === ConversationEnum.GROUP) {
-      let isRead = true
-
-      selectedConversation.participants.forEach(p => {
-        if (!isRead) return
-
-        if (!message.readReceipts) {
-          isRead = false
-        } else {
-          if (
-            p.userId !== profile.data?.id &&
-            message.readReceipts.some(r => r.userId !== p.userId)
-          ) {
-            isRead = false
-          }
-        }
-      })
-
-      return isRead
+      return selectedConversation.participants
+        .filter(p => p.userId !== profile.data.id) 
+        .every(p => message.readReceipts!.some(r => r.userId === p.userId))
     }
 
     return false

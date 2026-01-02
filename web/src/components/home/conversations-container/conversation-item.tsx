@@ -75,7 +75,7 @@ export function ConversationItem({ conversation, setSelectedConversation }: Conv
                   {typingUserInGroup.name.split(' ')[0]} is typing...
                 </p>
               ) : (
-                <ShowLastMessagge message={lastMessage} />
+                <ShowLastMessagge message={lastMessage} conversation={conversation} />
               )}
             </>
           ) : (
@@ -83,7 +83,7 @@ export function ConversationItem({ conversation, setSelectedConversation }: Conv
               {isUserTypingInDirect ? (
                 <p className='text-secondary text-sm font-semibold'>Typing...</p>
               ) : (
-                <ShowLastMessagge message={lastMessage} />
+                <ShowLastMessagge message={lastMessage} conversation={conversation} />
               )}
             </>
           )}
@@ -119,8 +119,15 @@ export function ConversationItemSkeleton() {
   )
 }
 
-function ShowLastMessagge({ message }: { message: Message | undefined }) {
+interface ShowLastMessaggeProps {
+  message: Message | undefined
+  conversation: Conversation
+}
+
+function ShowLastMessagge({ message, conversation }: ShowLastMessaggeProps) {
   const profile = useGetProfile()
+
+  if (!profile.data) return null
 
   if (!message) {
     return (
@@ -131,6 +138,25 @@ function ShowLastMessagge({ message }: { message: Message | undefined }) {
         <p className='text-muted-foreground line-clamp-1 max-w-4/5 text-sm'>No messages yet.</p>
       </div>
     )
+  }
+
+  const isSender = message.senderId === profile.data.id
+  const otherParticipant = getOtherParticipantFromDirectConversation(conversation, profile.data.id)
+
+  const isMessageRead = () => {
+    if (!message.readReceipts) return false
+
+    if (conversation.type === ConversationEnum.DIRECT && otherParticipant) {
+      return message.readReceipts.some(r => r.userId === otherParticipant.userId)
+    }
+
+    if (conversation.type === ConversationEnum.GROUP) {
+      return conversation.participants
+        .filter(p => p.userId !== profile.data.id) 
+        .every(p => message.readReceipts?.some(r => r.userId === p.userId))
+    }
+
+    return false
   }
 
   if (message.isDeleted) {
@@ -147,8 +173,8 @@ function ShowLastMessagge({ message }: { message: Message | undefined }) {
   if (message.type === MessageEnum.IMAGE) {
     return (
       <div className='text-muted-foreground flex items-center'>
-        {message.senderId === profile.data?.id && (
-          <span className='mr-1'>
+        {isSender && (
+          <span className={cn('mr-1', { 'text-[#00a2ff]': isMessageRead() })}>
             <CheckCheck className='size-4' />
           </span>
         )}
@@ -162,8 +188,8 @@ function ShowLastMessagge({ message }: { message: Message | undefined }) {
 
   return (
     <div className='text-muted-foreground flex items-center'>
-      {message.senderId === profile.data?.id && (
-        <span className='mr-1'>
+      {isSender && (
+        <span className={cn('mr-1', { 'text-[#00a2ff]': isMessageRead() })}>
           <CheckCheck className='size-4' />
         </span>
       )}
