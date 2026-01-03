@@ -15,6 +15,7 @@ export const initSocket = (io: SocketIOServer) => {
 
     logger.info(`🟢 A user connected: ${socket.id} | ${user.email}`)
 
+    socket.join(user.id)
     if (!onlineUsers.has(user.id)) {
       onlineUsers.set(user.id, new Set())
 

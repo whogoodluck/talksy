@@ -50,6 +50,11 @@ const createConversation = async (req: ExpressRequest, res: Response, next: Next
       conversation = await conversationService.createGroupConversation(userId, payload)
     }
 
+    conversation.participants.forEach(p => {
+      if (p.userId === userId) return
+      io.to(p.userId).emit('conversation:new', conversation)
+    })
+
     res.status(201).json(
       new JsonResponse({
         status: 'success',
@@ -215,7 +220,7 @@ const markAsRead = async (req: ExpressRequest, res: Response, next: NextFunction
 
     const readReceipt = await messageService.markAsRead(messageId, userId)
 
-    io.to(conversationId).emit('message:read', readReceipt)
+    io.to(message.senderId).emit('message:read', readReceipt)
 
     res.status(200).json(
       new JsonResponse({
