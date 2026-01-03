@@ -97,7 +97,7 @@ export function ConversationItemSkeleton() {
   return (
     <Card
       className={cn(
-        'bg-background rounded-none border-none px-4 py-3 shadow-none transition-colors md:rounded-sm md:px-3',
+        'bg-background rounded-none border-none p-4 shadow-none transition-colors',
         'hover:bg-foreground/10'
       )}
     >
@@ -152,7 +152,7 @@ function ShowLastMessagge({ message, conversation }: ShowLastMessaggeProps) {
 
     if (conversation.type === ConversationEnum.GROUP) {
       return conversation.participants
-        .filter(p => p.userId !== profile.data.id) 
+        .filter(p => p.userId !== profile.data.id)
         .every(p => message.readReceipts?.some(r => r.userId === p.userId))
     }
 

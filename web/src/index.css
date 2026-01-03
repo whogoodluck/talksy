@@ -84,7 +84,7 @@
   --accent-foreground: oklch(0.8 0.02 128);
   --destructive: oklch(0.68 0.1 25);
   --destructive-foreground: oklch(0.25 0.005 128);
-  --border: oklch(0.5 0.01 128);
+  --border: oklch(33.732% 0.00736 128.891);
   --input: oklch(0.5 0.02 128);
   --ring: oklch(0.8 0.02 128);
   --sidebar: oklch(0.25 0.005 128);
@@ -102,12 +102,7 @@
 }
 
 @layer utilities {
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
+  * {
+    scrollbar-width: thin;
   }
 }

@@ -31,7 +31,7 @@ function ConversationsContainer() {
 
   return (
     <aside
-      className={cn('flex w-full flex-col md:w-2/7 md:border-r', {
+      className={cn('flex h-full w-full flex-col overflow-y-hidden md:w-2/7 md:border-r', {
         'hidden md:flex': !!selectedConversation,
       })}
     >
@@ -53,9 +53,7 @@ function ConversationsContainer() {
         <Tabs tabs={HOME_TABS} activeTab={activeTab} setActiveTab={setActiveTab} />
       </div>
 
-      <div className='flex h-full'>
-        <ConversationList debouncedSearchQuery={debouncedSearchQuery} activeTab={activeTab} />
-      </div>
+      <ConversationList debouncedSearchQuery={debouncedSearchQuery} activeTab={activeTab} />
     </aside>
   )
 }

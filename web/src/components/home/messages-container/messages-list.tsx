@@ -64,7 +64,7 @@ function MessagesList() {
   }
 
   return (
-    <div className='bg-accent mb-[66px] flex-1 overflow-y-auto px-3 pb-2 md:px-8 md:py-4 dark:bg-[#111111]'>
+    <div className='bg-accent mb-[66px] flex-1 overflow-y-auto px-3 pb-2 md:px-8 md:py-4 dark:bg-[#181A1B]'>
       {!messagesList.length ? (
         <div className='my-2 flex flex-col items-center'>
           <div className='text-foreground bg-foreground/5 max-w-sm rounded-full px-3 py-1 text-center text-sm'>

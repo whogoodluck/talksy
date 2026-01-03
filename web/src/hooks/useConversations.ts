@@ -67,7 +67,7 @@ export const useCreateGroupConversation = () => {
 }
 
 export const useConversations = (activeTab?: ConversationType) => {
-  const {socket} = useSocketContext()
+  const { socket } = useSocketContext()
   const profile = useGetProfile()
   const queryClient = useQueryClient()
 
@@ -86,7 +86,7 @@ export const useConversations = (activeTab?: ConversationType) => {
     if (!socket) return
 
     const handleNewConversation = (newConversation: Conversation) => {
-      if(newConversation.createdBy === profile.data?.id) return
+      if (newConversation.createdBy === profile.data?.id) return
 
       queryClient.setQueriesData(
         { queryKey: ['conversations'] },

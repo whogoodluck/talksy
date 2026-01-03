@@ -12,7 +12,7 @@ function Home() {
   const { selectedConversation } = useConversationContext()
 
   return (
-    <div className='flex h-full'>
+    <div className='flex h-full overflow-hidden'>
       <ConversationsContainer />
       {selectedConversation ? (
         <MessagesContainer />

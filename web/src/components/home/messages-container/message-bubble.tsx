@@ -59,7 +59,7 @@ function MessageBubble({ message, onMessageVisible }: MessageBubbleProps) {
 
     if (selectedConversation.type === ConversationEnum.GROUP) {
       return selectedConversation.participants
-        .filter(p => p.userId !== profile.data.id) 
+        .filter(p => p.userId !== profile.data.id)
         .every(p => message.readReceipts!.some(r => r.userId === p.userId))
     }
 
