@@ -20,6 +20,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { useSignout } from '@/hooks/useAuth'
+import { cn } from '@/lib/utils'
 import { useTheme } from '@/providers/theme-provider'
 import {
   ChevronRight,
@@ -84,7 +85,7 @@ export function HomeMenu() {
                   <span className='text-base'>Theme</span>
                 </div>
                 <ChevronRight
-                  className={`size-4 transition-transform ${showThemeOptions ? 'rotate-90' : ''}`}
+                  className={cn('size-4 transition-transform', { 'rotate-90': showThemeOptions })}
                 />
               </Button>
 

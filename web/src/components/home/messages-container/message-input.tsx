@@ -136,7 +136,7 @@ function MessageInput() {
   }
 
   return (
-    <div className='bg-background fixed bottom-0 z-20 w-full px-2 py-3 md:absolute md:px-4 border-t'>
+    <div className='bg-background fixed bottom-0 z-20 w-full border-t px-2 py-3.5 md:absolute md:px-4'>
       {imgUrl && (
         <div className='mb-4 flex items-center justify-end px-2'>
           <div className='relative h-full w-[200px] overflow-hidden rounded-sm'>

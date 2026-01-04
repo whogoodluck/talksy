@@ -37,7 +37,7 @@ function MessagesContainerHeader() {
   if (!selectedConversation) return
 
   return (
-    <header className='bg-background flex h-16 w-full items-center border-b justify-between p-2 md:h-20 md:p-4'>
+    <header className='bg-background flex h-16 w-full items-center justify-between border-b p-2 md:h-20 md:p-4'>
       <div className='flex items-center space-x-1'>
         <Button
           variant='ghost'

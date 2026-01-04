@@ -57,7 +57,7 @@ function MessagesList() {
 
   if (messages.isLoading) {
     return (
-      <div className='flex flex-1 items-center justify-center'>
+      <div className='bg-accent flex flex-1 items-center justify-center dark:bg-[#181A1B]'>
         <Loader />
       </div>
     )

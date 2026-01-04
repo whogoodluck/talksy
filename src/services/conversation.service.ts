@@ -9,39 +9,6 @@ import {
 import { USER_SAFE_FIELDS } from './user.service'
 
 const createDirectConversation = async (userId: string, data: CreateDirectConversationRequest) => {
-  const existingConversation = await prisma.conversation.findFirst({
-    where: {
-      type: ConversationType.DIRECT,
-      participants: {
-        every: {
-          userId: {
-            in: [userId, data.participantId],
-          },
-        },
-      },
-    },
-    include: {
-      participants: {
-        include: {
-          user: {
-            omit: USER_SAFE_FIELDS,
-          },
-        },
-      },
-      messages: {
-        take: 1,
-        orderBy: { createdAt: 'desc' },
-        include: {
-          readReceipts: true,
-        },
-      },
-    },
-  })
-
-  if (existingConversation) {
-    return existingConversation
-  }
-
   return await prisma.conversation.create({
     data: {
       type: ConversationType.DIRECT,

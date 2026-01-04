@@ -29,7 +29,7 @@ export const HOME_TABS = [
     label: ConversationEnum.GROUP,
   },
   {
-    value: 'Direct',
+    value: 'Directs',
     label: ConversationEnum.DIRECT,
   },
 ]

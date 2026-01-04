@@ -70,12 +70,13 @@ export const useConversations = (activeTab?: ConversationType) => {
   const { socket } = useSocketContext()
   const profile = useGetProfile()
   const queryClient = useQueryClient()
+  const tab = activeTab ?? ConversationEnum.ALL
 
   const query = useQuery({
     queryKey: ['conversations', activeTab],
     queryFn: async () => {
       const res = await api.get<{ conversations: Conversation[]; total: number }>(
-        `/conversations?tab=${activeTab || ConversationEnum.ALL}`
+        `/conversations?tab=${tab}`
       )
 
       return res.data

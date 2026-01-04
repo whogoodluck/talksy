@@ -22,7 +22,15 @@ const createConversation = async (req: ExpressRequest, res: Response, next: Next
 
     let conversation
 
-    if (body.type === ConversationType.DIRECT || body.participantId) {
+    if (body.type === ConversationType.GROUP) {
+      const payload = createGroupConversationSchema.parse(body)
+
+      if (payload.participantIds.includes(userId)) {
+        throw new HttpError(400, 'You are automatically added to the conversation')
+      }
+
+      conversation = await conversationService.createGroupConversation(userId, payload)
+    } else {
       const payload = createDirectConversationSchema.parse(body)
 
       const existDirectConversation =
@@ -40,14 +48,6 @@ const createConversation = async (req: ExpressRequest, res: Response, next: Next
       }
 
       conversation = await conversationService.createDirectConversation(userId, payload)
-    } else {
-      const payload = createGroupConversationSchema.parse(body)
-
-      if (payload.participantIds.includes(userId)) {
-        throw new HttpError(400, 'You are automatically added to the conversation')
-      }
-
-      conversation = await conversationService.createGroupConversation(userId, payload)
     }
 
     conversation.participants.forEach(p => {
