@@ -2,7 +2,7 @@ import ConversationInfo from '@/components/conversation-info'
 import FallbackState from '@/components/fallback-state'
 import { Loader } from '@/components/loader'
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet'
-import { useConversationInfo } from '@/hooks/useConversations'
+import { useGroupInfo } from '@/hooks/useGroupConversations'
 import { useIsMobile } from '@/hooks/useMediaQuery'
 import { Users } from 'lucide-react'
 import { useState } from 'react'
@@ -13,12 +13,12 @@ function ConversationInfoPage() {
   const { id: conversationId } = useParams<{ id: string }>()
   const { isMobile } = useIsMobile()
   const navigate = useNavigate()
-  const conversationQuery = useConversationInfo(conversationId!)
-  const conversation = conversationQuery.data
+  const groupInfo = useGroupInfo(conversationId!)
+  const conversation = groupInfo.data
 
   const [isOpenSheet, setIsOpenSheet] = useState(true)
 
-  if (conversationQuery.isLoading) {
+  if (groupInfo.isLoading) {
     if (isMobile) {
       return (
         <div className='bg-background relative z-10 flex h-screen items-center justify-center'>

@@ -1,4 +1,4 @@
-import { useAddParticipants, useUpdateGroupInfo } from '@/hooks/useConversations'
+import { useAddParticipants, useUpdateGroupInfo } from '@/hooks/useGroupConversations'
 import { useIsMobile } from '@/hooks/useMediaQuery'
 import { useSearchUsers } from '@/hooks/useUsers'
 import {

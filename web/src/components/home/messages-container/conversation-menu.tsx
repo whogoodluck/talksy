@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button'
+import DeleteAlertDialog from '@/components/ui/delete-alert-dialog'
 import {
   Drawer,
   DrawerContent,
@@ -17,6 +18,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useGetProfile } from '@/hooks/useAuth'
+import { useDeleteGroup } from '@/hooks/useGroupConversations'
+import { useConversationContext } from '@/providers/conversation.provider'
 import { ConversationEnum, type Conversation } from '@/types/conversation'
 import { getOtherParticipantFromDirectConversation } from '@/utils/conversation'
 import { EllipsisVertical, Info, Trash2 } from 'lucide-react'
@@ -29,14 +32,28 @@ type ConversationMenuProps = {
 
 export function ConversationMenu({ conversation }: ConversationMenuProps) {
   const [open, setOpen] = useState(false)
+  const [showDeleteGroupAlert, setShowDeleteGroupAlert] = useState(false)
+  const { setSelectedConversation } = useConversationContext()
   const profile = useGetProfile()
+  const deleteGroup = useDeleteGroup()
 
   const otherParticipant = getOtherParticipantFromDirectConversation(conversation, profile.data!.id)
+
+  const handleDeleteGroup = () => {
+    if(conversation.type !== ConversationEnum.GROUP) return
+    deleteGroup.mutate(conversation.id, {
+      onSuccess: () => {
+        setShowDeleteGroupAlert(false)
+        setSelectedConversation(null)
+      },
+    })
+  }
 
   const isMobile = window.innerWidth < 768
 
   if (isMobile) {
     return (
+      <>
       <Drawer>
         <DrawerTrigger asChild>
           <Button variant='ghost' size='icon' className='rounded-full'>
@@ -61,22 +78,34 @@ export function ConversationMenu({ conversation }: ConversationMenuProps) {
               {conversation.type === ConversationEnum.DIRECT ? 'User Info' : 'Group info'}
             </span>
           </Link>
-          {conversation.createdBy === profile.data?.id && (
-            <Link
-              to={`/conversations/group/${conversation.id}`}
-              className='hover:bg-foreground/5 active:bg-foreground/5 flex items-center gap-4 px-6 py-3 text-lg'
+          {conversation.type === ConversationEnum.GROUP && <Button
+              className='flex h-auto w-full items-center justify-start gap-4 rounded-none !px-6 py-3 text-lg'
+              variant='ghost'
+              onClick={() => setShowDeleteGroupAlert(true)}
             >
-              <Trash2 className='text-destructive size-5.5' />
-              <span>Delete chat</span>
-            </Link>
-          )}
+              <div className='flex items-center gap-4'>
+                <Trash2 className='text-destructive size-5.5' />
+                <span>Delete chat</span>
+              </div>
+            </Button>}
           <DrawerFooter />
         </DrawerContent>
       </Drawer>
+
+      { conversation.type === ConversationEnum.GROUP && <DeleteAlertDialog
+        open={showDeleteGroupAlert}
+        onOpenChange={setShowDeleteGroupAlert}
+        title='Delete this group?'
+        description='Are you sure you want to delete this group? This action cannot be undone.'
+        isLoading={deleteGroup.isPending}
+        onAction={handleDeleteGroup}
+      />}
+      </>
     )
   }
 
   return (
+    <>
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild className=''>
         <Button variant='ghost' size='icon' className='rounded-full'>
@@ -96,13 +125,23 @@ export function ConversationMenu({ conversation }: ConversationMenuProps) {
             <Info className='size-4' />
             {conversation.type === ConversationEnum.DIRECT ? 'User Info' : 'Group info'}
           </DropdownMenuLink>
-          {conversation.createdBy === profile.data?.id && (
-            <DropdownMenuItem>
+          {conversation.type === ConversationEnum.GROUP && (
+            <DropdownMenuItem onClick={() => setShowDeleteGroupAlert(true)}>
               <Trash2 className='text-destructive size-4' /> Delete chat
             </DropdownMenuItem>
           )}
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
+
+    { conversation.type === ConversationEnum.GROUP && <DeleteAlertDialog
+        open={showDeleteGroupAlert}
+        onOpenChange={setShowDeleteGroupAlert}
+        title='Delete this group?'
+        description='Are you sure you want to delete this group? This action cannot be undone.'
+        isLoading={deleteGroup.isPending}
+        onAction={handleDeleteGroup}
+      />}
+    </>
   )
 }

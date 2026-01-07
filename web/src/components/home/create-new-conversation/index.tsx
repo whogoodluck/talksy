@@ -68,7 +68,6 @@ function CreateNewConversation() {
                 <span className='text-base'>New Group</span>
               </div>
             </Button>
-
             <DrawerFooter />
           </DrawerContent>
         </Drawer>

@@ -16,7 +16,7 @@ import {
   useRemoveParticipant,
   useRemoveParticipantFromAdmin,
   useUpdateGroupPicture,
-} from '@/hooks/useConversations'
+} from '@/hooks/useGroupConversations'
 import { useConversationContext } from '@/providers/conversation.provider'
 import { ParticipantRoleEnum, type Conversation } from '@/types/conversation'
 import {
@@ -56,7 +56,7 @@ function ConversationInfo({ conversation }: { conversation: Conversation }) {
   const makeParticipantAdmin = useMakeParticipantAdmin(conversation.id)
   const removeFromAdmin = useRemoveParticipantFromAdmin(conversation.id)
   const leaveGroup = useLeaveGroup()
-  const deleteConversation = useDeleteGroup()
+  const deleteGroup = useDeleteGroup()
 
   const currentUserParticipant = conversation?.participants.find(p => p.userId === profile?.id)
   const isCreator = currentUserParticipant?.role === ParticipantRoleEnum.CREATOR
@@ -133,7 +133,7 @@ function ConversationInfo({ conversation }: { conversation: Conversation }) {
   }
 
   const handleDeleteGroup = () => {
-    deleteConversation.mutate(conversation.id, {
+    deleteGroup.mutate(conversation.id, {
       onSuccess: () => {
         setShowDeleteGroupAlert(false)
         setSelectedConversation(null)
@@ -200,14 +200,14 @@ function ConversationInfo({ conversation }: { conversation: Conversation }) {
             />
           </div>
 
-          <div className='mt-4 text-center'>
-            <div className='flex items-center justify-center gap-2'>
-              <h2 className='text-2xl font-semibold'>{conversation.name}</h2>
+          <div className='mt-4 text-center w-full'>
+            <div className='flex relative items-center justify-center gap-2 w-full'>
+              <h2 className='text-2xl font-semibold px-12'>{conversation.name}</h2>
               {isAdmin && (
                 <Button
                   variant='ghost'
                   size='icon'
-                  className='rounded-full'
+                  className='rounded-full absolute right-0 top-0'
                   onClick={() => {
                     setFormAction('EDIT_NAME')
                     setOpenEditGroupDialog(true)
@@ -238,7 +238,7 @@ function ConversationInfo({ conversation }: { conversation: Conversation }) {
                 <div className='flex items-center'>
                   <UserAvatar size='sm' user={participant.user} />
                   <div className='ml-2 text-sm'>
-                    <div className='flex items-center space-x-2'>
+                    <div className='flex space-x-2'>
                       <p>
                         {participant.user.name}
                         {participant.userId === profile?.id && (
@@ -369,7 +369,7 @@ function ConversationInfo({ conversation }: { conversation: Conversation }) {
         onOpenChange={setShowDeleteGroupAlert}
         title='Delete this group?'
         description='Are you sure you want to delete this group? This action cannot be undone.'
-        isLoading={deleteConversation.isPending}
+        isLoading={deleteGroup.isPending}
         onAction={handleDeleteGroup}
       />
 
