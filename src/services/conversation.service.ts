@@ -1,10 +1,11 @@
-import { ConversationType } from '@prisma/client'
+import { ConversationType, ParticipantRole } from '@prisma/client'
 import { prisma } from '../lib/prisma'
 import {
   CreateDirectConversationRequest,
   CreateGroupConversationRequest,
   GetConversationsRequest,
   SearchConversationsRequest,
+  UpdateGroupConversationRequest,
 } from '../schemas/conversation.schema'
 import { USER_SAFE_FIELDS } from './user.service'
 
@@ -15,8 +16,8 @@ const createDirectConversation = async (userId: string, data: CreateDirectConver
       createdBy: userId,
       participants: {
         create: [
-          { userId, isAdmin: true },
-          { userId: data.participantId, isAdmin: true },
+          { userId, role: ParticipantRole.CREATOR },
+          { userId: data.participantId, role: ParticipantRole.ADMIN },
         ],
       },
     },
@@ -48,8 +49,8 @@ const createGroupConversation = async (userId: string, data: CreateGroupConversa
       createdBy: userId,
       participants: {
         create: [
-          { userId, isAdmin: true },
-          ...data.participantIds.map(id => ({ userId: id, isAdmin: false })),
+          { userId, role: ParticipantRole.CREATOR },
+          ...data.participantIds.map(id => ({ userId: id, role: ParticipantRole.MEMBER })),
         ],
       },
     },
@@ -77,7 +78,7 @@ const getUserConversations = async (userId: string, params?: GetConversationsReq
     participants: {
       some: {
         userId,
-        leftAt: null,
+        // leftAt: null,
       },
     },
   }
@@ -132,7 +133,7 @@ const getUserConversationsByQuery = async (userId: string, params: SearchConvers
     participants: {
       some: {
         userId,
-        leftAt: null,
+        // leftAt: null,
       },
     },
   }
@@ -207,7 +208,7 @@ const getUserConversationById = async (userId: string, conversationId: string) =
       participants: {
         some: {
           userId,
-          leftAt: null,
+          // leftAt: null,
         },
       },
     },
@@ -220,6 +221,9 @@ const getUserConversationById = async (userId: string, conversationId: string) =
           user: {
             omit: USER_SAFE_FIELDS,
           },
+        },
+        orderBy: {
+          role: 'asc',
         },
       },
       _count: {
@@ -249,6 +253,159 @@ const getDirectConversationByCurrentUserIdAndParticipantId = async (
   })
 }
 
+const getParticipantByConversationIdAndParticipantId = async (
+  conversationId: string,
+  participantId: string
+) => {
+  return await prisma.conversationParticipant.findFirst({
+    where: {
+      conversationId,
+      userId: participantId,
+    },
+  })
+}
+
+const updateGroupInfo = async (conversationId: string, data: UpdateGroupConversationRequest) => {
+  return await prisma.conversation.update({
+    where: { id: conversationId },
+    data: {
+      name: data.name,
+    },
+    include: {
+      participants: {
+        where: {
+          leftAt: null,
+        },
+        include: {
+          user: {
+            omit: USER_SAFE_FIELDS,
+          },
+        },
+      },
+      messages: {
+        take: 1,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          readReceipts: true,
+        },
+      },
+    },
+  })
+}
+
+const updateGroupPicture = async (conversaionId: string, picture: string) => {
+  return await prisma.conversation.update({
+    where: { id: conversaionId },
+    data: {
+      picture,
+    },
+    include: {
+      participants: {
+        where: {
+          leftAt: null,
+        },
+        include: {
+          user: {
+            omit: USER_SAFE_FIELDS,
+          },
+        },
+      },
+      messages: {
+        take: 1,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          readReceipts: true,
+        },
+      },
+    },
+  })
+}
+
+const addParticipant = async (conversationId: string, userId: string) => {
+  return await prisma.conversationParticipant.create({
+    data: {
+      conversationId,
+      userId: userId,
+    },
+  })
+}
+
+const removeParticipant = async (conversationId: string, userId: string) => {
+  return await prisma.conversationParticipant.update({
+    where: {
+      conversationId_userId: {
+        conversationId,
+        userId,
+      },
+    },
+    data: {
+      leftAt: new Date(),
+    },
+  })
+}
+
+const addParticipantAgain = async (conversationId: string, userId: string) => {
+  return await prisma.conversationParticipant.update({
+    where: {
+      conversationId_userId: {
+        conversationId,
+        userId,
+      },
+    },
+    data: {
+      leftAt: null,
+      role: ParticipantRole.MEMBER,
+    },
+  })
+}
+
+const makeAdmin = async (conversationId: string, userId: string) => {
+  return await prisma.conversationParticipant.update({
+    where: {
+      conversationId_userId: {
+        conversationId,
+        userId,
+      },
+    },
+    data: {
+      role: ParticipantRole.ADMIN,
+    },
+  })
+}
+
+const makeAdminToMember = async (conversationId: string, userId: string) => {
+  return await prisma.conversationParticipant.update({
+    where: {
+      conversationId_userId: {
+        conversationId,
+        userId,
+      },
+    },
+    data: {
+      role: ParticipantRole.MEMBER,
+    },
+  })
+}
+
+const deleteConversationParticipant = async (conversationId: string, userId: string) => {
+  return await prisma.conversationParticipant.delete({
+    where: {
+      conversationId_userId: {
+        conversationId,
+        userId,
+      },
+    },
+  })
+}
+
+const deleteConversation = async (conversationId: string) => {
+  return await prisma.conversation.delete({
+    where: {
+      id: conversationId,
+    },
+  })
+}
+
 export default {
   createDirectConversation,
   createGroupConversation,
@@ -256,4 +413,14 @@ export default {
   getUserConversationsByQuery,
   getUserConversationById,
   getDirectConversationByCurrentUserIdAndParticipantId,
+  getParticipantByConversationIdAndParticipantId,
+  addParticipant,
+  updateGroupInfo,
+  updateGroupPicture,
+  removeParticipant,
+  addParticipantAgain,
+  makeAdmin,
+  makeAdminToMember,
+  deleteConversationParticipant,
+  deleteConversation,
 }

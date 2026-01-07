@@ -22,7 +22,12 @@ function FallbackState({
   actionIcon: ActionIcon,
 }: FileCallbackProps) {
   return (
-    <div className={cn('flex w-full flex-col items-center justify-center text-center', className)}>
+    <div
+      className={cn(
+        'bg-background flex h-full w-full flex-col items-center justify-center text-center',
+        className
+      )}
+    >
       <Icon className='size-16' />
       <h1 className='mt-4 text-xl font-bold tracking-tight md:text-2xl'>{title}</h1>
       {description && <p className='text-muted-foreground mt-2 max-w-lg'>{description}</p>}

@@ -69,13 +69,19 @@ model Conversation {
   @@map("conversations")
 }
 
+enum ParticipantRole {
+  CREATOR
+  ADMIN
+  MEMBER
+}
+
 model ConversationParticipant {
   id             String       @id @default(cuid())
   conversationId String
+  role           ParticipantRole  @default(MEMBER)
   userId         String
   joinedAt       DateTime     @default(now())
   leftAt         DateTime?
-  isAdmin        Boolean      @default(false)
   isMuted        Boolean      @default(false)
   lastReadAt     DateTime?
   

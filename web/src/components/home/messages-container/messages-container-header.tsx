@@ -10,7 +10,8 @@ import {
   getConversationName,
   getOtherParticipantFromDirectConversation,
 } from '@/utils/conversation'
-import { ArrowLeft, EllipsisVertical, Search } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
+import { ConversationMenu } from './conversation-menu'
 
 function MessagesContainerHeader() {
   const profile = useGetProfile()
@@ -26,6 +27,10 @@ function MessagesContainerHeader() {
     selectedConversation,
     profile.data.id
   )
+
+  const otherUserParticipants = selectedConversation.participants
+    .filter(p => p.userId !== profile.data.id)
+    .map(p => p.user)
 
   const { onlineUserIds } = useGetOnlineUserIds()
 
@@ -64,8 +69,11 @@ function MessagesContainerHeader() {
                   )}
                 </>
               ) : (
-                <p className='text-muted-foreground text-xs'>
-                  You and {selectedConversation.participants.length - 1} more
+                <p className='text-muted-foreground line-clamp-1 text-xs'>
+                  {otherUserParticipants.length > 0 &&
+                    otherUserParticipants.map(user => user.name.split(' ')[0]).join(', ') +
+                      ','}{' '}
+                  You
                 </p>
               )}
             </h3>
@@ -74,12 +82,10 @@ function MessagesContainerHeader() {
       </div>
 
       <div className='flex items-center gap-1'>
-        <Button variant='ghost' size='icon' className='rounded-full'>
+        {/* <Button variant='ghost' size='icon' className='rounded-full'>
           <Search size={30} strokeWidth={3} />
-        </Button>
-        <Button variant='ghost' size='icon' className='rounded-full'>
-          <EllipsisVertical size={30} strokeWidth={3} />
-        </Button>
+        </Button> */}
+        <ConversationMenu conversation={selectedConversation} />
       </div>
     </header>
   )

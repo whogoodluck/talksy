@@ -17,6 +17,11 @@ function MessageBubble({ message, onMessageVisible }: MessageBubbleProps) {
 
   if (!profile.data || !selectedConversation) return null
 
+  const currentUserParticipant = selectedConversation?.participants.find(
+    p => p.userId === profile.data?.id
+  )
+  const isLeft = !currentUserParticipant || !!currentUserParticipant.leftAt
+
   const otherParticipant = getOtherParticipantFromDirectConversation(
     selectedConversation,
     profile.data.id
@@ -27,7 +32,7 @@ function MessageBubble({ message, onMessageVisible }: MessageBubbleProps) {
   const observerRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
-    if (!observerRef.current || !onMessageVisible) return
+    if (isLeft || !observerRef.current || !onMessageVisible) return
 
     const observer = new IntersectionObserver(
       entries => {

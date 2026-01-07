@@ -19,12 +19,22 @@ export const MessageEnum = {
 
 export type MessageType = (typeof MessageEnum)[keyof typeof MessageEnum]
 
+export const ParticipantRoleEnum = {
+  CREATOR: 'CREATOR',
+  ADMIN: 'ADMIN',
+  MEMBER: 'MEMBER',
+} as const
+
+export type ParticipantRoleType = (typeof ParticipantRoleEnum)[keyof typeof ParticipantRoleEnum]
+
 export interface ConversationParticipant {
   id: string
   userId: string
+  conversationId: string
   user: User
   joinedAt: string
-  isAdmin: boolean
+  leftAt: string | null
+  role: ParticipantRoleType
   isMuted: boolean
   lastReadAt?: string
 }

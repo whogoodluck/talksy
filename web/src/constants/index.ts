@@ -1,5 +1,5 @@
 import { ConversationEnum } from '@/types/conversation'
-import { ClockFading, HomeIcon, Settings } from 'lucide-react'
+import { Bell, ClockFading, HomeIcon } from 'lucide-react'
 
 export const PROTECTED_LINKS = [
   {
@@ -13,9 +13,9 @@ export const PROTECTED_LINKS = [
     icon: ClockFading,
   },
   {
-    name: 'Settings',
-    href: '/settings',
-    icon: Settings,
+    name: 'Notifications',
+    href: '/notifications',
+    icon: Bell,
   },
 ]
 

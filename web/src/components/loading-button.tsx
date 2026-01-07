@@ -12,7 +12,7 @@ interface LoadingButtonProps extends React.ComponentProps<typeof Button> {
 export function LoadingButton({
   isLoading,
   children,
-  loaderVariant = 'background',
+  loaderVariant,
   loaderSize = 'sm',
   loadingText,
   icon,

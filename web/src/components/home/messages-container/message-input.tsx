@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/form'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Textarea } from '@/components/ui/textarea'
+import { useGetProfile } from '@/hooks/useAuth'
 import { useIsMobile } from '@/hooks/useMediaQuery'
 import { useSendMessage } from '@/hooks/useMessages'
 import { useTypingUsers } from '@/hooks/useTypingUser'
@@ -25,9 +26,15 @@ import { toast } from 'sonner'
 
 function MessageInput() {
   const { selectedConversation } = useConversationContext()
+  const profile = useGetProfile()
   const { isMobile } = useIsMobile()
 
-  if (!selectedConversation) return null
+  const currentUserParticipant = selectedConversation?.participants.find(
+    p => p.userId === profile.data?.id
+  )
+  const isLeft = !currentUserParticipant || !!currentUserParticipant.leftAt
+
+  if (!selectedConversation || !profile.data) return null
 
   const sendMessage = useSendMessage(selectedConversation.id)
   const [imgFile, setImgFile] = useState<File | null>(null)
@@ -118,7 +125,7 @@ function MessageInput() {
   }
 
   const onSubmit = (data: SendMessageRequest) => {
-    if (!data.content?.trim() && !data.file) return
+    if (isLeft || (!data.content?.trim() && !data.file)) return
 
     const msgData = new FormData()
 
@@ -133,6 +140,14 @@ function MessageInput() {
 
     form.reset()
     setImgFile(null)
+  }
+
+  if (isLeft) {
+    return (
+      <div className='bg-background fixed bottom-0 z-20 flex h-16 w-full items-center md:absolute md:px-4'>
+        <p className='text-muted-foreground w-full text-center'>You left the conversation.</p>
+      </div>
+    )
   }
 
   return (

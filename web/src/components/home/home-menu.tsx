@@ -4,6 +4,7 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuLink,
   DropdownMenuPortal,
   DropdownMenuSeparator,
   DropdownMenuSub,
@@ -31,7 +32,6 @@ import {
   Palette,
   Settings,
   Sun,
-  User,
 } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -60,13 +60,6 @@ export function HomeMenu() {
           </SheetHeader>
           <div className='flex h-full flex-col'>
             <div className='flex-1'>
-              <Link
-                to='/profile'
-                className='hover:bg-foreground/5 active:bg-foreground/5 flex items-center gap-4 px-6 py-3 text-lg'
-              >
-                <User className='size-5.5' />
-                <span>Profile</span>
-              </Link>
               <Link
                 to='/settings'
                 className='hover:bg-foreground/5 active:bg-foreground/5 flex items-center gap-4 px-6 py-3 text-lg'
@@ -154,12 +147,9 @@ export function HomeMenu() {
       </DropdownMenuTrigger>
       <DropdownMenuContent className='w-56' align='start'>
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <User className='size-4' /> Profile
-          </DropdownMenuItem>
-          <DropdownMenuItem>
+          <DropdownMenuLink to='/settings'>
             <Settings className='size-4' /> Settings
-          </DropdownMenuItem>
+          </DropdownMenuLink>
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>
               <Palette className='size-4' /> Theme

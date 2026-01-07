@@ -1,6 +1,5 @@
 import { z } from 'zod'
-
-const requiredString = (fieldName: string) => z.string().trim().min(1, `${fieldName} is required`)
+import { requiredString } from './helper'
 
 export const usernameSchema = requiredString('Username')
   .min(3, 'Username must be atleast 3 characters')

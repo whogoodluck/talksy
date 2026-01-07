@@ -7,6 +7,7 @@ import { Toaster } from './components/ui/sonner'
 import Signin from './pages/auth/signin'
 import Signup from './pages/auth/signup'
 import VerifyEmail from './pages/auth/verify-email'
+import ConversationInfo from './pages/conversation-info'
 import Home from './pages/home'
 import { ConversationProvider } from './providers/conversation.provider'
 import { SocketProvider } from './providers/socket.provider'
@@ -47,6 +48,17 @@ function App() {
                     element={
                       <NavigationLayout>
                         <Home />
+                      </NavigationLayout>
+                    }
+                  />
+                </Route>
+
+                <Route element={<ProtectedRoute />}>
+                  <Route
+                    path='/conversations/group/:id'
+                    element={
+                      <NavigationLayout>
+                        <ConversationInfo />
                       </NavigationLayout>
                     }
                   />

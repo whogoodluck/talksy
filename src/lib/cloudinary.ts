@@ -15,3 +15,23 @@ export const uploadImage = async (file: Express.Multer.File) => {
     folder: 'talksy',
   })
 }
+
+export const getPublicIdFromUrl = (url: string): string => {
+  const parts = url.split('/')
+  const uploadIndex = parts.findIndex(p => p === 'upload')
+
+  if (uploadIndex === -1) {
+    throw new Error('Invalid Cloudinary URL')
+  }
+
+  const publicIdWithExt = parts
+    .slice(uploadIndex + 1)
+    .filter(p => !p.startsWith('v'))
+    .join('/')
+
+  return publicIdWithExt.replace(/\.[^/.]+$/, '')
+}
+
+export const deleteImage = async (publicId: string) => {
+  return await cloudinary.uploader.destroy(publicId)
+}

@@ -10,3 +10,4 @@ export const upload = multer({
 })
 
 export const uploadSingleFileForMessage = upload.single('file')
+export const uploadSingleFileForGroupPicture = upload.single('picture')
