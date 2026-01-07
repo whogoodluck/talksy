@@ -64,7 +64,7 @@ const updateGroupInfo = async (req: ExpressRequest, res: Response, next: NextFun
 
     const updatedConversation = await conversationService.updateGroupInfo(conversationId, payload)
 
-    io.to(conversationId).emit('group-conversation-info:updated', updatedConversation)
+    io.to(conversationId).emit('group-conversation:updated', { conversationId })
 
     res.status(200).json(
       new JsonResponse({
@@ -118,7 +118,7 @@ const updateGroupPicture = async (req: ExpressRequest, res: Response, next: Next
       await deleteImage(publicId)
     }
 
-    io.to(conversationId).emit('group-conversation-info:updated', updatedConversation)
+    io.to(conversationId).emit('group-conversation:updated', { conversationId })
 
     res.status(200).json(
       new JsonResponse({
@@ -167,10 +167,10 @@ const addParticipants = async (req: ExpressRequest, res: Response, next: NextFun
 
       await conversationService.addParticipantAgain(conversationId, participantUserId)
 
-      io.to(participantUserId).emit('conversation:participants:updated', { conversationId })
+      io.to(participantUserId).emit('group-conversation:updated', { conversationId })
     })
 
-    io.to(conversationId).emit('conversation:participants:updated', { conversationId })
+    io.to(conversationId).emit('group-conversation:updated', { conversationId })
 
     res.status(200).json(
       new JsonResponse({
@@ -225,7 +225,7 @@ const removeParticipant = async (req: ExpressRequest, res: Response, next: NextF
 
     await conversationService.removeParticipant(conversationId, participantId)
 
-    io.to(conversationId).emit('conversation:participants:updated', { conversationId })
+    io.to(conversationId).emit('group-conversation:updated', { conversationId })
 
     res.status(200).json(
       new JsonResponse({
@@ -280,7 +280,7 @@ const makeParticipantAdmin = async (req: ExpressRequest, res: Response, next: Ne
 
     await conversationService.makeAdmin(conversationId, participantId)
 
-    io.to(conversationId).emit('conversation:participants:updated', { conversationId })
+    io.to(conversationId).emit('group-conversation:updated', { conversationId })
 
     res.status(200).json(
       new JsonResponse({
@@ -339,7 +339,7 @@ const removeParticipantFromAdmin = async (
 
     await conversationService.makeAdminToMember(conversationId, participant.userId)
 
-    io.to(conversationId).emit('conversation:participants:updated', { conversationId })
+    io.to(conversationId).emit('group-conversation:updated', { conversationId })
 
     res.status(200).json(
       new JsonResponse({
@@ -398,7 +398,7 @@ const leaveGroup = async (req: ExpressRequest, res: Response, next: NextFunction
       await conversationService.removeParticipant(conversationId, userId)
     }
 
-    io.to(conversationId).emit('conversation:participants:updated', { conversationId })
+    io.to(conversationId).emit('group-conversation:updated', { conversationId })
 
     res.status(200).json(
       new JsonResponse({
@@ -466,7 +466,7 @@ const deleteGroup = async (req: ExpressRequest, res: Response, next: NextFunctio
       await conversationService.deleteConversationParticipant(conversationId, userId)
     }
 
-    io.to(conversationId).emit('conversation:participants:updated', { conversationId })
+    io.to(conversationId).emit('group-conversation:updated', { conversationId })
 
     res.status(200).json(
       new JsonResponse({

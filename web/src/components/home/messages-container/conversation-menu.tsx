@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button'
-import DeleteAlertDialog from '@/components/ui/delete-alert-dialog'
+import { ConfirmAlertDialog } from '@/components/ui/confirm-alert-dialog'
 import {
   Drawer,
   DrawerContent,
@@ -92,13 +92,16 @@ export function ConversationMenu({ conversation }: ConversationMenuProps) {
         </DrawerContent>
       </Drawer>
 
-      { conversation.type === ConversationEnum.GROUP && <DeleteAlertDialog
+      { conversation.type === ConversationEnum.GROUP && <ConfirmAlertDialog
         open={showDeleteGroupAlert}
         onOpenChange={setShowDeleteGroupAlert}
+        icon={<Trash2 />}
         title='Delete this group?'
         description='Are you sure you want to delete this group? This action cannot be undone.'
         isLoading={deleteGroup.isPending}
-        onAction={handleDeleteGroup}
+        loadingText='Deleting...'
+        confirmText='Delete'
+        onConfirm={handleDeleteGroup}
       />}
       </>
     )
@@ -134,13 +137,16 @@ export function ConversationMenu({ conversation }: ConversationMenuProps) {
       </DropdownMenuContent>
     </DropdownMenu>
 
-    { conversation.type === ConversationEnum.GROUP && <DeleteAlertDialog
+    { conversation.type === ConversationEnum.GROUP && <ConfirmAlertDialog
         open={showDeleteGroupAlert}
         onOpenChange={setShowDeleteGroupAlert}
+        icon={<Trash2 />}
         title='Delete this group?'
         description='Are you sure you want to delete this group? This action cannot be undone.'
         isLoading={deleteGroup.isPending}
-        onAction={handleDeleteGroup}
+        loadingText='Deleting...'
+        confirmText='Delete'
+        onConfirm={handleDeleteGroup}
       />}
     </>
   )

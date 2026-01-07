@@ -20,6 +20,7 @@ import {
 import { useConversationContext } from '@/providers/conversation.provider'
 import { ParticipantRoleEnum, type Conversation } from '@/types/conversation'
 import {
+  ArrowLeft,
   Camera,
   ChessQueen,
   CircleMinus,
@@ -36,8 +37,9 @@ import {
 import { useMemo, useRef, useState, type ChangeEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
-import DeleteAlertDialog from '../ui/delete-alert-dialog'
+import { ConfirmAlertDialog } from '../ui/confirm-alert-dialog'
 import EditGroup from './edit-group'
+import { useIsMobile } from '@/hooks/useMediaQuery'
 
 function ConversationInfo({ conversation }: { conversation: Conversation }) {
   const { setSelectedConversation } = useConversationContext()
@@ -49,6 +51,7 @@ function ConversationInfo({ conversation }: { conversation: Conversation }) {
   const [showLeaveGroupAlert, setShowLeaveGroupAlert] = useState(false)
   const [showDeleteGroupAlert, setShowDeleteGroupAlert] = useState(false)
   const [formAction, setFormAction] = useState<'EDIT_NAME' | 'ADD_MEMBER' | null>(null)
+  const { isMobile } = useIsMobile()
   const { data: profile } = useGetProfile()
   const [imgFile, setImgFile] = useState<File | null>(null)
   const updateGroupPicture = useUpdateGroupPicture(conversation.id)
@@ -147,7 +150,7 @@ function ConversationInfo({ conversation }: { conversation: Conversation }) {
       <header className='bg-background flex h-16 w-full items-center justify-between border-b p-2 md:h-20 md:p-4'>
         <div className='flex items-center space-x-1'>
           <Button variant='ghost' size='icon' className='rounded-full' onClick={() => navigate(-1)}>
-            <X size={30} strokeWidth={3} />
+            {isMobile ? <ArrowLeft size={30} strokeWidth={3} /> : <X size={30} strokeWidth={3} />}
           </Button>
           <span>Group</span>
         </div>
@@ -173,7 +176,7 @@ function ConversationInfo({ conversation }: { conversation: Conversation }) {
       )}
 
       <div className='overflow-y-auto px-4'>
-        <div className='flex flex-col items-center py-4 md:py-8'>
+        <div className='flex flex-col items-center py-6 md:py-8'>
           <div className='relative'>
             <Avatar className='h-32 w-32'>
               <AvatarImage src={imgUrl || undefined} />
@@ -286,35 +289,38 @@ function ConversationInfo({ conversation }: { conversation: Conversation }) {
                       </DropdownMenuContent>
                     </DropdownMenu>
                   )}
-                <DeleteAlertDialog
+                <ConfirmAlertDialog
                   open={showMakeGroupAdminAlert}
                   onOpenChange={setShowMakeGroupAdminAlert}
                   icon={<Crown />}
                   title='Make admin?'
                   description={`Are you sure you want to make ${participant.user.name} an admin?`}
                   isLoading={makeParticipantAdmin.isPending}
-                  actionName='Make admin'
-                  onAction={() => handleMakeParticipantAdmin(participant.userId)}
+                  loadingText='Making...'
+                  confirmText='Make admin'
+                  onConfirm={() => handleMakeParticipantAdmin(participant.userId)}
                 />
-                <DeleteAlertDialog
+                <ConfirmAlertDialog
                   open={showRemoveFromGroupAdminAlert}
                   onOpenChange={setShowRemoveFromGroupAdminAlert}
                   icon={<Crown />}
                   title='Remove admin?'
                   description={`Are you sure you want to remove ${participant.user.name} from admin?`}
                   isLoading={removeFromAdmin.isPending}
-                  actionName='Remove admin'
-                  onAction={() => handleRemoveFromGroupAdmin(participant.userId)}
+                  loadingText='Removing...'
+                  confirmText='Remove admin'
+                  onConfirm={() => handleRemoveFromGroupAdmin(participant.userId)}
                 />
-                <DeleteAlertDialog
+                <ConfirmAlertDialog
                   open={showRemoveParticipantAlert}
                   onOpenChange={setShowRemoveParticipantAlert}
                   icon={<CircleMinus />}
                   title='Remove participant?'
                   description={`Are you sure you want to remove ${participant.user.name} from the group?`}
                   isLoading={removeParticipant.isPending}
-                  actionName='Remove'
-                  onAction={() => handleRemoveParticipant(participant.userId)}
+                  loadingText='Removing...'
+                  confirmText='Remove'
+                  onConfirm={() => handleRemoveParticipant(participant.userId)}
                 />
               </div>
             ))}
@@ -354,23 +360,27 @@ function ConversationInfo({ conversation }: { conversation: Conversation }) {
         </Button>
       </div>
 
-      <DeleteAlertDialog
+      <ConfirmAlertDialog
         open={showLeaveGroupAlert}
         onOpenChange={setShowLeaveGroupAlert}
         icon={<LogOut />}
         title='Leave group?'
         description='Are you sure you want to leave this group?'
         isLoading={leaveGroup.isPending}
-        actionName='Leave'
-        onAction={handleLeaveGroup}
+        loadingText='Leaving...'
+        confirmText='Leave'
+        onConfirm={handleLeaveGroup}
       />
-      <DeleteAlertDialog
+      <ConfirmAlertDialog
         open={showDeleteGroupAlert}
         onOpenChange={setShowDeleteGroupAlert}
-        title='Delete this group?'
+        icon={<Trash2 />}
+        title='Delete group?'
         description='Are you sure you want to delete this group? This action cannot be undone.'
         isLoading={deleteGroup.isPending}
-        onAction={handleDeleteGroup}
+        loadingText='Deleting...'
+        confirmText='Delete'
+        onConfirm={handleDeleteGroup}
       />
 
       {formAction && (

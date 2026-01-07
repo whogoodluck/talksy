@@ -12,6 +12,7 @@ import {
 } from '@/utils/conversation'
 import { ArrowLeft } from 'lucide-react'
 import { ConversationMenu } from './conversation-menu'
+import { Link } from 'react-router-dom'
 
 function MessagesContainerHeader() {
   const profile = useGetProfile()
@@ -28,9 +29,7 @@ function MessagesContainerHeader() {
     profile.data.id
   )
 
-  const otherUserParticipants = selectedConversation.participants
-    .filter(p => p.userId !== profile.data.id)
-    .map(p => p.user)
+  
 
   const { onlineUserIds } = useGetOnlineUserIds()
 
@@ -53,7 +52,13 @@ function MessagesContainerHeader() {
           <ArrowLeft size={30} strokeWidth={3} />
         </Button>
 
-        <div className='flex items-center gap-3 md:gap-4'>
+        <Link
+          to={
+              selectedConversation.type === ConversationEnum.DIRECT
+                ? `/users/${otherParticipant?.user.username}`
+                : `/conversations/group/${selectedConversation.id}`
+            }
+          className='flex items-center gap-3 md:gap-4'>
           <UserAvatar size='sm' user={{ picture: conversationAvatar, name: conversationName }} />
           <div>
             <h3>
@@ -70,15 +75,14 @@ function MessagesContainerHeader() {
                 </>
               ) : (
                 <p className='text-muted-foreground line-clamp-1 text-xs'>
-                  {otherUserParticipants.length > 0 &&
-                    otherUserParticipants.map(user => user.name.split(' ')[0]).join(', ') +
-                      ','}{' '}
-                  You
+                    {selectedConversation.participants
+                      .map(p => p.userId === profile.data.id ? 'You' : p.user.name.split(' ')[0])
+                      .join(', ')}
                 </p>
               )}
             </h3>
           </div>
-        </div>
+        </Link>
       </div>
 
       <div className='flex items-center gap-1'>

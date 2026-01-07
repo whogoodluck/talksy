@@ -4,11 +4,9 @@ import { type Conversation } from '@/types/conversation'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { toast } from 'sonner'
-import { useGetProfile } from './useAuth'
 
 export const useGroupInfo = (conversationId: string) => {
   const { socket } = useSocketContext()
-  const profile = useGetProfile()
   const queryClient = useQueryClient()
 
   const query = useQuery({
@@ -23,33 +21,21 @@ export const useGroupInfo = (conversationId: string) => {
   useEffect(() => {
     if (!socket) return
 
-    const handleGroupConversationInfoUpdated = (updatedConversation: Conversation) => {
-      if (updatedConversation.id === conversationId) {
-        queryClient.setQueryData(['conversation-info', conversationId], updatedConversation)
-      }
-      
-      queryClient.invalidateQueries({ queryKey: ['conversations'] })
-    }
-
     const handleConversationParticipantsUpdated = (data: {
       conversationId: string
-      participantId?: string
     }) => {
       if (data.conversationId === conversationId) {
         queryClient.invalidateQueries({ queryKey: ['conversation-info', conversationId] })
       }
 
-      if (data.participantId && data.participantId === profile.data?.id) {
         queryClient.invalidateQueries({ queryKey: ['conversations'] })
-      }
+      
     }
 
-    socket.on('group-conversation-info:updated', handleGroupConversationInfoUpdated)
-    socket.on('conversation:participants:updated', handleConversationParticipantsUpdated)
+    socket.on('group-conversation:updated', handleConversationParticipantsUpdated)
 
     return () => {
-      socket.off('group-conversation-info:updated', handleGroupConversationInfoUpdated)
-      socket.off('conversation:participants:updated', handleConversationParticipantsUpdated)
+      socket.off('group-conversation:updated', handleConversationParticipantsUpdated)
     }
   }, [socket, conversationId, queryClient])
 
@@ -121,7 +107,7 @@ export const useMakeParticipantAdmin = (conversationId: string) => {
   return useMutation({
     mutationFn: async (participantId: string) => {
       return await api.post(
-        `/conversations/${conversationId}/participants/groups/${participantId}/make-admin`
+        `/conversations/groups/${conversationId}/participants/${participantId}/make-admin`
       )
     },
     onSuccess: data => {
@@ -137,7 +123,7 @@ export const useRemoveParticipantFromAdmin = (conversationId: string) => {
   return useMutation({
     mutationFn: async (participantId: string) => {
       return await api.post(
-        `/conversations/${conversationId}/participants/groups/${participantId}/remove-from-admin`
+        `/conversations/groups/${conversationId}/participants/${participantId}/remove-from-admin`
       )
     },
     onSuccess: data => {
