@@ -340,6 +340,7 @@ const removeParticipant = async (conversationId: string, userId: string) => {
     },
     data: {
       leftAt: new Date(),
+      role: ParticipantRole.MEMBER,
     },
   })
 }
@@ -354,7 +355,6 @@ const addParticipantAgain = async (conversationId: string, userId: string) => {
     },
     data: {
       leftAt: null,
-      role: ParticipantRole.MEMBER,
     },
   })
 }

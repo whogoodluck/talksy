@@ -21,15 +21,12 @@ export const useGroupInfo = (conversationId: string) => {
   useEffect(() => {
     if (!socket) return
 
-    const handleConversationParticipantsUpdated = (data: {
-      conversationId: string
-    }) => {
+    const handleConversationParticipantsUpdated = (data: { conversationId: string }) => {
       if (data.conversationId === conversationId) {
         queryClient.invalidateQueries({ queryKey: ['conversation-info', conversationId] })
       }
 
-        queryClient.invalidateQueries({ queryKey: ['conversations'] })
-      
+      queryClient.invalidateQueries({ queryKey: ['conversations'] })
     }
 
     socket.on('group-conversation:updated', handleConversationParticipantsUpdated)
@@ -60,7 +57,10 @@ export const useUpdateGroupInfo = (conversationId: string) => {
 export const useUpdateGroupPicture = (conversationId: string) => {
   return useMutation({
     mutationFn: async (data: FormData) => {
-      const res = await api.put<Conversation>(`/conversations/groups/${conversationId}/picture`, data)
+      const res = await api.put<Conversation>(
+        `/conversations/groups/${conversationId}/picture`,
+        data
+      )
       return res.data
     },
     onSuccess: () => {
@@ -75,7 +75,10 @@ export const useUpdateGroupPicture = (conversationId: string) => {
 export const useAddParticipants = (conversationId: string) => {
   return useMutation({
     mutationFn: async (data: { participantIds: string[] }) => {
-      return await api.post<Conversation>(`/conversations/groups/${conversationId}/participants/add`, data)
+      return await api.post<Conversation>(
+        `/conversations/groups/${conversationId}/participants/add`,
+        data
+      )
     },
     onSuccess: data => {
       toast.success(data.message ?? 'Participants added successfully!')
@@ -91,7 +94,9 @@ export const useRemoveParticipant = (conversationId: string) => {
 
   return useMutation({
     mutationFn: async (participantId: string) => {
-      return await api.delete(`/conversations/groups/${conversationId}/participants/${participantId}`)
+      return await api.delete(
+        `/conversations/groups/${conversationId}/participants/${participantId}`
+      )
     },
     onSuccess: data => {
       queryClient.invalidateQueries({ queryKey: ['conversation-info', conversationId] })

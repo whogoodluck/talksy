@@ -187,7 +187,7 @@ function EditGroupForm({ conversation, onOpenChange, formAction }: EditGroupForm
                 >
                   <div className='flex items-center'>
                     <UserAvatar size='sm' user={user} />
-                    <div className='ml-2 text-sm text-start'>
+                    <div className='ml-2 text-start text-sm'>
                       <p>{user.name}</p>
                       <p className='text-foreground/50'>{user.username}</p>
                     </div>
@@ -225,7 +225,11 @@ function EditGroupForm({ conversation, onOpenChange, formAction }: EditGroupForm
             onSubmit={addMemberForm.handleSubmit(handleAddParticipant)}
             className='mt-4 flex flex-col space-y-2'
           >
-            <LoadingButton type='submit' isLoading={groupInfo.isPending} disabled={!selectedUsers.length}>
+            <LoadingButton
+              type='submit'
+              isLoading={groupInfo.isPending}
+              disabled={!selectedUsers.length}
+            >
               Save
             </LoadingButton>
             <Button

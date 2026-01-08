@@ -1,4 +1,4 @@
-import type { Dispatch, SetStateAction, ReactNode } from 'react'
+import type { Dispatch, ReactNode, SetStateAction } from 'react'
 import { LoadingButton } from '../loading-button'
 import {
   AlertDialog,
@@ -39,16 +39,12 @@ export function ConfirmAlertDialog({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle className="flex items-center gap-3">
+          <AlertDialogTitle className='flex items-center gap-3'>
             {icon}
             {title}
           </AlertDialogTitle>
 
-          {description && (
-            <AlertDialogDescription>
-              {description}
-            </AlertDialogDescription>
-          )}
+          {description && <AlertDialogDescription>{description}</AlertDialogDescription>}
         </AlertDialogHeader>
 
         <AlertDialogFooter>
@@ -62,9 +58,7 @@ export function ConfirmAlertDialog({
             {confirmText}
           </LoadingButton>
 
-          <AlertDialogCancel disabled={isLoading}>
-            Cancel
-          </AlertDialogCancel>
+          <AlertDialogCancel disabled={isLoading}>Cancel</AlertDialogCancel>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

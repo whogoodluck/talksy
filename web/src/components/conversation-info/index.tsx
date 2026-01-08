@@ -11,6 +11,7 @@ import {
 import { useGetProfile } from '@/hooks/useAuth'
 import {
   useDeleteGroup,
+  useGroupInfo,
   useLeaveGroup,
   useMakeParticipantAdmin,
   useRemoveParticipant,
@@ -20,7 +21,6 @@ import {
 import { useConversationContext } from '@/providers/conversation.provider'
 import { ParticipantRoleEnum, type Conversation } from '@/types/conversation'
 import {
-  ArrowLeft,
   Camera,
   ChessQueen,
   CircleMinus,
@@ -32,16 +32,36 @@ import {
   Trash2,
   UserPlus,
   Users,
-  X,
 } from 'lucide-react'
 import { useMemo, useRef, useState, type ChangeEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
+import { Loader } from '../loader'
 import { ConfirmAlertDialog } from '../ui/confirm-alert-dialog'
 import EditGroup from './edit-group'
-import { useIsMobile } from '@/hooks/useMediaQuery'
+import InfoHeader from './info-header'
 
-function ConversationInfo({ conversation }: { conversation: Conversation }) {
+function ConversationInfo({ conversationId }: { conversationId: string }) {
+  const groupInfo = useGroupInfo(conversationId)
+  const conversation = groupInfo.data
+
+  return (
+    <div className='bg-background relative z-10 flex h-screen flex-col'>
+      <InfoHeader />
+      {groupInfo.isLoading ? (
+        <div className='flex h-full items-center justify-center'>
+          <Loader />
+        </div>
+      ) : (
+        <InfoContent conversation={conversation!} />
+      )}
+    </div>
+  )
+}
+
+export default ConversationInfo
+
+function InfoContent({ conversation }: { conversation: Conversation }) {
   const { setSelectedConversation } = useConversationContext()
   const navigate = useNavigate()
   const [openEditGroupDialog, setOpenEditGroupDialog] = useState(false)
@@ -51,7 +71,6 @@ function ConversationInfo({ conversation }: { conversation: Conversation }) {
   const [showLeaveGroupAlert, setShowLeaveGroupAlert] = useState(false)
   const [showDeleteGroupAlert, setShowDeleteGroupAlert] = useState(false)
   const [formAction, setFormAction] = useState<'EDIT_NAME' | 'ADD_MEMBER' | null>(null)
-  const { isMobile } = useIsMobile()
   const { data: profile } = useGetProfile()
   const [imgFile, setImgFile] = useState<File | null>(null)
   const updateGroupPicture = useUpdateGroupPicture(conversation.id)
@@ -146,20 +165,17 @@ function ConversationInfo({ conversation }: { conversation: Conversation }) {
   }
 
   return (
-    <div className='bg-background relative z-10 flex h-screen flex-col'>
-      <header className='bg-background flex h-16 w-full items-center justify-between border-b p-2 md:h-20 md:p-4'>
-        <div className='flex items-center space-x-1'>
-          <Button variant='ghost' size='icon' className='rounded-full' onClick={() => navigate(-1)}>
-            {isMobile ? <ArrowLeft size={30} strokeWidth={3} /> : <X size={30} strokeWidth={3} />}
-          </Button>
-          <span>Group</span>
-        </div>
-      </header>
+    <>
       {imgFile && isAdmin && (
         <div className='bg-accent sticky top-0 z-20 flex items-center justify-between px-4 py-2'>
           <span className='text-sm'>Save changes to group picture?</span>
           <div className='flex gap-2'>
-            <Button size='sm' variant='accent' disabled={updateGroupPicture.isPending} onClick={() => setImgFile(null)}>
+            <Button
+              size='sm'
+              variant='accent'
+              disabled={updateGroupPicture.isPending}
+              onClick={() => setImgFile(null)}
+            >
               Cancel
             </Button>
             <LoadingButton
@@ -203,14 +219,14 @@ function ConversationInfo({ conversation }: { conversation: Conversation }) {
             />
           </div>
 
-          <div className='mt-4 text-center w-full'>
-            <div className='flex relative items-center justify-center gap-2 w-full'>
-              <h2 className='text-2xl font-semibold px-12'>{conversation.name}</h2>
+          <div className='mt-4 w-full text-center'>
+            <div className='relative flex w-full items-center justify-center gap-2'>
+              <h2 className='px-12 text-2xl font-semibold'>{conversation.name}</h2>
               {isAdmin && (
                 <Button
                   variant='ghost'
                   size='icon'
-                  className='rounded-full absolute right-0 top-0'
+                  className='absolute top-0 right-0 rounded-full'
                   onClick={() => {
                     setFormAction('EDIT_NAME')
                     setOpenEditGroupDialog(true)
@@ -391,8 +407,6 @@ function ConversationInfo({ conversation }: { conversation: Conversation }) {
           conversation={conversation}
         />
       )}
-    </div>
+    </>
   )
 }
-
-export default ConversationInfo
