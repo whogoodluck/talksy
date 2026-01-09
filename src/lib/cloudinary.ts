@@ -16,7 +16,7 @@ export const uploadImage = async (file: Express.Multer.File) => {
   })
 }
 
-export const getPublicIdFromUrl = (url: string): string => {
+const getPublicIdFromUrl = (url: string): string => {
   const parts = url.split('/')
   const uploadIndex = parts.findIndex(p => p === 'upload')
 
@@ -32,6 +32,8 @@ export const getPublicIdFromUrl = (url: string): string => {
   return publicIdWithExt.replace(/\.[^/.]+$/, '')
 }
 
-export const deleteImage = async (publicId: string) => {
+export const deleteImage = async (url: string) => {
+  const publicId = getPublicIdFromUrl(url)
+
   return await cloudinary.uploader.destroy(publicId)
 }

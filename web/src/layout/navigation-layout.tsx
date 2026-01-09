@@ -1,9 +1,9 @@
+import UserAvatar from '@/components/common/user-avatar'
 import { buttonVariants } from '@/components/ui/button'
 import { PROTECTED_LINKS } from '@/constants'
 import { useGetProfile } from '@/hooks/useAuth'
 import { cn } from '@/lib/utils'
 import { Link, Outlet, useLocation } from 'react-router-dom'
-import UserAvatar from '@/components/common/user-avatar'
 
 function NavigationLayout() {
   const profile = useGetProfile()

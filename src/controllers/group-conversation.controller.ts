@@ -1,7 +1,7 @@
 import { ConversationType, ParticipantRole } from '@prisma/client'
 import { NextFunction, Response } from 'express'
 import { io } from '../index'
-import { deleteImage, getPublicIdFromUrl, uploadImage } from '../lib/cloudinary'
+import { deleteImage, uploadImage } from '../lib/cloudinary'
 import { ExpressRequest } from '../middlewares/auth.middleware'
 import {
   addParticipantsInGroupConversationSchema,
@@ -16,7 +16,10 @@ const getConversationInfo = async (req: ExpressRequest, res: Response, next: Nex
     const userId = req.user!.id
     const { conversationId } = req.params
 
-    const conversation = await conversationService.getUserConversationById(userId, conversationId)
+    const conversation = await conversationService.getConversationByIdAndUserId(
+      conversationId,
+      userId
+    )
 
     if (!conversation) {
       throw new HttpError(404, 'Conversation not found')
@@ -44,7 +47,10 @@ const updateGroupInfo = async (req: ExpressRequest, res: Response, next: NextFun
     const { conversationId } = req.params
     const payload = updateGroupConversationSchema.parse(req.body)
 
-    const conversation = await conversationService.getUserConversationById(userId, conversationId)
+    const conversation = await conversationService.getConversationByIdAndUserId(
+      conversationId,
+      userId
+    )
 
     if (!conversation) {
       throw new HttpError(404, 'Conversation not found')
@@ -88,7 +94,10 @@ const updateGroupPicture = async (req: ExpressRequest, res: Response, next: Next
       throw new HttpError(400, 'Picture not uploaded')
     }
 
-    const conversation = await conversationService.getUserConversationById(userId, conversationId)
+    const conversation = await conversationService.getConversationByIdAndUserId(
+      conversationId,
+      userId
+    )
 
     if (!conversation) {
       throw new HttpError(404, 'Conversation not found')
@@ -108,14 +117,10 @@ const updateGroupPicture = async (req: ExpressRequest, res: Response, next: Next
 
     const uploadResult = await uploadImage(file)
 
-    const updatedConversation = await conversationService.updateGroupPicture(
-      conversationId,
-      uploadResult.secure_url
-    )
+    await conversationService.updateGroupPicture(conversationId, uploadResult.secure_url)
 
     if (conversation.picture) {
-      const publicId = getPublicIdFromUrl(conversation.picture)
-      await deleteImage(publicId)
+      await deleteImage(conversation.picture)
     }
 
     io.to(conversationId).emit('group-conversation:updated', { conversationId })
@@ -137,7 +142,10 @@ const addParticipants = async (req: ExpressRequest, res: Response, next: NextFun
     const { conversationId } = req.params
     const payload = addParticipantsInGroupConversationSchema.parse(req.body)
 
-    const conversation = await conversationService.getUserConversationById(userId, conversationId)
+    const conversation = await conversationService.getConversationByIdAndUserId(
+      conversationId,
+      userId
+    )
 
     if (!conversation) {
       throw new HttpError(404, 'Conversation not found')
@@ -156,7 +164,7 @@ const addParticipants = async (req: ExpressRequest, res: Response, next: NextFun
     }
 
     payload.participantIds.forEach(async participantUserId => {
-      const participant = await conversationService.getParticipantByConversationIdAndParticipantId(
+      const participant = await conversationService.getParticipantByConversationIdAndUserId(
         conversationId,
         participantUserId
       )
@@ -188,7 +196,10 @@ const removeParticipant = async (req: ExpressRequest, res: Response, next: NextF
     const userId = req.user!.id
     const { conversationId, participantId } = req.params
 
-    const conversation = await conversationService.getUserConversationById(userId, conversationId)
+    const conversation = await conversationService.getConversationByIdAndUserId(
+      conversationId,
+      userId
+    )
 
     if (!conversation) {
       throw new HttpError(404, 'Conversation not found')
@@ -210,7 +221,7 @@ const removeParticipant = async (req: ExpressRequest, res: Response, next: NextF
       throw new HttpError(400, 'You cannot remove yourself')
     }
 
-    const participant = await conversationService.getParticipantByConversationIdAndParticipantId(
+    const participant = await conversationService.getParticipantByConversationIdAndUserId(
       conversationId,
       participantId
     )
@@ -243,7 +254,10 @@ const makeParticipantAdmin = async (req: ExpressRequest, res: Response, next: Ne
     const userId = req.user!.id
     const { conversationId, participantId } = req.params
 
-    const conversation = await conversationService.getUserConversationById(userId, conversationId)
+    const conversation = await conversationService.getConversationByIdAndUserId(
+      conversationId,
+      userId
+    )
 
     if (!conversation) {
       throw new HttpError(404, 'Conversation not found')
@@ -265,7 +279,7 @@ const makeParticipantAdmin = async (req: ExpressRequest, res: Response, next: Ne
       throw new HttpError(400, 'You cannot make yourself admin')
     }
 
-    const participant = await conversationService.getParticipantByConversationIdAndParticipantId(
+    const participant = await conversationService.getParticipantByConversationIdAndUserId(
       conversationId,
       participantId
     )
@@ -302,7 +316,10 @@ const removeParticipantFromAdmin = async (
     const userId = req.user!.id
     const { conversationId, participantId } = req.params
 
-    const conversation = await conversationService.getUserConversationById(userId, conversationId)
+    const conversation = await conversationService.getConversationByIdAndUserId(
+      conversationId,
+      userId
+    )
 
     if (!conversation) {
       throw new HttpError(404, 'Conversation not found')
@@ -324,7 +341,7 @@ const removeParticipantFromAdmin = async (
       throw new HttpError(400, 'You cannot remove yourself from admin')
     }
 
-    const participant = await conversationService.getParticipantByConversationIdAndParticipantId(
+    const participant = await conversationService.getParticipantByConversationIdAndUserId(
       conversationId,
       participantId
     )
@@ -357,7 +374,10 @@ const leaveGroup = async (req: ExpressRequest, res: Response, next: NextFunction
     const userId = req.user!.id
     const { conversationId } = req.params
 
-    const conversation = await conversationService.getUserConversationById(userId, conversationId)
+    const conversation = await conversationService.getConversationByIdAndUserId(
+      conversationId,
+      userId
+    )
 
     if (!conversation) {
       throw new HttpError(404, 'Conversation not found')
@@ -378,7 +398,7 @@ const leaveGroup = async (req: ExpressRequest, res: Response, next: NextFunction
 
       await conversationService.removeParticipant(conversationId, userId)
     } else {
-      const participant = await conversationService.getParticipantByConversationIdAndParticipantId(
+      const participant = await conversationService.getParticipantByConversationIdAndUserId(
         conversationId,
         userId
       )
@@ -416,7 +436,10 @@ const deleteGroup = async (req: ExpressRequest, res: Response, next: NextFunctio
     const userId = req.user!.id
     const { conversationId } = req.params
 
-    const conversation = await conversationService.getUserConversationById(userId, conversationId)
+    const conversation = await conversationService.getConversationByIdAndUserId(
+      conversationId,
+      userId
+    )
 
     if (!conversation) {
       throw new HttpError(404, 'Conversation not found')
@@ -446,7 +469,7 @@ const deleteGroup = async (req: ExpressRequest, res: Response, next: NextFunctio
 
     // Case 3: more than two participants
     else {
-      const participant = await conversationService.getParticipantByConversationIdAndParticipantId(
+      const participant = await conversationService.getParticipantByConversationIdAndUserId(
         conversationId,
         userId
       )

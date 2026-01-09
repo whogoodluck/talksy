@@ -1,4 +1,5 @@
-import { ConversationType, ParticipantRole } from '@prisma/client'
+import { deleteImage } from '@/lib/cloudinary'
+import { ConversationType, MessageType, ParticipantRole } from '@prisma/client'
 import { prisma } from '../lib/prisma'
 import {
   CreateDirectConversationRequest,
@@ -201,7 +202,7 @@ const getUserConversationsByQuery = async (userId: string, params: SearchConvers
   })
 }
 
-const getUserConversationById = async (userId: string, conversationId: string) => {
+const getConversationByIdAndUserId = async (conversationId: string, userId: string) => {
   return await prisma.conversation.findFirst({
     where: {
       id: conversationId,
@@ -235,7 +236,7 @@ const getUserConversationById = async (userId: string, conversationId: string) =
   })
 }
 
-const getDirectConversationByCurrentUserIdAndParticipantId = async (
+const getDirectConversationByCurrentUserIdAndOtherUserId = async (
   currentUserId: string,
   participantId: string
 ) => {
@@ -253,7 +254,7 @@ const getDirectConversationByCurrentUserIdAndParticipantId = async (
   })
 }
 
-const getParticipantByConversationIdAndParticipantId = async (
+const getParticipantByConversationIdAndUserId = async (
   conversationId: string,
   participantId: string
 ) => {
@@ -399,6 +400,18 @@ const deleteConversationParticipant = async (conversationId: string, userId: str
 }
 
 const deleteConversation = async (conversationId: string) => {
+  const messages = await prisma.message.findMany({
+    where: {
+      conversationId,
+    },
+  })
+
+  for (const message of messages) {
+    if (message.type === MessageType.IMAGE) {
+      if (message.fileUrl) await deleteImage(message.fileUrl)
+    }
+  }
+
   return await prisma.conversation.delete({
     where: {
       id: conversationId,
@@ -411,9 +424,9 @@ export default {
   createGroupConversation,
   getUserConversations,
   getUserConversationsByQuery,
-  getUserConversationById,
-  getDirectConversationByCurrentUserIdAndParticipantId,
-  getParticipantByConversationIdAndParticipantId,
+  getConversationByIdAndUserId,
+  getDirectConversationByCurrentUserIdAndOtherUserId,
+  getParticipantByConversationIdAndUserId,
   addParticipant,
   updateGroupInfo,
   updateGroupPicture,

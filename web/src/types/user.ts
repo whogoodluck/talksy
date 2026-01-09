@@ -8,4 +8,6 @@ export interface User {
   location?: string
   isOnline: boolean
   lastSeen?: string
+  createdAt: string
+  updatedAt: string
 }

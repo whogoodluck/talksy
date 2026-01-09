@@ -12,6 +12,10 @@ conversationRouter.post('/', conversationController.createConversation)
 conversationRouter.get('/', conversationController.getUserConversations)
 conversationRouter.get('/search', conversationController.getUserConversationsByQuery)
 
+// Direct conversation routes)
+conversationRouter.delete('/:conversationId', conversationController.deleteDirectConversation)
+conversationRouter.get('/direct/:userId', conversationController.getDirectConversationByOtherUserId)
+
 // Messages routes
 conversationRouter.post(
   '/:conversationId/messages',

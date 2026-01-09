@@ -1,14 +1,15 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 import ComingSoon from './components/coming-soon'
-import HomeLayout from './layout/home-layout'
-import NavigationLayout from './layout/navigation-layout'
 import { ProtectedRoute, PublicRoute } from './components/route-guard'
 import { Toaster } from './components/ui/sonner'
+import HomeLayout from './layout/home-layout'
+import NavigationLayout from './layout/navigation-layout'
 import Signin from './pages/auth/signin'
 import Signup from './pages/auth/signup'
 import VerifyEmail from './pages/auth/verify-email'
 import ConversationInfo from './pages/conversation-info'
+import UserProfile from './pages/user-profile'
 import { ConversationProvider } from './providers/conversation.provider'
 import { SocketProvider } from './providers/socket.provider'
 import { ThemeProvider } from './providers/theme-provider'
@@ -41,7 +42,7 @@ function App() {
                     <Route element={<HomeLayout />}>
                       <Route path='/' element={null} />
                       <Route path='/conversations/group/:id' element={<ConversationInfo />} />
-                      <Route path='/users/:username' element={null} />
+                      <Route path='/users/:username' element={<UserProfile />} />
                     </Route>
                   </Route>
                 </Route>

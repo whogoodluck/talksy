@@ -1,6 +1,11 @@
 import { api } from '@/lib/api'
 import { useSocketContext } from '@/providers/socket.provider'
-import { ConversationEnum, type Conversation, type ConversationType } from '@/types/conversation'
+import {
+  ConversationEnum,
+  type Conversation,
+  type ConversationType,
+  type Message,
+} from '@/types/conversation'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { toast } from 'sonner'
@@ -105,6 +110,29 @@ export const useConversations = (activeTab?: ConversationType) => {
 
     socket.on('conversation:new', handleNewConversation)
 
+    const handleDeleteConversation = (conversationId: string) => {
+      queryClient.setQueriesData(
+        { queryKey: ['conversations'] },
+        (old: { conversations: Conversation[]; total: number }) => {
+          return {
+            ...old,
+            conversations: old.conversations.filter(c => c.id !== conversationId),
+            total: old.total - 1,
+          }
+        }
+      )
+    }
+
+    socket.on('conversation:delete', handleDeleteConversation)
+
+    const handleNewMessage = (message: Message) => {
+      if (message.senderId === profile.data?.id) return
+
+      queryClient.invalidateQueries({ queryKey: ['conversations'] })
+    }
+
+    socket.on('message:new', handleNewMessage)
+
     return () => {
       socket.off('conversation:new', handleNewConversation)
     }
@@ -122,6 +150,43 @@ export const useSearchConversations = (query: string) => {
       )
 
       return res.data
+    },
+  })
+}
+
+export const useGetDirectConversationByOtherUserId = (userId: string) => {
+  return useQuery({
+    queryKey: ['direct-conversation', userId],
+    queryFn: async () => {
+      const res = await api.get<Conversation>(`/conversations/direct/${userId}`)
+      return res.data
+    },
+  })
+}
+
+export const useDeleteConversation = (conversationId: string) => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async () => {
+      const res = await api.delete(`/conversations/${conversationId}`)
+      return res.data
+    },
+    onSuccess: () => {
+      queryClient.setQueriesData(
+        { queryKey: ['conversations'] },
+        (old: { conversations: Conversation[]; total: number }) => {
+          return {
+            ...old,
+            conversations: old.conversations.filter(c => c.id !== conversationId),
+            total: old.total - 1,
+          }
+        }
+      )
+
+      toast.success('Conversation deleted successfully!')
+    },
+    onError: (error: Error) => {
+      toast.error(error.message)
     },
   })
 }

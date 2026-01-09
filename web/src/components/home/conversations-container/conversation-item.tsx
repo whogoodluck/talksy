@@ -159,6 +159,11 @@ function ShowLastMessagge({ message, conversation }: ShowLastMessaggeProps) {
     return false
   }
 
+  const isMessageSeenByMe = () => {
+    if (!message.readReceipts) return false
+    return message.readReceipts.some(r => r.userId === profile.data.id)
+  }
+
   if (message.isDeleted) {
     return (
       <div className='text-muted-foreground flex items-center'>
@@ -193,7 +198,13 @@ function ShowLastMessagge({ message, conversation }: ShowLastMessaggeProps) {
           <CheckCheck className='size-4' />
         </span>
       )}
-      <p className='text-muted-foreground line-clamp-1 max-w-4/5 text-sm'>{message.content}</p>
+      <p
+        className={cn('text-muted-foreground line-clamp-1 max-w-4/5 text-sm', {
+          'text-foreground font-semibold': !isSender && !isMessageSeenByMe(),
+        })}
+      >
+        {message.content}
+      </p>
     </div>
   )
 }

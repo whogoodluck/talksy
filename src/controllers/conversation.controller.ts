@@ -34,7 +34,7 @@ const createConversation = async (req: ExpressRequest, res: Response, next: Next
       const payload = createDirectConversationSchema.parse(body)
 
       const existDirectConversation =
-        await conversationService.getDirectConversationByCurrentUserIdAndParticipantId(
+        await conversationService.getDirectConversationByCurrentUserIdAndOtherUserId(
           userId,
           payload.participantId
         )
@@ -109,6 +109,82 @@ const getUserConversationsByQuery = async (
   }
 }
 
+const getDirectConversationByOtherUserId = async (
+  req: ExpressRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userId = req.user!.id
+    const { userId: otherUserId } = req.params
+
+    const conversation =
+      await conversationService.getDirectConversationByCurrentUserIdAndOtherUserId(
+        userId,
+        otherUserId
+      )
+
+    if (!conversation) {
+      throw new HttpError(404, 'Conversation not found')
+    }
+
+    res.status(200).json(
+      new JsonResponse({
+        status: 'success',
+        message: 'Conversation fetched successfully!',
+        data: conversation,
+      })
+    )
+  } catch (err) {
+    next(err)
+  }
+}
+
+const deleteDirectConversation = async (req: ExpressRequest, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id
+    const { conversationId } = req.params
+
+    const conversation = await conversationService.getConversationByIdAndUserId(
+      conversationId,
+      userId
+    )
+
+    if (!conversation) {
+      throw new HttpError(404, 'Conversation not found')
+    }
+
+    if (conversation.type !== ConversationType.DIRECT) {
+      throw new HttpError(400, 'This conversation is not a direct conversation')
+    }
+
+    const participant = await conversationService.getParticipantByConversationIdAndUserId(
+      conversationId,
+      userId
+    )
+
+    if (!participant) {
+      throw new HttpError(404, 'Participant not found')
+    }
+
+    await conversationService.deleteConversation(conversationId)
+
+    conversation.participants.forEach(p => {
+      if (p.userId === userId) return
+      io.to(p.userId).emit('conversation:delete', conversationId)
+    })
+
+    res.status(200).json(
+      new JsonResponse({
+        status: 'success',
+        message: 'You have left the conversation successfully!',
+      })
+    )
+  } catch (err) {
+    next(err)
+  }
+}
+
 const sendMessage = async (req: ExpressRequest, res: Response, next: NextFunction) => {
   try {
     const userId = req.user!.id
@@ -116,13 +192,16 @@ const sendMessage = async (req: ExpressRequest, res: Response, next: NextFunctio
     const payload = sendMessageSchema.parse(req.body)
     const file = req.file
 
-    const conversation = await conversationService.getUserConversationById(userId, conversationId)
+    const conversation = await conversationService.getConversationByIdAndUserId(
+      conversationId,
+      userId
+    )
 
     if (!conversation) {
       throw new HttpError(404, 'Conversation not found')
     }
 
-    const participant = await conversationService.getParticipantByConversationIdAndParticipantId(
+    const participant = await conversationService.getParticipantByConversationIdAndUserId(
       conversationId,
       userId
     )
@@ -165,7 +244,10 @@ const getMessages = async (req: ExpressRequest, res: Response, next: NextFunctio
     const { conversationId } = req.params
     const payload = getMessagesQuerySchema.parse(req.query)
 
-    const conversation = await conversationService.getUserConversationById(userId, conversationId)
+    const conversation = await conversationService.getConversationByIdAndUserId(
+      conversationId,
+      userId
+    )
 
     if (!conversation) {
       throw new HttpError(404, 'Conversation not found')
@@ -195,7 +277,10 @@ const markAsRead = async (req: ExpressRequest, res: Response, next: NextFunction
     const userId = req.user!.id
     const { conversationId, messageId } = req.params
 
-    const conversation = await conversationService.getUserConversationById(userId, conversationId)
+    const conversation = await conversationService.getConversationByIdAndUserId(
+      conversationId,
+      userId
+    )
 
     if (!conversation) {
       throw new HttpError(404, 'Conversation not found')
@@ -211,7 +296,7 @@ const markAsRead = async (req: ExpressRequest, res: Response, next: NextFunction
       throw new HttpError(400, 'You cannot mark your own message as read')
     }
 
-    const participant = await conversationService.getParticipantByConversationIdAndParticipantId(
+    const participant = await conversationService.getParticipantByConversationIdAndUserId(
       conversationId,
       userId
     )
@@ -243,6 +328,8 @@ export default {
   createConversation,
   getUserConversations,
   getUserConversationsByQuery,
+  getDirectConversationByOtherUserId,
+  deleteDirectConversation,
   sendMessage,
   getMessages,
   markAsRead,

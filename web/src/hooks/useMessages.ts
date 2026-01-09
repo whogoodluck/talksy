@@ -179,9 +179,14 @@ export const useMessages = (conversationId: string, limit = 50) => {
 }
 
 export const useMarkAsRead = (conversationId: string) => {
+  const queryClient = useQueryClient()
+
   return useMutation({
     mutationFn: async (messageId: string) => {
       await api.post(`/conversations/${conversationId}/messages/${messageId}/read`)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['conversations'] })
     },
   })
 }
