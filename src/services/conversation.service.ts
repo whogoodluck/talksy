@@ -1,5 +1,5 @@
-import { deleteImage } from '@/lib/cloudinary'
 import { ConversationType, MessageType, ParticipantRole } from '@prisma/client'
+import { deleteImage } from '../lib/cloudinary'
 import { prisma } from '../lib/prisma'
 import {
   CreateDirectConversationRequest,
