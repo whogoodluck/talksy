@@ -32,7 +32,6 @@ export function ConversationItem({ conversation, setSelectedConversation }: Conv
   if (!profile.data) return null
 
   const { conversationTypingUserIds } = useTypingUsers()
-  const lastMessage: Message | undefined = conversation.messages[0]
   const conversationName = getConversationName(conversation, profile.data.id)
   const conversationAvatar = getConversationAvatar(conversation, profile.data.id)
   const otherParticipant = getOtherParticipantFromDirectConversation(conversation, profile.data.id)
@@ -62,9 +61,9 @@ export function ConversationItem({ conversation, setSelectedConversation }: Conv
         <div className='flex-1'>
           <div className='flex items-center justify-between'>
             <h3 className='text-foreground text-lg font-medium'>{conversationName}</h3>
-            {lastMessage && (
+            {conversation.lastMessage && (
               <span className='text-muted-foreground text-xs'>
-                {formatDate(lastMessage.createdAt)}
+                {formatDate(conversation.lastMessage.createdAt)}
               </span>
             )}
           </div>
@@ -75,7 +74,7 @@ export function ConversationItem({ conversation, setSelectedConversation }: Conv
                   {typingUserInGroup.name.split(' ')[0]} is typing...
                 </p>
               ) : (
-                <ShowLastMessagge message={lastMessage} conversation={conversation} />
+                <ShowLastMessagge message={conversation.lastMessage} conversation={conversation} />
               )}
             </>
           ) : (
@@ -83,7 +82,7 @@ export function ConversationItem({ conversation, setSelectedConversation }: Conv
               {isUserTypingInDirect ? (
                 <p className='text-secondary text-sm font-semibold'>Typing...</p>
               ) : (
-                <ShowLastMessagge message={lastMessage} conversation={conversation} />
+                <ShowLastMessagge message={conversation.lastMessage} conversation={conversation} />
               )}
             </>
           )}
@@ -144,7 +143,7 @@ function ShowLastMessagge({ message, conversation }: ShowLastMessaggeProps) {
   const otherParticipant = getOtherParticipantFromDirectConversation(conversation, profile.data.id)
 
   const isMessageRead = () => {
-    if (!message.readReceipts) return false
+    if (!message.readReceipts || !message.readReceipts.length) return false
 
     if (conversation.type === ConversationEnum.DIRECT && otherParticipant) {
       return message.readReceipts.some(r => r.userId === otherParticipant.userId)
@@ -177,7 +176,7 @@ function ShowLastMessagge({ message, conversation }: ShowLastMessaggeProps) {
 
   if (message.type === MessageEnum.IMAGE) {
     return (
-      <div className='text-muted-foreground flex items-center'>
+      <div className={cn('text-muted-foreground flex items-center', { 'text-foreground font-semibold': !isSender && !isMessageSeenByMe() })}>
         {isSender && (
           <span className={cn('mr-1', { 'text-[#00a2ff]': isMessageRead() })}>
             <CheckCheck className='size-4' />

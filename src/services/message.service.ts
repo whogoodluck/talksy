@@ -1,3 +1,4 @@
+import { ConversationParticipant } from '@prisma/client'
 import { prisma } from '../lib/prisma'
 import { SendMessageRequest } from '../schemas/message.schema'
 import { USER_SAFE_FIELDS } from './user.service'
@@ -36,11 +37,23 @@ const sendMessage = async (conversationId: string, senderId: string, data: SendM
   return message
 }
 
-const getMessages = async (conversationId: string, limit: number) => {
-  return await prisma.message.findMany({
-    where: {
-      conversationId,
+const getMessages = async (participant: Partial<ConversationParticipant>, limit: number) => {
+  const whereClause: any = {
+    conversationId: participant.conversationId,
+    createdAt: {
+      gte: participant.joinedAt,
     },
+  }
+
+  if (participant.leftAt) {
+    whereClause.createdAt = {
+      ...whereClause.createdAt,
+      lte: participant.leftAt,
+    }
+  }
+
+  return await prisma.message.findMany({
+    where: whereClause,
     take: limit,
     orderBy: {
       createdAt: 'desc',
@@ -58,6 +71,22 @@ const getMessages = async (conversationId: string, limit: number) => {
       },
       readReceipts: true,
     },
+  })
+}
+
+const getLastMessage = async (participant: Partial<ConversationParticipant>) => {
+  return await prisma.message.findFirst({
+    where: {
+      conversationId: participant.conversationId,
+      createdAt: {
+        gte: participant.joinedAt,
+        ...(participant.leftAt && { lte: participant.leftAt }),
+      },
+    },
+    include: {
+      readReceipts: true,
+    },
+    orderBy: { createdAt: 'desc' },
   })
 }
 
@@ -102,6 +131,7 @@ const updateLastRead = async (conversationId: string, userId: string) => {
 export default {
   sendMessage,
   getMessages,
+  getLastMessage,
   getMessageById,
   markAsRead,
   updateLastRead,

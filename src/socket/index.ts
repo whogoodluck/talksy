@@ -26,7 +26,7 @@ export const initSocket = (io: SocketIOServer) => {
 
     onlineUsers.get(user.id)!.add(socket.id)
 
-    const conversations = await conversationService.getUserConversations(user.id)
+    const conversations = await conversationService.getUserActiveConversations(user.id)
     const contactIds = new Set<string>()
 
     conversations.forEach(conversation => {

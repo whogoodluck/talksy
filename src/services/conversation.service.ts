@@ -74,12 +74,78 @@ const createGroupConversation = async (userId: string, data: CreateGroupConversa
   })
 }
 
+// const getUserConversations = async (userId: string, params?: GetConversationsRequest) => {
+//   const whereClause: any = {
+//     participants: {
+//       some: {
+//         userId,
+//       },
+//     },
+//   }
+
+//   if (params) {
+//     const { tab } = params
+
+//     if (tab) {
+//       if (tab === ConversationType.GROUP) {
+//         whereClause.type = ConversationType.GROUP
+//       } else if (tab === ConversationType.DIRECT) {
+//         whereClause.type = ConversationType.DIRECT
+//       }
+//     }
+//   }
+
+//   return await prisma.conversation.findMany({
+//     where: whereClause,
+//     include: {
+//       participants: {
+//         where: {
+//           leftAt: null,
+//         },
+//         include: {
+//           user: {
+//             omit: USER_SAFE_FIELDS,
+//           },
+//         },
+//       },
+//       _count: {
+//         select: {
+//           participants: true,
+//         },
+//       },
+//     },
+//     orderBy: {
+//       updatedAt: 'desc',
+//     },
+//   })
+// }
+
+const getUserActiveConversations = async (userId: string) => {
+  return await prisma.conversation.findMany({
+    where: {
+      participants: {
+        some: {
+          userId,
+          leftAt: null,
+        },
+      },
+    },
+    include: {
+      participants: {
+        include: {
+          user: true,
+        },
+      },
+    },
+    orderBy: { updatedAt: 'desc' },
+  })
+}
+
 const getUserConversations = async (userId: string, params?: GetConversationsRequest) => {
   const whereClause: any = {
     participants: {
       some: {
         userId,
-        // leftAt: null,
       },
     },
   }
@@ -100,31 +166,17 @@ const getUserConversations = async (userId: string, params?: GetConversationsReq
     where: whereClause,
     include: {
       participants: {
-        where: {
-          leftAt: null,
-        },
         include: {
           user: {
             omit: USER_SAFE_FIELDS,
           },
         },
       },
-      messages: {
-        take: 1,
-        orderBy: { createdAt: 'desc' },
-        include: {
-          readReceipts: true,
-        },
-      },
       _count: {
-        select: {
-          participants: true,
-        },
+        select: { participants: true },
       },
     },
-    orderBy: {
-      updatedAt: 'desc',
-    },
+    orderBy: { updatedAt: 'desc' },
   })
 }
 
@@ -254,14 +306,11 @@ const getDirectConversationByCurrentUserIdAndOtherUserId = async (
   })
 }
 
-const getParticipantByConversationIdAndUserId = async (
-  conversationId: string,
-  participantId: string
-) => {
+const getParticipantByConversationIdAndUserId = async (conversationId: string, userId: string) => {
   return await prisma.conversationParticipant.findFirst({
     where: {
       conversationId,
-      userId: participantId,
+      userId,
     },
   })
 }
@@ -422,6 +471,7 @@ const deleteConversation = async (conversationId: string) => {
 export default {
   createDirectConversation,
   createGroupConversation,
+  getUserActiveConversations,
   getUserConversations,
   getUserConversationsByQuery,
   getConversationByIdAndUserId,

@@ -74,11 +74,28 @@ const getUserConversations = async (req: ExpressRequest, res: Response, next: Ne
 
     const conversations = await conversationService.getUserConversations(userId, payload)
 
+    const result = await Promise.all(
+      conversations.map(async conversation => {
+        const userParticipant = conversation.participants.find(p => p.userId === userId)
+
+        if (!userParticipant) return null
+
+        const lastMessage = await messageService.getLastMessage(userParticipant)
+
+        return {
+          ...conversation,
+          participants: conversation.participants.filter(p => p.leftAt === null),
+          lastMessage,
+          hasLeft: !!userParticipant.leftAt,
+        }
+      })
+    )
+
     res.status(200).json(
       new JsonResponse({
         status: 'success',
         message: 'Conversations fetched successfully!',
-        data: { total: conversations.length, conversations },
+        data: { total: conversations.length, conversations: result.filter(Boolean) },
       })
     )
   } catch (err) {
@@ -253,7 +270,16 @@ const getMessages = async (req: ExpressRequest, res: Response, next: NextFunctio
       throw new HttpError(404, 'Conversation not found')
     }
 
-    const messages = await messageService.getMessages(conversationId, payload.limit)
+    const participant = await conversationService.getParticipantByConversationIdAndUserId(
+      conversationId,
+      userId
+    )
+
+    if (!participant) {
+      throw new HttpError(404, 'Participant not found')
+    }
+
+    const messages = await messageService.getMessages(participant, payload.limit)
 
     await messageService.updateLastRead(conversationId, userId)
 

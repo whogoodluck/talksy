@@ -75,7 +75,7 @@ export interface Conversation {
   createdAt: string
   updatedAt: string
   participants: ConversationParticipant[]
-  messages: Message[]
+  lastMessage: Message
   _count?: {
     messages: number
   }

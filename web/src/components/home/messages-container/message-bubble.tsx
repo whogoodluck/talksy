@@ -56,7 +56,7 @@ function MessageBubble({ message, onMessageVisible }: MessageBubbleProps) {
   }, [isSender, message.id])
 
   const isMessageRead = () => {
-    if (!message.readReceipts) return false
+    if (!message.readReceipts || !message.readReceipts.length) return false
 
     if (selectedConversation.type === ConversationEnum.DIRECT && otherParticipant) {
       return message.readReceipts.some(r => r.userId === otherParticipant.userId)
