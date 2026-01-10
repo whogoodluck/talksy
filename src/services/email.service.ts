@@ -1,23 +1,32 @@
-import nodemailer from 'nodemailer'
+import axios from 'axios'
 import config from '../utils/config'
 
-const transporter = nodemailer.createTransport({
-  host: 'smtp-relay.brevo.com',
-  port: 587,
-  secure: false,
-  auth: {
-    user: config.BREVO_USER,
-    pass: config.BREVO_SMTP_KEY,
+// const transporter = nodemailer.createTransport({
+//   host: 'smtp-relay.brevo.com',
+//   port: 587,
+//   secure: false,
+//   auth: {
+//     user: config.BREVO_USER,
+//     pass: config.BREVO_SMTP_KEY,
+//   },
+// })
+
+const brevo = axios.create({
+  baseURL: 'https://api.brevo.com/v3',
+  headers: {
+    'api-key': config.BREVO_SMTP_KEY,
+    'Content-Type': 'application/json',
   },
+  timeout: 15000,
 })
 
-transporter.verify(function (error, success) {
-  if (error) {
-    console.log('check brevo error', error)
-  } else {
-    console.log('Server is ready to take our messages')
-  }
-})
+// transporter.verify(function (error, success) {
+//   if (error) {
+//     console.log('check brevo error', error)
+//   } else {
+//     console.log('Server is ready to take our messages')
+//   }
+// })
 
 const createEmailTemplate = (content: string, currentYear: number) => `
 <!DOCTYPE html>
@@ -165,14 +174,23 @@ const sendVerificationEmail = async (email: string, code: string, name: string) 
     <p class="muted">If you didn't create an account with ${config.APP_NAME}, you can safely ignore this email. Your email address will not be used for anything else.</p>
   `
 
-  const mailOptions = {
-    from: `"${config.APP_NAME}" <${config.SENDER_EMAIL}>`,
-    to: email,
-    subject: `Verify Your Email Address - Welcome to ${config.APP_NAME}`,
-    html: createEmailTemplate(content, new Date().getFullYear()),
-  }
+  //   const mailOptions = {
+  //     from: `"${config.APP_NAME}" <${config.SENDER_EMAIL}>`,
+  //     to: email,
+  //     subject: `Verify Your Email Address - Welcome to ${config.APP_NAME}`,
+  //     html: createEmailTemplate(content, new Date().getFullYear()),
+  //   }
 
-  await transporter.sendMail(mailOptions)
+  //   await transporter.sendMail(mailOptions)
+  await brevo.post('/smtp/email', {
+    sender: {
+      name: config.APP_NAME,
+      email: config.SENDER_EMAIL,
+    },
+    to: [{ email }],
+    subject: `Verify Your Email Address - Welcome to ${config.APP_NAME}`,
+    htmlContent: createEmailTemplate(content, new Date().getFullYear()),
+  })
 }
 
 const sendWelcomeEmail = async (email: string, name: string) => {
@@ -182,14 +200,23 @@ const sendWelcomeEmail = async (email: string, name: string) => {
     <p>Thank you for joining us!</p>
   `
 
-  const mailOptions = {
-    from: `"${config.APP_NAME}" <${config.SENDER_EMAIL}>`,
-    to: email,
-    subject: 'Welcome! Your Email is Verified',
-    html: createEmailTemplate(content, new Date().getFullYear()),
-  }
+  //   const mailOptions = {
+  //     from: `"${config.APP_NAME}" <${config.SENDER_EMAIL}>`,
+  //     to: email,
+  //     subject: 'Welcome! Your Email is Verified',
+  //     html: createEmailTemplate(content, new Date().getFullYear()),
+  //   }
 
-  await transporter.sendMail(mailOptions)
+  //   await transporter.sendMail(mailOptions)
+  await brevo.post('/smtp/email', {
+    sender: {
+      name: config.APP_NAME,
+      email: config.SENDER_EMAIL,
+    },
+    to: [{ email }],
+    subject: 'Welcome! Your Email is Verified',
+    htmlContent: createEmailTemplate(content, new Date().getFullYear()),
+  })
 }
 
 export default {
