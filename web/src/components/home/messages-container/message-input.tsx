@@ -144,8 +144,8 @@ function MessageInput() {
 
   if (isLeft) {
     return (
-      <div className='bg-background fixed bottom-0 z-20 flex h-16 w-full items-center border-t md:absolute md:px-4'>
-        <p className='text-foreground/50 w-full text-center'>
+      <div className='bg-background fixed bottom-0 z-20 flex h-[70px] w-full items-center border-t md:absolute md:px-4'>
+        <p className='text-foreground/50 w-full text-center text-xs md:text-base'>
           You can't send messages to this group because you're no longer a member.
         </p>
       </div>

@@ -131,14 +131,6 @@ function EditProfileForm({ onOpenChange }: EditProfileFormProps) {
           )}
         />
         <div className='mt-4 flex flex-col space-y-2'>
-          <Button
-            type='button'
-            variant='accent'
-            onClick={() => onOpenChange?.(false)}
-            disabled={updateProfile.isPending}
-          >
-            Cancel
-          </Button>
           <LoadingButton
             type='submit'
             isLoading={updateProfile.isPending}
@@ -147,6 +139,14 @@ function EditProfileForm({ onOpenChange }: EditProfileFormProps) {
           >
             Save
           </LoadingButton>
+          <Button
+            type='button'
+            variant='accent'
+            onClick={() => onOpenChange?.(false)}
+            disabled={updateProfile.isPending}
+          >
+            Cancel
+          </Button>
         </div>
       </form>
     </Form>

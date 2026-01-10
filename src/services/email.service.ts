@@ -11,6 +11,14 @@ const transporter = nodemailer.createTransport({
   },
 })
 
+transporter.verify(function (error, success) {
+  if (error) {
+    console.log('check brevo error', error)
+  } else {
+    console.log('Server is ready to take our messages')
+  }
+})
+
 const createEmailTemplate = (content: string, currentYear: number) => `
 <!DOCTYPE html>
 <html lang="en">

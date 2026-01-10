@@ -15,7 +15,7 @@ function MyProfile() {
   const { data: user, isLoading } = useGetProfile()
 
   return (
-    <aside className='flex h-full w-full flex-col overflow-y-hidden md:w-2/7 md:border-r'>
+    <aside className='flex h-full w-full flex-col overflow-y-auto md:w-2/7 md:border-r py-4'>
       <ProfileHeader />
       {isLoading ? (
         <div className='flex h-full items-center justify-center'>

@@ -8,7 +8,7 @@ function ProfileHeader() {
   const navigate = useNavigate()
 
   return (
-    <header className='bg-background flex w-full items-center justify-between p-4'>
+    <header className='bg-background flex w-full items-center justify-between px-4'>
       <div className='flex items-center space-x-1'>
         {isMobile && (
           <Button variant='ghost' size='icon' className='rounded-full' onClick={() => navigate(-1)}>
