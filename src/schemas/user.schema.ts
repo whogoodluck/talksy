@@ -35,6 +35,13 @@ export const resendCodeSchema = z.object({
   email: requiredString('Email').email('Please provide a valid email address'),
 })
 
+export const updateProfileSchema = z.object({
+  name: requiredString('Name').max(100, 'Name must be less than 100 characters').optional(),
+  username: usernameSchema.optional(),
+  bio: z.string().max(500, 'Bio must be less than 500 characters').optional(),
+  location: z.string().max(100, 'Location must be less than 100 characters').optional(),
+})
+
 type OriginalSignupRequest = z.infer<typeof signupSchema>
 
 export type SignupRequest = Omit<OriginalSignupRequest, 'password'> & {
@@ -51,9 +58,7 @@ type OriginalSigninRequest = z.infer<typeof signinSchema>
 export type SigninRequest = Omit<OriginalSigninRequest, 'password'> & {
   hashPassword: OriginalSigninRequest['password']
 }
-
 export type VerifyEmailRequest = z.infer<typeof verifyEmailSchema>
-
 export type ResendCodeRequest = z.infer<typeof resendCodeSchema>
-
 export type SearchUsersRequest = z.infer<typeof searchUsersSchema>
+export type UpdateProfileRequest = z.infer<typeof updateProfileSchema>

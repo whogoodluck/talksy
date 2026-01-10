@@ -41,12 +41,14 @@ function EditGroup({ open, onOpenChange, formAction, conversation }: EditGroupPr
           <DrawerHeader>
             <DrawerTitle>{formAction === 'EDIT_NAME' ? 'Edit Name' : 'Add Member'}</DrawerTitle>
             <DrawerDescription className='hidden' />
+          </DrawerHeader>
+          <div className='px-4 pb-4'>
             <EditGroupForm
               conversation={conversation}
               onOpenChange={onOpenChange}
               formAction={formAction}
             />
-          </DrawerHeader>
+          </div>
         </DrawerContent>
       </Drawer>
     )

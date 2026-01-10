@@ -1,6 +1,7 @@
 import { api } from '@/lib/api'
+import type { UpdateProfileRequest } from '@/schemas/user.schema'
 import type { User } from '@/types/user'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
 export const useSearchUsers = (query: string) => {
@@ -23,14 +24,41 @@ export const useGetUserByUsername = (username: string) => {
   })
 }
 
+export const useCheckUserName = () => {
+  useMutation({
+    mutationFn: async (username: string) => {
+      return await api.get<User>(`/users/${username}`)
+    },
+  })
+}
+
 export const useUpdateProfilePicture = () => {
+  const queryClient = useQueryClient()
+
   return useMutation({
     mutationFn: async (data: FormData) => {
-      const res = await api.put<User>('/users/me/picture', data)
-      return res.data
+      return await api.put<User>('/users/update-profile-picture', data)
     },
-    onSuccess: () => {
+    onSuccess: data => {
+      queryClient.setQueryData(['profile'], data.data)
       toast.success('Profile picture updated successfully!')
+    },
+    onError: (error: Error) => {
+      toast.error(error.message)
+    },
+  })
+}
+
+export const useUpdateProfile = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (data: UpdateProfileRequest) => {
+      return await api.put<User>('/users/update-profile', data)
+    },
+    onSuccess: data => {
+      queryClient.setQueryData(['profile'], data.data)
+      toast.success('Profile updated successfully!')
     },
     onError: (error: Error) => {
       toast.error(error.message)

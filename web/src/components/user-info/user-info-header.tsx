@@ -3,7 +3,7 @@ import { ArrowLeft, X } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '../ui/button'
 
-function ProfileHeader() {
+function UserInfoHeader() {
   const { isMobile } = useIsMobile()
   const navigate = useNavigate()
 
@@ -19,4 +19,4 @@ function ProfileHeader() {
   )
 }
 
-export default ProfileHeader
+export default UserInfoHeader

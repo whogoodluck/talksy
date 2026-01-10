@@ -1,5 +1,6 @@
 import { VerificationType } from '@prisma/client'
 import { NextFunction, Request, Response } from 'express'
+import { deleteImage, uploadImage } from '../lib/cloudinary'
 import { comparePassword, hashPassword, signToken } from '../lib/utils'
 import { ExpressRequest } from '../middlewares/auth.middleware'
 import {
@@ -7,6 +8,7 @@ import {
   searchUsersSchema,
   signinSchema,
   signupSchema,
+  updateProfileSchema,
   usernameSchema,
   verifyEmailSchema,
 } from '../schemas/user.schema'
@@ -278,6 +280,68 @@ const getUserByUsername = async (req: Request, res: Response, next: NextFunction
   }
 }
 
+const updateProfilePicture = async (req: ExpressRequest, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id
+    const file = req.file
+
+    if (!file) {
+      throw new HttpError(400, 'Picture not uploaded')
+    }
+
+    const user = await userService.getOneById(userId)
+
+    if (!user) {
+      throw new HttpError(404, 'User not found')
+    }
+
+    const uploadResult = await uploadImage(file)
+
+    const updatedUser = await userService.updateOneById(userId, {
+      picture: uploadResult.secure_url,
+    })
+
+    if (user.picture) {
+      await deleteImage(user.picture)
+    }
+
+    res.status(200).json(
+      new JsonResponse({
+        status: 'success',
+        message: 'Group picture updated successfully!',
+        data: updatedUser,
+      })
+    )
+  } catch (err) {
+    next(err)
+  }
+}
+
+const updateProfile = async (req: ExpressRequest, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id
+    const payload = updateProfileSchema.parse(req.body)
+
+    const user = await userService.getOneById(userId)
+
+    if (!user) {
+      throw new HttpError(404, 'User not found')
+    }
+
+    const updatedUser = await userService.updateOneById(userId, payload)
+
+    res.status(200).json(
+      new JsonResponse({
+        status: 'success',
+        message: 'User updated successfully',
+        data: updatedUser,
+      })
+    )
+  } catch (err) {
+    next(err)
+  }
+}
+
 export default {
   signUp,
   vrififyEmail,
@@ -287,4 +351,6 @@ export default {
   getProfile,
   getUsersByQuery,
   getUserByUsername,
+  updateProfilePicture,
+  updateProfile,
 }

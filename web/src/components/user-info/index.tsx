@@ -13,9 +13,9 @@ import { Loader } from '../loader'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import { Button } from '../ui/button'
 import { ConfirmAlertDialog } from '../ui/confirm-alert-dialog'
-import ProfileHeader from './profile-header'
+import UserInfoHeader from './user-info-header'
 
-function UserProfile({ username }: { username: string }) {
+function UserInfoDetail({ username }: { username: string }) {
   const { data: currentUser } = useGetProfile()
   const { data: user, isLoading } = useGetUserByUsername(username)
   const navigate = useNavigate()
@@ -28,7 +28,7 @@ function UserProfile({ username }: { username: string }) {
 
   return (
     <div className='bg-background relative z-10 flex h-screen flex-col'>
-      <ProfileHeader />
+      <UserInfoHeader />
       {isLoading ? (
         <div className='flex h-full items-center justify-center'>
           <Loader />
@@ -40,7 +40,7 @@ function UserProfile({ username }: { username: string }) {
   )
 }
 
-export default UserProfile
+export default UserInfoDetail
 
 function ProfileContent({ user }: { user: User }) {
   const [showDeleteChatAlert, setShowDeleteChatAlert] = useState(false)

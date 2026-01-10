@@ -176,7 +176,11 @@ function ShowLastMessagge({ message, conversation }: ShowLastMessaggeProps) {
 
   if (message.type === MessageEnum.IMAGE) {
     return (
-      <div className={cn('text-muted-foreground flex items-center', { 'text-foreground font-semibold': !isSender && !isMessageSeenByMe() })}>
+      <div
+        className={cn('text-muted-foreground flex items-center', {
+          'text-foreground font-semibold': !isSender && !isMessageSeenByMe(),
+        })}
+      >
         {isSender && (
           <span className={cn('mr-1', { 'text-[#00a2ff]': isMessageRead() })}>
             <CheckCheck className='size-4' />

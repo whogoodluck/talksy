@@ -29,7 +29,15 @@ export const resendCodeSchema = z.object({
   email: requiredString('Email').email('Please provide a valid email address'),
 })
 
+export const updateProfileSchema = z.object({
+  name: requiredString('Name').max(100, 'Name must be less than 100 characters').optional(),
+  username: usernameSchema.optional(),
+  bio: z.string().max(500, 'Bio must be less than 500 characters').optional(),
+  location: z.string().max(100, 'Location must be less than 100 characters').optional(),
+})
+
 export type SignupRequest = z.infer<typeof signupSchema>
 export type SigninRequest = z.infer<typeof signinSchema>
 export type VerifyEmailRequest = z.infer<typeof verifyEmailSchema>
 export type ResendCodeRequest = z.infer<typeof resendCodeSchema>
+export type UpdateProfileRequest = z.infer<typeof updateProfileSchema>
