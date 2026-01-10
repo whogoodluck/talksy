@@ -12,7 +12,7 @@ const DEV_DATABASE_URL = process.env.DEV_DATABASE_URL
 const JWT_SECRET = process.env.JWT_SECRET
 
 const BREVO_USER = process.env.BREVO_USER
-const BREVO_SMTP_KEY = process.env.BREVO_SMTP_KEY
+const BREVO_API_KEY = process.env.BREVO_SMTP_KEY
 
 const APP_NAME = process.env.APP_NAME
 const SENDER_EMAIL = process.env.SENDER_EMAIL
@@ -28,7 +28,7 @@ export default {
   DEV_DATABASE_URL,
   JWT_SECRET,
   BREVO_USER,
-  BREVO_SMTP_KEY,
+  BREVO_API_KEY,
   APP_NAME,
   SENDER_EMAIL,
   CLOUDINARY_CLOUD_NAME,
