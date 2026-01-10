@@ -83,8 +83,8 @@ function ProfileContent({ user }: { user: User }) {
 
         {user.bio && (
           <div className='bg-muted/50 space-y-2 rounded-lg p-4'>
-            <h3 className='font-semibold'>Bio</h3>
-            <p className='text-muted-foreground text-sm'>{user.bio}</p>
+            <h3 className='font-semibold text-foreground/80'>Bio</h3>
+            <p className='text text-sm'>{user.bio}</p>
           </div>
         )}
 

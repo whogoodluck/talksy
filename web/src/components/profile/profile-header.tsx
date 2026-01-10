@@ -7,15 +7,15 @@ function ProfileHeader() {
   const { isMobile } = useIsMobile()
   const navigate = useNavigate()
 
+  if(!isMobile) return <div className='h-16' />
+
   return (
-    <header className='bg-background flex w-full items-center justify-between px-4'>
+    <header className='bg-background flex h-16 w-full items-center justify-between border-b p-2 md:h-20 md:p-4'>
       <div className='flex items-center space-x-1'>
-        {isMobile && (
-          <Button variant='ghost' size='icon' className='rounded-full' onClick={() => navigate(-1)}>
-            <ArrowLeft size={30} strokeWidth={3} />
-          </Button>
-        )}
-        <span className='text-xl'>Profile</span>
+        <Button variant='ghost' size='icon' className='rounded-full' onClick={() => navigate(-1)}>
+          <ArrowLeft size={30} strokeWidth={3} />
+        </Button>
+        <span>Profile</span>
       </div>
     </header>
   )

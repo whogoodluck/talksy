@@ -15,7 +15,7 @@ function MyProfile() {
   const { data: user, isLoading } = useGetProfile()
 
   return (
-    <aside className='flex h-full w-full flex-col overflow-y-auto md:w-2/7 md:border-r py-4'>
+    <aside className='flex h-full w-full flex-col overflow-y-auto md:w-2/7 md:border-r pb-[66px]'>
       <ProfileHeader />
       {isLoading ? (
         <div className='flex h-full items-center justify-center'>
@@ -131,12 +131,12 @@ function ProfileContent({ user }: { user: User }) {
         </div>
         {user.bio && (
           <div className='bg-muted/50 space-y-2 rounded-lg p-4'>
-            <h3 className='font-semibold'>Bio</h3>
-            <p className='text-muted-foreground text-sm'>{user.bio}</p>
+            <h3 className='font-semibold text-foreground/80'>Bio</h3>
+            <p className='text text-sm'>{user.bio}</p>
           </div>
         )}
 
-        <div className='bg-muted/50 mt-2 space-y-4 rounded-lg p-4'>
+        <div className='bg-muted/50 mt-2 space-y-4 rounded-lg p-4 mb-4'>
           <h3 className='mb-3 font-semibold'>Information</h3>
           {user.email && (
             <div className='flex items-center gap-3'>
