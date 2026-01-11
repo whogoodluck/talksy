@@ -4,7 +4,6 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLink,
   DropdownMenuPortal,
   DropdownMenuSeparator,
   DropdownMenuSub,
@@ -30,11 +29,9 @@ import {
   LogOutIcon,
   Moon,
   Palette,
-  Settings,
   Sun,
 } from 'lucide-react'
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
 import { LoadingButton } from '../loading-button'
 
 export function HomeMenu() {
@@ -60,13 +57,13 @@ export function HomeMenu() {
           </SheetHeader>
           <div className='flex h-full flex-col'>
             <div className='flex-1'>
-              <Link
+              {/* <Link
                 to='/settings'
                 className='hover:bg-foreground/5 active:bg-foreground/5 flex items-center gap-4 px-6 py-3 text-lg'
               >
                 <Settings className='size-5.5' />
                 <span>Settings</span>
-              </Link>
+              </Link> */}
 
               <Button
                 className='flex h-auto w-full items-center justify-between gap-4 rounded-none !px-6 py-3 text-lg'
@@ -147,9 +144,9 @@ export function HomeMenu() {
       </DropdownMenuTrigger>
       <DropdownMenuContent className='w-56' align='start'>
         <DropdownMenuGroup>
-          <DropdownMenuLink to='/settings'>
+          {/* <DropdownMenuLink to='/settings'>
             <Settings className='size-4' /> Settings
-          </DropdownMenuLink>
+          </DropdownMenuLink> */}
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>
               <Palette className='size-4' /> Theme

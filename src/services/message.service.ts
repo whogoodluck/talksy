@@ -54,7 +54,6 @@ const getMessages = async (participant: Partial<ConversationParticipant>, limit:
 
   return await prisma.message.findMany({
     where: whereClause,
-    take: limit,
     orderBy: {
       createdAt: 'desc',
     },

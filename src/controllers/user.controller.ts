@@ -4,13 +4,16 @@ import { deleteImage, uploadImage } from '../lib/cloudinary'
 import { comparePassword, hashPassword, signToken } from '../lib/utils'
 import { ExpressRequest } from '../middlewares/auth.middleware'
 import {
+  forgotPasswordSchema,
   resendCodeSchema,
+  resetPasswordSchema,
   searchUsersSchema,
   signinSchema,
   signupSchema,
   updateProfileSchema,
   usernameSchema,
   verifyEmailSchema,
+  verifyResetCodeSchema,
 } from '../schemas/user.schema'
 import emailService from '../services/email.service'
 import userService from '../services/user.service'
@@ -142,6 +145,113 @@ const resendEmailVerificationCode = async (req: Request, res: Response, next: Ne
       new JsonResponse({
         status: 'success',
         message: 'Verification code sent successfully!',
+      })
+    )
+  } catch (err) {
+    next(err)
+  }
+}
+
+const forgotPassword = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const payload = forgotPasswordSchema.parse(req.body)
+
+    const user = await userService.getOneByEmail(payload.email)
+
+    if (!user) {
+      throw new HttpError(404, 'No account found with this email address')
+    }
+
+    if (!user.isEmailVerified) {
+      throw new HttpError(400, 'Please verify your email before resetting password')
+    }
+
+    const verificationCode = await verificationService.createVerificationCode(
+      user.id,
+      VerificationType.PASSWORD_RESET
+    )
+    await emailService.sendPasswordResetEmail(user.email, verificationCode.code, user.name)
+
+    res.status(200).json(
+      new JsonResponse({
+        status: 'success',
+        message: 'Password reset code sent to your email',
+        data: {
+          email: user.email,
+        },
+      })
+    )
+  } catch (err) {
+    next(err)
+  }
+}
+
+const verifyResetCode = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const payload = verifyResetCodeSchema.parse(req.body)
+
+    const verificationCode = await verificationService.verifyCodeByEmail(
+      payload.email,
+      payload.code,
+      VerificationType.PASSWORD_RESET
+    )
+
+    if (!verificationCode) {
+      throw new HttpError(400, 'Invalid or expired reset code')
+    }
+
+    res.status(200).json(
+      new JsonResponse({
+        status: 'success',
+        message: 'Reset code verified successfully',
+        data: {
+          email: payload.email,
+          code: payload.code,
+          verified: true,
+        },
+      })
+    )
+  } catch (err) {
+    next(err)
+  }
+}
+
+const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const payload = resetPasswordSchema.parse(req.body)
+
+    const user = await userService.getOneByEmail(payload.email)
+
+    if (!user) {
+      throw new HttpError(404, 'User not found')
+    }
+
+    if (!user.isEmailVerified) {
+      throw new HttpError(400, 'Please verify your email before resetting password')
+    }
+
+    // const verificationCode = await verificationService.verifyCodeByEmail(
+    //   payload.email,
+    //   payload.code,
+    //   VerificationType.PASSWORD_RESET
+    // )
+
+    // if (!verificationCode) {
+    //   throw new HttpError(400, 'Invalid or expired reset code')
+    // }
+
+    const hashedPassword = await hashPassword(payload.password)
+
+    await userService.updateOneById(user.id, {
+      hashPassword: hashedPassword,
+    })
+
+    await emailService.sendPasswordChangedEmail(user.email, user.name)
+
+    res.status(200).json(
+      new JsonResponse({
+        status: 'success',
+        message: 'Password reset successfully',
       })
     )
   } catch (err) {
@@ -353,4 +463,7 @@ export default {
   getUserByUsername,
   updateProfilePicture,
   updateProfile,
+  forgotPassword,
+  verifyResetCode,
+  resetPassword,
 }

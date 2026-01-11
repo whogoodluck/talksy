@@ -16,7 +16,7 @@ const generateUniqueUsernameFromEmail = async (email: string) => {
   })
 
   if (existingUser) {
-    username = `${username.replace(/[^a-z]/g, '')}_${existingUser.id.slice(0, 5)}`
+    username = `${username}_${Math.floor(Math.random() * 1000)}`
   }
 
   return username

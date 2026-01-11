@@ -8,6 +8,9 @@ import NavigationLayout from './layout/navigation-layout'
 import Signin from './pages/auth/signin'
 import Signup from './pages/auth/signup'
 import VerifyEmail from './pages/auth/verify-email'
+import ForgotPassword from './pages/auth/forgot-password'
+import ResetPassword from './pages/auth/reset-password'
+import VerifyResetCode from './pages/auth/verify-reset-code'
 import ConversationInfo from './pages/conversation-info'
 import Profile from './pages/profile'
 import UserInfo from './pages/user-info'
@@ -36,6 +39,9 @@ function App() {
                   <Route path='/auth/signin' element={<Signin />} />
                   <Route path='/auth/signup' element={<Signup />} />
                   <Route path='/auth/verify-email' element={<VerifyEmail />} />
+                  <Route path='/auth/forgot-password' element={<ForgotPassword />} />
+                  <Route path='/auth/verify-reset-code' element={<VerifyResetCode />} />
+                  <Route path='/auth/reset-password' element={<ResetPassword />} />
                 </Route>
 
                 <Route element={<ProtectedRoute />}>

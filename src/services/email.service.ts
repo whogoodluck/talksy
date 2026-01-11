@@ -185,7 +185,56 @@ const sendWelcomeEmail = async (email: string, name: string) => {
   })
 }
 
+const sendPasswordResetEmail = async (email: string, code: string, name: string) => {
+  const content = `
+    <h1>Password Reset Request</h1>
+    <p>Hi ${name},</p>
+    <p>We received a request to reset your password for your ${config.APP_NAME} account. Use the verification code below to proceed:</p>
+
+    <div class="code-container">
+        <div class="code">${code}</div>
+    </div>
+
+    <div class="warning">
+        <p>This reset code will expire in 10 minutes.</p>
+    </div>
+
+    <p class="muted">If you didn't request a password reset, you can safely ignore this email. Your password will remain unchanged.</p>
+  `
+
+  await brevo.post('/smtp/email', {
+    sender: {
+      name: config.APP_NAME,
+      email: config.SENDER_EMAIL,
+    },
+    to: [{ email }],
+    subject: `Password Reset Code - ${config.APP_NAME}`,
+    htmlContent: createEmailTemplate(content, new Date().getFullYear()),
+  })
+}
+
+const sendPasswordChangedEmail = async (email: string, name: string) => {
+  const content = `
+    <h1>Password Successfully Changed</h1>
+    <p>Hi ${name},</p>
+    <p>Your password has been successfully changed. If you didn't make this change, please contact our support team immediately.</p>
+    <p>For security reasons, you may want to review your recent account activity.</p>
+  `
+
+  await brevo.post('/smtp/email', {
+    sender: {
+      name: config.APP_NAME,
+      email: config.SENDER_EMAIL,
+    },
+    to: [{ email }],
+    subject: `Password Changed - ${config.APP_NAME}`,
+    htmlContent: createEmailTemplate(content, new Date().getFullYear()),
+  })
+}
+
 export default {
   sendVerificationEmail,
   sendWelcomeEmail,
+  sendPasswordResetEmail,
+  sendPasswordChangedEmail,
 }

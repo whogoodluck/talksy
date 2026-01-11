@@ -14,7 +14,7 @@ function NavigationLayout() {
       <div className='md:bg-foreground/5 bg-background fixed bottom-0 border-t md:border-t-0 z-10 flex w-full items-center gap-6 px-2 md:relative md:h-full md:w-16 md:flex-col md:gap-2 md:border-r md:px-1 md:py-4'>
         {PROTECTED_LINKS.map(link => (
           <Link
-            className='flex w-1/4 flex-col justify-center gap-1 md:w-full'
+            className='flex w-1/2 flex-col justify-center gap-1 md:w-full'
             key={link.name}
             to={link.href}
           >
@@ -33,7 +33,7 @@ function NavigationLayout() {
           </Link>
         ))}
         <Link
-          className='bottom-4 flex w-1/4 flex-col justify-center gap-1 p-1 md:absolute md:w-full'
+          className='bottom-4 flex w-1/2 flex-col justify-center gap-1 p-1 md:absolute md:w-full'
           to={'/profile'}
         >
           <div
@@ -48,7 +48,7 @@ function NavigationLayout() {
             <UserAvatar
               size='xs'
               user={profile.data!}
-              className={cn({ 'text-secondary': pathname === '/profile' })}
+              className={cn({ 'text-secondary border-secondary border': pathname === '/profile' })}
             />
           </div>
           <span className='text-center text-sm md:hidden'>Profile</span>

@@ -1,4 +1,11 @@
-import type { SigninRequest, SignupRequest, VerifyEmailRequest } from '@/schemas/user.schema'
+import type {
+  ForgotPasswordRequest,
+  ResetPasswordRequest,
+  SigninRequest,
+  SignupRequest,
+  VerifyEmailRequest,
+  VerifyResetCodeRequest,
+} from '@/schemas/user.schema'
 import type { User } from '@/types/user'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
@@ -48,6 +55,57 @@ export const useResendEmailVerification = () => {
     },
     onSuccess: data => {
       toast.success(data.message)
+    },
+    onError: (error: Error) => {
+      toast.error(error.message)
+    },
+  })
+}
+
+export const useForgotPassword = () => {
+  const navigate = useNavigate()
+
+  return useMutation({
+    mutationFn: async (data: ForgotPasswordRequest) => {
+      return await api.post<any>('/users/forgot-password', data)
+    },
+    onSuccess: (data) => {
+      toast.success(data.message)
+      navigate('/auth/verify-reset-code', { state: { email: data.data.email } })
+    },
+    onError: (error: Error) => {
+      toast.error(error.message)
+    },
+  })
+}
+
+export const useVerifyResetCode = () => {
+  const navigate = useNavigate()
+
+  return useMutation({
+    mutationFn: async (data: VerifyResetCodeRequest) => {
+      return await api.post<any>('/users/verify-reset-code', data)
+    },
+    onSuccess: (data) => {
+      toast.success(data.message)
+      navigate('/auth/reset-password', { state: { email: data.data.email, code: data.data.code } })
+    },
+    onError: (error: Error) => {
+      toast.error(error.message)
+    },
+  })
+}
+
+export const useResetPassword = () => {
+  const navigate = useNavigate()
+
+  return useMutation({
+    mutationFn: async (data: ResetPasswordRequest) => {
+      return await api.post('/users/reset-password', data)
+    },
+    onSuccess: (data) => {
+      toast.success(data.message)
+      navigate('/auth/signin')
     },
     onError: (error: Error) => {
       toast.error(error.message)
@@ -106,3 +164,4 @@ export const useGetProfile = () => {
     retry: false,
   })
 }
+

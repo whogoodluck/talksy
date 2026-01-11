@@ -11,6 +11,10 @@ userRouter.post('/signout', userController.signout)
 userRouter.post('/verify-email', userController.vrififyEmail)
 userRouter.post('/resend-email-verification-code', userController.resendEmailVerificationCode)
 
+userRouter.post('/forgot-password', userController.forgotPassword)
+userRouter.post('/verify-reset-code', userController.verifyResetCode)
+userRouter.post('/reset-password', userController.resetPassword)
+
 userRouter.get('/me', authMiddleware.requireAuth, userController.getProfile)
 userRouter.put(
   '/update-profile-picture',
