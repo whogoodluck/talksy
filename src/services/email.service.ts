@@ -217,7 +217,7 @@ const sendPasswordChangedEmail = async (email: string, name: string) => {
   const content = `
     <h1>Password Successfully Changed</h1>
     <p>Hi ${name},</p>
-    <p>Your password has been successfully changed. If you didn't make this change, please contact our support team immediately.</p>
+    <p>Your password has been successfully changed.</p>
     <p>For security reasons, you may want to review your recent account activity.</p>
   `
 

@@ -65,6 +65,22 @@ const verifyCode = async (userId: string, code: string, type: VerificationType) 
   return verificationCode
 }
 
+const checkVerificationCode = async (email: string, code: string, type: VerificationType) => {
+  return await prisma.verificationCode.findFirst({
+    where: {
+      user: {
+        email,
+      },
+      code,
+      type,
+      isUsed: false,
+      expiresAt: {
+        gt: new Date(),
+      },
+    },
+  })
+}
+
 const verifyCodeByEmail = async (email: string, code: string, type: VerificationType) => {
   const verificationCode = await prisma.verificationCode.findFirst({
     where: {
@@ -101,5 +117,6 @@ export default {
   deleteUserCodes,
   createVerificationCode,
   verifyCode,
+  checkVerificationCode,
   verifyCodeByEmail,
 }

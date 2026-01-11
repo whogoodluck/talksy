@@ -190,12 +190,12 @@ const verifyResetCode = async (req: Request, res: Response, next: NextFunction) 
   try {
     const payload = verifyResetCodeSchema.parse(req.body)
 
-    const verificationCode = await verificationService.verifyCodeByEmail(
+    const verificationCode = await verificationService.checkVerificationCode(
       payload.email,
       payload.code,
       VerificationType.PASSWORD_RESET
     )
-
+    console.log(verificationCode)
     if (!verificationCode) {
       throw new HttpError(400, 'Invalid or expired reset code')
     }
@@ -230,15 +230,15 @@ const resetPassword = async (req: Request, res: Response, next: NextFunction) =>
       throw new HttpError(400, 'Please verify your email before resetting password')
     }
 
-    // const verificationCode = await verificationService.verifyCodeByEmail(
-    //   payload.email,
-    //   payload.code,
-    //   VerificationType.PASSWORD_RESET
-    // )
+    const verificationCode = await verificationService.verifyCodeByEmail(
+      payload.email,
+      payload.code,
+      VerificationType.PASSWORD_RESET
+    )
 
-    // if (!verificationCode) {
-    //   throw new HttpError(400, 'Invalid or expired reset code')
-    // }
+    if (!verificationCode) {
+      throw new HttpError(400, 'Invalid or expired reset code')
+    }
 
     const hashedPassword = await hashPassword(payload.password)
 
