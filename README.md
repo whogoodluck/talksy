@@ -112,7 +112,7 @@ DEV_DATABASE_URL=postgresql://username:password@localhost:5432/talksy
 JWT_SECRET=your_super_secret_jwt_key_here
 
 # Brevo SMTP
-BREVO_SMTP_KEY=your_brevo_api_key
+BREVO_API_KEY=your_brevo_api_key
 
 # Application
 APP_NAME=Talksy
