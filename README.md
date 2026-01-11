@@ -1,30 +1,16 @@
 # 💬 Talksy
 
-<div align="center">
-
 **A modern real-time chat platform that makes conversations fast, fun, and effortless.**
 
-[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
-[![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)](https://nodejs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org/)
-
-[Live Demo](https://talksy.yourdomain.com) • [Features](#features) • [Tech Stack](#tech-stack) • [Getting Started](#getting-started) • [Configuration](#configuration) • [Development](#development)
-
-### 🌐 [Try Talksy Live →](https://talksy-mptl.onrender.com/)
-
-</div>
+[Live demo](https://talksy-mptl.onrender.com/)
 
 ---
 
 ## 📸 Preview
 
-<div align="center">
-
 ![Talksy Preview](./public/preview.png)
 
 _Experience real-time conversations with a modern, intuitive interface_
-
-</div>
 
 ## ✨ Features
 
