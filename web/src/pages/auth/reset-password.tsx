@@ -64,9 +64,7 @@ function ResetPassword() {
       <div className='w-full max-w-md space-y-6'>
         <div className='mb-12 space-y-2 text-center'>
           <h1 className='text-3xl font-bold tracking-tight'>Create New Password</h1>
-          <p className='text-muted-foreground'>
-            Enter a strong password for your account
-          </p>
+          <p className='text-muted-foreground'>Enter a strong password for your account</p>
         </div>
 
         <Form {...form}>
@@ -93,7 +91,11 @@ function ResetPassword() {
                     <Check
                       className={`h-3 w-3 ${passwordStrength.checks.length ? 'text-green-600' : 'text-muted-foreground'}`}
                     />
-                    <span className={passwordStrength.checks.length ? 'text-green-600' : 'text-muted-foreground'}>
+                    <span
+                      className={
+                        passwordStrength.checks.length ? 'text-green-600' : 'text-muted-foreground'
+                      }
+                    >
                       At least 6 characters
                     </span>
                   </li>
@@ -101,7 +103,13 @@ function ResetPassword() {
                     <Check
                       className={`h-3 w-3 ${passwordStrength.checks.uppercase ? 'text-green-600' : 'text-muted-foreground'}`}
                     />
-                    <span className={passwordStrength.checks.uppercase ? 'text-green-600' : 'text-muted-foreground'}>
+                    <span
+                      className={
+                        passwordStrength.checks.uppercase
+                          ? 'text-green-600'
+                          : 'text-muted-foreground'
+                      }
+                    >
                       One uppercase letter
                     </span>
                   </li>
@@ -109,7 +117,13 @@ function ResetPassword() {
                     <Check
                       className={`h-3 w-3 ${passwordStrength.checks.lowercase ? 'text-green-600' : 'text-muted-foreground'}`}
                     />
-                    <span className={passwordStrength.checks.lowercase ? 'text-green-600' : 'text-muted-foreground'}>
+                    <span
+                      className={
+                        passwordStrength.checks.lowercase
+                          ? 'text-green-600'
+                          : 'text-muted-foreground'
+                      }
+                    >
                       One lowercase letter
                     </span>
                   </li>
@@ -117,7 +131,11 @@ function ResetPassword() {
                     <Check
                       className={`h-3 w-3 ${passwordStrength.checks.number ? 'text-green-600' : 'text-muted-foreground'}`}
                     />
-                    <span className={passwordStrength.checks.number ? 'text-green-600' : 'text-muted-foreground'}>
+                    <span
+                      className={
+                        passwordStrength.checks.number ? 'text-green-600' : 'text-muted-foreground'
+                      }
+                    >
                       One number
                     </span>
                   </li>
@@ -125,7 +143,11 @@ function ResetPassword() {
                     <Check
                       className={`h-3 w-3 ${passwordStrength.checks.special ? 'text-green-600' : 'text-muted-foreground'}`}
                     />
-                    <span className={passwordStrength.checks.special ? 'text-green-600' : 'text-muted-foreground'}>
+                    <span
+                      className={
+                        passwordStrength.checks.special ? 'text-green-600' : 'text-muted-foreground'
+                      }
+                    >
                       One special character
                     </span>
                   </li>

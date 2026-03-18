@@ -47,17 +47,19 @@ export const verifyResetCodeSchema = z.object({
     .regex(/^\d+$/, 'Code must contain only numbers'),
 })
 
-export const resetPasswordSchema = z.object({
-  email: requiredString('Email').email('Please provide a valid email address'),
-  code: requiredString('code')
-    .length(6, 'Code must be 6 digits')
-    .regex(/^\d+$/, 'Code must contain only numbers'),
-  password: requiredString('Password').min(6, 'Password must be atleast 6 characters'),
-  confirmPassword: requiredString('Confirm Password'),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-})
+export const resetPasswordSchema = z
+  .object({
+    email: requiredString('Email').email('Please provide a valid email address'),
+    code: requiredString('code')
+      .length(6, 'Code must be 6 digits')
+      .regex(/^\d+$/, 'Code must contain only numbers'),
+    password: requiredString('Password').min(6, 'Password must be atleast 6 characters'),
+    confirmPassword: requiredString('Confirm Password'),
+  })
+  .refine(data => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ['confirmPassword'],
+  })
 
 export type SignupRequest = z.infer<typeof signupSchema>
 export type SigninRequest = z.infer<typeof signinSchema>
@@ -67,4 +69,3 @@ export type UpdateProfileRequest = z.infer<typeof updateProfileSchema>
 export type ForgotPasswordRequest = z.infer<typeof forgotPasswordSchema>
 export type VerifyResetCodeRequest = z.infer<typeof verifyResetCodeSchema>
 export type ResetPasswordRequest = z.infer<typeof resetPasswordSchema>
-

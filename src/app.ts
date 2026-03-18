@@ -2,6 +2,7 @@ import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import express, { Request, Response } from 'express'
 import morgan from 'morgan'
+import passport from './lib/passport'
 
 import router from './routes'
 
@@ -16,6 +17,7 @@ app.use(express.json())
 app.use(morgan('tiny'))
 app.use(cors())
 app.use(cookieParser())
+app.use(passport.initialize())
 
 app.use('/api/v1', router)
 

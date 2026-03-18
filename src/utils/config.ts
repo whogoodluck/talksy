@@ -20,6 +20,12 @@ const CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME
 const CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY
 const CLOUDINARY_API_SECRET = process.env.CLOUDINARY_API_SECRET
 
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET
+const GOOGLE_CALLBACK_URL =
+  process.env.GOOGLE_CALLBACK_URL || `http://localhost:${PORT}/api/v1/users/auth/google/callback`
+const CLIENT_URL = process.env.CLIENT_URL
+
 export default {
   NODE_ENV,
   PORT,
@@ -32,4 +38,8 @@ export default {
   CLOUDINARY_CLOUD_NAME,
   CLOUDINARY_API_KEY,
   CLOUDINARY_API_SECRET,
+  GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET,
+  GOOGLE_CALLBACK_URL,
+  CLIENT_URL,
 }

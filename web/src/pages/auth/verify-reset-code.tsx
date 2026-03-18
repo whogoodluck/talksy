@@ -75,9 +75,7 @@ function VerifyResetCode() {
       <div className='w-full max-w-md space-y-6'>
         <div className='mb-12 space-y-2 text-center'>
           <h1 className='text-3xl font-bold tracking-tight'>Verify Reset Code</h1>
-          <p className='text-muted-foreground'>
-            Enter the verification code sent to your email
-          </p>
+          <p className='text-muted-foreground'>Enter the verification code sent to your email</p>
         </div>
 
         <Form {...form}>

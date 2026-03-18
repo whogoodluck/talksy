@@ -69,7 +69,7 @@ export const useForgotPassword = () => {
     mutationFn: async (data: ForgotPasswordRequest) => {
       return await api.post<any>('/users/forgot-password', data)
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       toast.success(data.message)
       navigate('/auth/verify-reset-code', { state: { email: data.data.email } })
     },
@@ -86,7 +86,7 @@ export const useVerifyResetCode = () => {
     mutationFn: async (data: VerifyResetCodeRequest) => {
       return await api.post<any>('/users/verify-reset-code', data)
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       toast.success(data.message)
       navigate('/auth/reset-password', { state: { email: data.data.email, code: data.data.code } })
     },
@@ -103,7 +103,7 @@ export const useResetPassword = () => {
     mutationFn: async (data: ResetPasswordRequest) => {
       return await api.post('/users/reset-password', data)
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       toast.success(data.message)
       navigate('/auth/signin')
     },
@@ -164,4 +164,3 @@ export const useGetProfile = () => {
     retry: false,
   })
 }
-

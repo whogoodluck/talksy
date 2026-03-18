@@ -1,9 +1,26 @@
 import { Router } from 'express'
+import googleAuthController from '../controllers/google-auth.controller'
 import userController from '../controllers/user.controller'
+import passport from '../lib/passport'
 import authMiddleware from '../middlewares/auth.middleware'
 import { uploadSingleFileForProfilePicture } from '../middlewares/multer'
+import config from '../utils/config'
 
 const userRouter = Router()
+
+userRouter.get(
+  '/auth/google',
+  passport.authenticate('google', { session: false, scope: ['profile', 'email'] })
+)
+
+userRouter.get(
+  '/auth/google/callback',
+  passport.authenticate('google', {
+    session: false,
+    failureRedirect: `${config.CLIENT_URL!}/signin?error=google_auth_failed`,
+  }),
+  googleAuthController.handleCallback
+)
 
 userRouter.post('/signup', userController.signUp)
 userRouter.post('/signin', userController.signin)

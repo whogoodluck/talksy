@@ -7,7 +7,7 @@ function ProfileHeader() {
   const { isMobile } = useIsMobile()
   const navigate = useNavigate()
 
-  if(!isMobile) return <div className='h-16' />
+  if (!isMobile) return <div className='h-16' />
 
   return (
     <header className='bg-background flex h-16 w-full items-center justify-between border-b p-2 md:h-20 md:p-4'>

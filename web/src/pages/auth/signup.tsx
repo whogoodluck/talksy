@@ -1,3 +1,4 @@
+import { GoogleOAuthButton } from '@/components/google-auth-button'
 import { LoadingButton } from '@/components/loading-button'
 import {
   Form,
@@ -89,6 +90,18 @@ function Signup() {
             </LoadingButton>
           </form>
         </Form>
+
+        <div className='relative'>
+          <div className='absolute inset-0 flex items-center'>
+            <span className='border-foreground/10 w-full border-t' />
+          </div>
+          <div className='relative flex justify-center text-xs uppercase'>
+            <span className='text-muted-foreground bg-background px-2'>Or continue with</span>
+          </div>
+        </div>
+
+        <GoogleOAuthButton className='w-full'>Google</GoogleOAuthButton>
+
         <div className='text-muted-foreground text-center text-sm'>
           Already have an account?{' '}
           <Link

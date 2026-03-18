@@ -7,10 +7,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum AuthType {
+  EMAIL
+  GOOGLE
+}
+
 model User {
   id                String             @id @default(cuid())
   email             String             @unique
   hashPassword      String?
+  googleId          String?            @unique
   username          String?            @unique @db.VarChar(30)
   name              String             @db.VarChar(100)
   bio               String?            @db.VarChar(500)
@@ -21,6 +27,7 @@ model User {
   lastSeen          DateTime?
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
+  authType          AuthType           @default(EMAIL)
   
   verificationCodes VerificationCode[]
   sentMessages      Message[]          @relation("SentMessages")

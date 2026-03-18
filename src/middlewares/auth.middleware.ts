@@ -11,6 +11,15 @@ export interface JWTPayload {
   name: string
 }
 
+declare global {
+  namespace Express {
+    interface User extends JWTPayload {}
+    interface Request {
+      user?: JWTPayload
+    }
+  }
+}
+
 export interface ExpressRequest extends Request {
   user?: JWTPayload
 }
